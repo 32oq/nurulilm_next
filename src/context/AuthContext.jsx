@@ -15,21 +15,19 @@ import { getErrorMessage } from '../utils/errors';
 export const getMemoryToken = () => getClientToken();
 export const setMemoryToken = (token) => setClientToken(token);
 
-const hasStoredSession = typeof window !== 'undefined' && storage.getString('has_session') === '1';
-const initialAct = typeof window !== 'undefined' ? storage.getString('last_act', null) : null;
-
 export const initialAuthState = {
   isAuthenticated: false,
   user: null,
-  loading: hasStoredSession,
-  authRestoring: hasStoredSession,
+  loading: false,
+  authRestoring: false,
   error: null,
-  act: initialAct,
+  act: null,
   id: null,
 };
 
 export const AUTH_ACTIONS = Object.freeze({
   REQUEST_START: 'AUTH/REQUEST_START',
+  RESTORE_START: 'AUTH/RESTORE_START',
   LOGIN_SUCCESS: 'AUTH/LOGIN_SUCCESS',
   REGISTER_SUCCESS: 'AUTH/REGISTER_SUCCESS',
   LOGOUT: 'AUTH/LOGOUT',
@@ -46,6 +44,9 @@ function authReducer(state, action) {
   switch (action.type) {
     case AUTH_ACTIONS.REQUEST_START:
       return { ...state, loading: true, error: null };
+
+    case AUTH_ACTIONS.RESTORE_START:
+      return { ...state, loading: true, authRestoring: true, error: null };
 
     case AUTH_ACTIONS.LOGIN_SUCCESS:
     case AUTH_ACTIONS.REGISTER_SUCCESS:
@@ -117,6 +118,15 @@ export const AuthProvider = ({ children }) => {
     let isMounted = true;
 
     const restoreSession = async () => {
+      const hasStored = storage.getString('has_session') === '1';
+      if (!hasStored) {
+        return;
+      }
+
+      if (isMounted) {
+        dispatch({ type: AUTH_ACTIONS.RESTORE_START });
+      }
+
       try {
         const { token, user } = await authService.refreshSession();
         if (token && isMounted) {

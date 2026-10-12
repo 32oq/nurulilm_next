@@ -26,9 +26,6 @@ export default function Home() {
   const [additionalParams, setAddParams] = useState({});
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('has_session') === '1') {
-      setPage('dashboard');
-    }
     if (fetchLibraryTimings) fetchLibraryTimings();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
