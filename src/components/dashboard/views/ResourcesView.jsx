@@ -37,9 +37,10 @@ export default function ResourcesView({ isAdmin }) {
 
   useEffect(() => { fetchResources(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filtered = (resources || []).filter(r => {
-    const matchCat    = category === "all" || r.category === category;
-    const matchSearch = !search || r.title?.toLowerCase().includes(search.toLowerCase()) || r.author?.toLowerCase().includes(search.toLowerCase());
+  const resList = Array.isArray(resources) ? resources : (Array.isArray(resources?.data) ? resources.data : []);
+  const filtered = resList.filter(r => {
+    const matchCat    = category === "all" || r?.category === category;
+    const matchSearch = !search || r?.title?.toLowerCase().includes(search.toLowerCase()) || r?.author?.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 

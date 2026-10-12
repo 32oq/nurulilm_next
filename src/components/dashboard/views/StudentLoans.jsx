@@ -48,9 +48,10 @@ export default function StudentLoans() {
 
   useEffect(() => { fetchMyLoans(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const isOverdue = (loan) => loan.status === 'active' && moment(loan.due_date).isBefore(moment(), 'day');
-  const active  = (loans || []).filter(l => l.status === 'active');
-  const history = (loans || []).filter(l => l.status === 'returned');
+  const isOverdue = (loan) => loan?.status === 'active' && moment(loan.due_date).isBefore(moment(), 'day');
+  const loansList = Array.isArray(loans) ? loans : (Array.isArray(loans?.data) ? loans.data : (Array.isArray(loans?.loans) ? loans.loans : []));
+  const active  = loansList.filter(l => l && (l.status === 'active' || l.status === 'borrowed' || !l.return_date));
+  const history = loansList.filter(l => l && (l.status === 'returned' || !!l.return_date));
 
   return (
     <div className="space-y-6 w-full max-w-5xl">

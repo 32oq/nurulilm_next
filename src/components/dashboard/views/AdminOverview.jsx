@@ -100,8 +100,8 @@ export default function AdminOverview({ setView }) {
     }
   }, [libraryTimings]);
 
-  const allLoans      = loans || [];
-  const allResources  = resources || [];
+  const allLoans      = Array.isArray(loans) ? loans : (Array.isArray(loans?.data) ? loans.data : []);
+  const allResources  = Array.isArray(resources) ? resources : (Array.isArray(resources?.data) ? resources.data : []);
   const activeLoans   = allLoans.filter(l => l.status === 'active');
   const returnedLoans = allLoans.filter(l => l.status === 'returned');
   const overdueLoans  = activeLoans.filter(l => moment(l.due_date).isBefore(moment(), 'day'));

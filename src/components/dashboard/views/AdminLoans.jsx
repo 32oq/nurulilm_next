@@ -38,8 +38,10 @@ export default function AdminLoans() {
     fetchResources();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filteredLoans   = (loans || []).filter(l => loanFilter === "all" ? true : l.status === loanFilter);
-  const availableBooks  = (resources || []).filter(r => (r.availability ?? 0) > 0);
+  const loansList = Array.isArray(loans) ? loans : (Array.isArray(loans?.data) ? loans.data : []);
+  const resourcesList = Array.isArray(resources) ? resources : (Array.isArray(resources?.data) ? resources.data : []);
+  const filteredLoans   = loansList.filter(l => loanFilter === "all" ? true : l?.status === loanFilter);
+  const availableBooks  = resourcesList.filter(r => (r?.availability ?? 0) > 0);
 
   const openIssue = () => {
     setIssueForm({ user_id: "", user_name: "", resource_id: "", resource_title: "", due_date: defaultDue });

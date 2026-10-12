@@ -19,17 +19,17 @@ import { getErrorMessage } from "../utils/errors";
 
 /* ---------- Initial State ---------- */
 export const initialState = {
-  packages: null,
+  packages: [],
   loading: false,
   error: null,
   checkout_flag: null,
-  txns: null,
-  resources: null,
-  loans: null,
-  students: null,
-  allStudents: null,
-  earnings: null,
-  studentStats: null,
+  txns: [],
+  resources: [],
+  loans: [],
+  students: [],
+  allStudents: [],
+  earnings: { total: 0, count: 0 },
+  studentStats: { total: 0, verified: 0, pending_kyc: 0, paid: 0 },
   pendingCounts: { pendingPayments: 0, pendingUsers: 0 },
   libraryTimings: {
     open_time: '07:00 AM',
@@ -189,8 +189,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await paymentService.getMyTransactions();
-      dispatch({ type: ACTION_TYPES.TXN_FETCH, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.allPayments) ? data.allPayments : (Array.isArray(data?.data) ? data.data : []));
+      dispatch({ type: ACTION_TYPES.TXN_FETCH, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch transactions.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -212,8 +213,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await paymentService.getTransactionsForConfirmation();
-      dispatch({ type: ACTION_TYPES.TXN_FETCH_CONFIRMATION, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : (Array.isArray(data?.payments) ? data.payments : []));
+      dispatch({ type: ACTION_TYPES.TXN_FETCH_CONFIRMATION, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch unconfirmed transactions.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -250,8 +252,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await catalogService.getBooks();
-      dispatch({ type: ACTION_TYPES.RESOURCES_FETCH, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+      dispatch({ type: ACTION_TYPES.RESOURCES_FETCH, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch catalog resources.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -294,8 +297,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await loansService.getMyLoans();
-      dispatch({ type: ACTION_TYPES.LOANS_FETCH, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : (Array.isArray(data?.loans) ? data.loans : []));
+      dispatch({ type: ACTION_TYPES.LOANS_FETCH, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch borrowed books.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -307,8 +311,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await loansService.getAllLoans(params);
-      dispatch({ type: ACTION_TYPES.LOANS_FETCH, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : (Array.isArray(data?.loans) ? data.loans : []));
+      dispatch({ type: ACTION_TYPES.LOANS_FETCH, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch library loans.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -348,8 +353,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await adminService.getStudents();
-      dispatch({ type: ACTION_TYPES.STUDENTS_FETCH, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : (Array.isArray(data?.students) ? data.students : []));
+      dispatch({ type: ACTION_TYPES.STUDENTS_FETCH, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch student roster.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -361,8 +367,9 @@ export const OtherProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
       const data = await adminService.getAllStudents();
-      dispatch({ type: ACTION_TYPES.ALL_STUDENTS_FETCH, payload: data });
-      return data;
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : (Array.isArray(data?.students) ? data.students : []));
+      dispatch({ type: ACTION_TYPES.ALL_STUDENTS_FETCH, payload: list });
+      return list;
     } catch (error) {
       const msg = getErrorMessage(error, 'Failed to fetch all students.');
       dispatch({ type: ACTION_TYPES.FETCH_ERROR, payload: msg });
@@ -446,6 +453,64 @@ export const OtherProvider = ({ children }) => {
       return await deskService.auditDeskRequest(requestId, status, note);
     } catch (error) {
       throw new Error(getErrorMessage(error, 'Failed to audit desk request.'));
+    }
+  }, []);
+
+  const fetchAllDeskChangeRequestsAdmin = useCallback(async () => {
+    try {
+      const data = await deskService.getDeskRequestsAdmin();
+      return Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+    } catch (error) {
+      console.warn('Failed to fetch admin desk change requests:', error);
+      return [];
+    }
+  }, []);
+
+  const approveDeskChangeRequest = useCallback(async (requestId) => {
+    try {
+      return await deskService.approveDeskRequest(requestId);
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to approve desk request.'));
+    }
+  }, []);
+
+  const rejectDeskChangeRequest = useCallback(async (requestId, note = '') => {
+    try {
+      return await deskService.rejectDeskRequest(requestId, note);
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to reject desk request.'));
+    }
+  }, []);
+
+  const adminReleaseDesk = useCallback(async (deskId) => {
+    try {
+      return await deskService.releaseDesk(deskId);
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to release desk.'));
+    }
+  }, []);
+
+  const adminCreateDesk = useCallback(async (deskData) => {
+    try {
+      return await deskService.createDesk(deskData);
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to create desk.'));
+    }
+  }, []);
+
+  const adminToggleDeskStatus = useCallback(async (deskId, status) => {
+    try {
+      return await deskService.toggleDeskStatus(deskId, status);
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to toggle desk status.'));
+    }
+  }, []);
+
+  const adminReassignDesk = useCallback(async (studentId, deskId) => {
+    try {
+      return await deskService.reassignDesk({ student_id: studentId, desk_id: deskId });
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to reassign desk.'));
     }
   }, []);
 
@@ -611,11 +676,13 @@ export const OtherProvider = ({ children }) => {
     // Catalog Resources
     fetchResources, addResource, editResource, removeResource,
     // Loans
-    fetchMyLoans, fetchLoans, createLoan, returnLoan, extendLoan,
+    fetchMyLoans, fetchLoans, createLoan, issueBook: createLoan, returnLoan, returnBook: returnLoan, extendLoan,
     // Students
     fetchStudents, fetchAllStudents, fetchStudentStats, fetchPendingCounts, verifyStudentKYC,
     // Desks
     fetchDesks, claimDesk, releaseDesk, fetchDeskRequests, requestDeskChange, auditDeskRequest,
+    fetchAllDeskChangeRequestsAdmin, approveDeskChangeRequest, rejectDeskChangeRequest,
+    adminReleaseDesk, adminCreateDesk, adminToggleDeskStatus, adminReassignDesk,
     // Focus Sprints
     startFocusSprint, completeFocusSprint, fetchFocusSprintHistory, fetchFocusSprintLeaderboard,
     // Community Notes
@@ -634,6 +701,8 @@ export const OtherProvider = ({ children }) => {
     fetchMyLoans, fetchLoans, createLoan, returnLoan, extendLoan,
     fetchStudents, fetchAllStudents, fetchStudentStats, fetchPendingCounts, verifyStudentKYC,
     fetchDesks, claimDesk, releaseDesk, fetchDeskRequests, requestDeskChange, auditDeskRequest,
+    fetchAllDeskChangeRequestsAdmin, approveDeskChangeRequest, rejectDeskChangeRequest,
+    adminReleaseDesk, adminCreateDesk, adminToggleDeskStatus, adminReassignDesk,
     startFocusSprint, completeFocusSprint, fetchFocusSprintHistory, fetchFocusSprintLeaderboard,
     fetchCommunityNotes, submitCommunityNote, fetchAllCommunityNotes, auditCommunityNote,
     fetchLibraryTimings, updateLibraryTimings,

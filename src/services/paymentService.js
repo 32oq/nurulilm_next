@@ -13,7 +13,11 @@ export const paymentService = {
    */
   async getMyTransactions() {
     const response = await apiClient.get(ENDPOINTS.PAYMENTS.FETCH);
-    return response?.data?.results || [];
+    const res = response?.data?.results;
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.allPayments)) return res.allPayments;
+    if (Array.isArray(res?.data)) return res.data;
+    return [];
   },
 
   /**
@@ -37,7 +41,11 @@ export const paymentService = {
    */
   async getTransactionsForConfirmation(params = {}) {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.PENDING_PAYMENTS, { params });
-    return response?.data?.results || [];
+    const res = response?.data?.results;
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.data)) return res.data;
+    if (Array.isArray(res?.payments)) return res.payments;
+    return [];
   },
 
   /**

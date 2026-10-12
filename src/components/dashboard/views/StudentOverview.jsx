@@ -57,10 +57,13 @@ export default function StudentOverview({ setView }) {
   const isPaid      = user?.lastpayment && moment(user.lastpayment).isSameOrAfter(moment(), 'day');
   const daysLeft    = user?.lastpayment ? moment(user.lastpayment).diff(moment(), 'days') : null;
 
-  const active   = (loans || []).filter(l => l.status === 'active');
-  const returned = (loans || []).filter(l => l.status === 'returned');
-  const overdue  = active.filter(l => moment(l.due_date).isBefore(moment(), 'day'));
-  const confirmedPayments = (txns || []).filter(t => t.confirmation);
+  const loansList = Array.isArray(loans) ? loans : (Array.isArray(loans?.data) ? loans.data : (Array.isArray(loans?.loans) ? loans.loans : []));
+  const txnsList  = Array.isArray(txns) ? txns : (Array.isArray(txns?.allPayments) ? txns.allPayments : (Array.isArray(txns?.data) ? txns.data : []));
+
+  const active   = loansList.filter(l => l && (l.status === 'active' || l.status === 'borrowed' || !l.return_date));
+  const returned = loansList.filter(l => l && (l.status === 'returned' || !!l.return_date));
+  const overdue  = active.filter(l => l?.due_date && moment(l.due_date).isBefore(moment(), 'day'));
+  const confirmedPayments = txnsList.filter(t => t?.confirmation);
 
   const handleNoteSubmit = async (e) => {
     e.preventDefault();

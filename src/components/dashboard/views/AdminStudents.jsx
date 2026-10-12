@@ -38,10 +38,12 @@ export default function AdminStudents() {
 
   const isPaidUp = (s) => s.lastpayment && moment(s.lastpayment).isSameOrAfter(moment(), 'day');
 
-  const pendingStudentsCount = (allStudents || []).filter(s => !s.verified || !s.registration || !s.paid).length;
+  const studentsList = Array.isArray(allStudents) ? allStudents : (Array.isArray(allStudents?.data) ? allStudents.data : (Array.isArray(allStudents?.students) ? allStudents.students : []));
 
-  const displayedStudents = (allStudents || []).filter(s => {
-    if (filterTab === 'pending') return !s.verified || !s.registration || !s.paid;
+  const pendingStudentsCount = studentsList.filter(s => !s?.verified || !s?.registration || !s?.paid).length;
+
+  const displayedStudents = studentsList.filter(s => {
+    if (filterTab === 'pending') return !s?.verified || !s?.registration || !s?.paid;
     if (filterTab === 'paid') return isPaidUp(s);
     if (filterTab === 'overdue') return !isPaidUp(s);
     return true;

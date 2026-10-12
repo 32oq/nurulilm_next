@@ -12,6 +12,8 @@ export default function StudentPayments() {
   const { state: { user }, patchUser } = useAuth();
   const { state: { txns, loading, error }, fetchTxns, checkout } = useOther();
 
+  const txnsList = Array.isArray(txns) ? txns : (Array.isArray(txns?.allPayments) ? txns.allPayments : (Array.isArray(txns?.data) ? txns.data : []));
+
   const [showPay, setShowPay] = useState(false);
 
   useEffect(() => {
@@ -135,7 +137,7 @@ export default function StudentPayments() {
 
       {!loading && (
         <div className="bg-white dark:bg-[#142019] border border-[#DFE6DC] dark:border-[#22352B] rounded-2xl shadow-xs overflow-hidden">
-          {!txns?.length ? (
+          {!txnsList?.length ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 gap-2 text-center">
               <div className="w-12 h-12 rounded-xl bg-[#FAF8F5] dark:bg-[#18261F] text-[#7F8781] dark:text-[#8FD4AE] flex items-center justify-center mb-1">
                 <CreditCard size={24} />
@@ -166,7 +168,7 @@ export default function StudentPayments() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#EFEBE4] dark:divide-[#22352B]">
-                    {txns.map((item, i) => {
+                    {txnsList.map((item, i) => {
                       const period = formatPeriod(item);
                       const refId = getReferenceId(item);
                       const paidVia = formatPaidVia(item.payment_type || item.type);
@@ -221,7 +223,7 @@ export default function StudentPayments() {
 
               {/* Mobile cards */}
               <div className="md:hidden divide-y divide-[#EFEBE4] dark:divide-[#22352B]">
-                {txns.map((item, i) => {
+                {txnsList.map((item, i) => {
                   const period = formatPeriod(item);
                   const refId = getReferenceId(item);
                   const paidVia = formatPaidVia(item.payment_type || item.type);

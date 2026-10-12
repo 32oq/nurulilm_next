@@ -13,7 +13,11 @@ export const loansService = {
    */
   async getMyLoans() {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.LOANS_MY);
-    return response?.data?.results || [];
+    const res = response?.data?.results;
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.data)) return res.data;
+    if (Array.isArray(res?.loans)) return res.loans;
+    return [];
   },
 
   /**
@@ -21,7 +25,11 @@ export const loansService = {
    */
   async getAllLoans(params = {}) {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.LOANS_LIST, { params });
-    return response?.data?.results || [];
+    const res = response?.data?.results;
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.data)) return res.data;
+    if (Array.isArray(res?.loans)) return res.loans;
+    return [];
   },
 
   /**
@@ -29,7 +37,11 @@ export const loansService = {
    */
   async getStudentsForLoans() {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.LOANS_STUDENTS);
-    return response?.data?.results || [];
+    const res = response?.data?.results;
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.data)) return res.data;
+    if (Array.isArray(res?.students)) return res.students;
+    return [];
   },
 
   /**
