@@ -1,21 +1,22 @@
 /**
  * @file adminService.js
  * @description Administrative operations: student roster, KYC audits, operational hours, membership packages, notices, and digital patron cards.
+ * 100% matched to Express backend routes.
  */
 
 import { apiClient } from './apiClient';
-import { DASHBOARD_API_BASE, USER_API_BASE } from '../config/api';
+import { ENDPOINTS } from '../config/api';
 
 export const adminService = {
   /**
    * Fetches official library operational timings and seasonal note
    */
   async getLibraryTimings() {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/timings`);
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.TIMINGS);
     return response?.data?.results || {
       open_time: '07:00 AM',
       close_time: '09:00 PM',
-      days: 'Monday - Sunday',
+      days: 'Monday – Sunday',
       status_note: 'Open 7 days a week • Winter heating & quiet cabins active',
       is_open_today: true,
     };
@@ -25,7 +26,7 @@ export const adminService = {
    * Updates library operational timings (admin)
    */
   async updateLibraryTimings(timingsData) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/timings/update`, timingsData);
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.TIMINGS_UPDATE, timingsData);
     return response?.data;
   },
 
@@ -33,15 +34,16 @@ export const adminService = {
    * Fetches all membership tiers/packages
    */
   async getPackages() {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/packages/fetch_all`);
-    return response?.data?.results || [];
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.PACKAGES);
+    const list = response?.data?.results?.data || response?.data?.results || [];
+    return Array.isArray(list) ? list : [];
   },
 
   /**
    * Creates a new membership package (admin)
    */
   async createPackage(packageData) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/packages/create`, packageData);
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.PACKAGE_CREATE, packageData);
     return response?.data;
   },
 
@@ -49,7 +51,8 @@ export const adminService = {
    * Updates a membership package (admin)
    */
   async updatePackage(packageData) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/packages/update`, packageData);
+    const id = packageData._id || packageData.id;
+    const response = await apiClient.put(ENDPOINTS.DASHBOARD.PACKAGE_UPDATE(id), packageData);
     return response?.data;
   },
 
@@ -57,31 +60,39 @@ export const adminService = {
    * Deletes a membership package (admin)
    */
   async deletePackage(packageId) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/packages/delete`, { id: packageId });
+    const response = await apiClient.delete(ENDPOINTS.DASHBOARD.PACKAGE_DELETE(packageId));
     return response?.data;
   },
 
   /**
-   * Fetches verified active student roster (admin)
+   * Fetches active student roster (admin)
    */
   async getStudents(params = {}) {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/students/fetch_all`, { params });
-    return response?.data?.results || [];
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.STUDENTS_LIST, { params });
+    return response?.data?.results?.data || response?.data?.results || [];
   },
 
   /**
    * Fetches complete student roster including unverified registrations (admin)
    */
   async getAllStudents(params = {}) {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/students/fetch_roster`, { params });
-    return response?.data?.results || [];
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.STUDENTS_LIST, { params });
+    return response?.data?.results?.data || response?.data?.results || [];
+  },
+
+  /**
+   * Creates a new student record manually (admin)
+   */
+  async createStudent(studentData) {
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.STUDENT_CREATE, studentData);
+    return response?.data;
   },
 
   /**
    * Fetches student aggregate counts (total, verified, pending KYC, paid)
    */
   async getStudentStats() {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/students/stats`);
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.STUDENT_STATS);
     return response?.data?.results || { total: 0, verified: 0, pending_kyc: 0, paid: 0 };
   },
 
@@ -89,59 +100,75 @@ export const adminService = {
    * Fetches pending action counts for admin badge alerts
    */
   async getPendingCounts() {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/pending_counts`);
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.PENDING_COUNTS);
     return response?.data?.results || { pendingPayments: 0, pendingUsers: 0 };
   },
 
   /**
-   * Audits student KYC/Police verification status (admin)
+   * Verifies/Audits student KYC status (admin)
    */
   async verifyStudentKyc(studentId, isVerified) {
-    const response = await apiClient.post(`${USER_API_BASE}/verify-kyc`, {
-      user_id: studentId,
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.STUDENT_VERIFY(studentId), {
       verified: isVerified ? 1 : 0,
     });
     return response?.data;
   },
 
   /**
-   * Fetches library administrative announcements and notices
+   * Toggles student active/suspended status (admin)
    */
-  async getLibraryNews(params = {}) {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/news`, { params });
-    return response?.data?.data || response?.data?.results || [];
-  },
-
-  /**
-   * Posts a new library notice (admin)
-   */
-  async createLibraryNews(newsPayload) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/news/create`, newsPayload);
+  async toggleStudentStatus(studentId, status) {
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.STUDENT_TOGGLE_STATUS(studentId), { status });
     return response?.data;
   },
 
   /**
-   * Updates a library notice (admin)
+   * Resets student password (admin)
    */
-  async updateLibraryNews(newsId, newsPayload) {
-    const response = await apiClient.put(`${DASHBOARD_API_BASE}/news/update/${newsId}`, newsPayload);
+  async resetStudentPassword(studentId, newPassword) {
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.STUDENT_CHANGE_PASSWORD(studentId), {
+      password: newPassword,
+    });
     return response?.data;
   },
 
   /**
-   * Deletes a library notice (admin)
+   * Fetches library administrative news bulletins
    */
-  async deleteLibraryNews(newsId) {
-    const response = await apiClient.delete(`${DASHBOARD_API_BASE}/news/delete/${newsId}`);
+  async getNews() {
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.NEWS);
+    return response?.data?.results || [];
+  },
+
+  /**
+   * Creates news bulletin (admin)
+   */
+  async createNews(payload) {
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.NEWS_CREATE, payload);
     return response?.data;
   },
 
   /**
-   * Fetches the digital patron ID card data and barcode credentials
+   * Updates news bulletin (admin)
    */
-  async getPatronCard(studentId = null) {
-    const params = studentId ? { student_id: studentId } : {};
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/patron_card`, { params });
+  async updateNews(id, payload) {
+    const response = await apiClient.put(ENDPOINTS.DASHBOARD.NEWS_UPDATE(id), payload);
+    return response?.data;
+  },
+
+  /**
+   * Deletes news bulletin (admin)
+   */
+  async deleteNews(id) {
+    const response = await apiClient.delete(ENDPOINTS.DASHBOARD.NEWS_DELETE(id));
+    return response?.data;
+  },
+
+  /**
+   * Fetches digital patron library pass card for logged-in user
+   */
+  async getPatronCard() {
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.PATRON_CARD);
     return response?.data?.results;
   },
 };

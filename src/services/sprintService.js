@@ -1,42 +1,43 @@
 /**
  * @file sprintService.js
  * @description Pomodoro study focus sprints, study streak tracking, and scholar leaderboard.
+ * 100% matched to Express backend routes.
  */
 
 import { apiClient } from './apiClient';
-import { DASHBOARD_API_BASE } from '../config/api';
+import { ENDPOINTS } from '../config/api';
 
 export const sprintService = {
   /**
-   * Starts a focus sprint session
+   * Logs a completed focus sprint session
    */
-  async startSprint(payload = {}) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/focus_sprint/start`, payload);
-    return response?.data?.results;
+  async logSprint(payload) {
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.FOCUS_SPRINT_LOG, payload);
+    return response?.data;
   },
 
   /**
-   * Completes a focus sprint session with minutes studied and topic
-   */
-  async completeSprint(payload) {
-    const response = await apiClient.post(`${DASHBOARD_API_BASE}/focus_sprint/complete`, payload);
-    return response?.data?.results;
-  },
-
-  /**
-   * Fetches sprint history and streak statistics for the logged-in student
+   * Fetches sprint history and streak statistics for current student
    */
   async getHistory() {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/focus_sprint/history`);
-    return response?.data?.results || { sprints: [], stats: { streakDays: 0, todayMinutes: 0, totalMinutes: 0 } };
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.FOCUS_SPRINT_HISTORY);
+    return response?.data?.results?.data || response?.data?.results || { history: [], stats: { streak: 0, todayMinutes: 0, totalMinutes: 0 } };
   },
 
   /**
-   * Fetches top dedicated scholars for the week/month
+   * Fetches top dedicated scholars for the focus leaderboard
    */
   async getLeaderboard() {
-    const response = await apiClient.get(`${DASHBOARD_API_BASE}/focus_sprint/leaderboard`);
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.FOCUS_SPRINT_LEADERBOARD);
     return response?.data?.results || [];
+  },
+
+  /**
+   * Deletes a focus session log
+   */
+  async deleteSprint(id) {
+    const response = await apiClient.delete(ENDPOINTS.DASHBOARD.FOCUS_SPRINT_DELETE(id));
+    return response?.data;
   },
 };
 

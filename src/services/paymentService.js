@@ -1,17 +1,18 @@
 /**
  * @file paymentService.js
  * @description Subscription billing, UTR verification, transaction logs, and revenue metrics.
+ * 100% matched to Express backend routes (/payments/* and /dashboard/*).
  */
 
 import { apiClient } from './apiClient';
-import { PAYMENTS_API_BASE } from '../config/api';
+import { ENDPOINTS } from '../config/api';
 
 export const paymentService = {
   /**
    * Fetches transaction history for current logged-in patron
    */
   async getMyTransactions() {
-    const response = await apiClient.get(`${PAYMENTS_API_BASE}/fetch_all`);
+    const response = await apiClient.get(ENDPOINTS.PAYMENTS.FETCH);
     return response?.data?.results || [];
   },
 
@@ -19,15 +20,15 @@ export const paymentService = {
    * Submits a new payment / subscription enrollment
    */
   async checkout(paymentPayload) {
-    const response = await apiClient.post(`${PAYMENTS_API_BASE}/checkout`, paymentPayload);
+    const response = await apiClient.post(ENDPOINTS.PAYMENTS.CHECKOUT, paymentPayload);
     return response?.data;
   },
 
   /**
-   * Updates an existing pending transaction (e.g. UTR correction or note)
+   * Updates an existing pending transaction (UTR correction)
    */
   async updatePendingTxn(payload) {
-    const response = await apiClient.post(`${PAYMENTS_API_BASE}/update_pending`, payload);
+    const response = await apiClient.put(ENDPOINTS.PAYMENTS.UPDATE_TXN, payload);
     return response?.data;
   },
 
@@ -35,16 +36,15 @@ export const paymentService = {
    * Fetches unconfirmed pending transactions for admin audit
    */
   async getTransactionsForConfirmation(params = {}) {
-    const response = await apiClient.get(`${PAYMENTS_API_BASE}/fetch_unconfirmed`, { params });
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.PENDING_PAYMENTS, { params });
     return response?.data?.results || [];
   },
 
   /**
-   * Confirms or rejects a student payment receipt (admin)
+   * Confirms a student payment receipt (admin)
    */
   async confirmPayment(txnId, confirmationStatus = 1, remarks = '') {
-    const response = await apiClient.post(`${PAYMENTS_API_BASE}/confirm`, {
-      txn_id: txnId,
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.APPROVE_PAYMENT(txnId), {
       confirmation: confirmationStatus,
       remarks,
     });
@@ -52,10 +52,18 @@ export const paymentService = {
   },
 
   /**
+   * Records a direct offline / cash payment (admin)
+   */
+  async recordPayment(payload) {
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.RECORD_PAYMENT, payload);
+    return response?.data;
+  },
+
+  /**
    * Fetches cumulative fee collections and analytics (admin)
    */
   async getEarnings(params = {}) {
-    const response = await apiClient.get(`${PAYMENTS_API_BASE}/earnings`, { params });
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.EARNINGS, { params });
     return response?.data?.results || { total: 0, count: 0 };
   },
 };

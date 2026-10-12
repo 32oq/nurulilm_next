@@ -23,10 +23,14 @@ export function useFocusSprint(options = { autoFetch: true }) {
       ]);
 
       if (historyData.status === 'fulfilled') {
-        setHistory(Array.isArray(historyData.value) ? historyData.value : []);
+        const val = historyData.value;
+        const list = Array.isArray(val) ? val : (Array.isArray(val?.history) ? val.history : (Array.isArray(val?.data) ? val.data : []));
+        setHistory(list);
       }
       if (leadersData.status === 'fulfilled') {
-        setLeaderboard(Array.isArray(leadersData.value) ? leadersData.value : []);
+        const val = leadersData.value;
+        const list = Array.isArray(val) ? val : (Array.isArray(val?.leaderboard) ? val.leaderboard : (Array.isArray(val?.data) ? val.data : []));
+        setLeaderboard(list);
       }
     } catch (err) {
       setError(getErrorMessage(err, 'Failed to fetch focus sprint data.'));
