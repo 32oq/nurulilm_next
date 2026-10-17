@@ -51,8 +51,16 @@ export const paymentService = {
   /**
    * Confirms a student payment receipt (admin)
    */
-  async confirmPayment(txnId, confirmationStatus = 1, remarks = '') {
-    const response = await apiClient.post(ENDPOINTS.DASHBOARD.APPROVE_PAYMENT(txnId), {
+  async confirmPayment(txnOrRefId, confirmationStatus = 1, remarks = '') {
+    const targetId = typeof txnOrRefId === 'object'
+      ? (txnOrRefId?.id || txnOrRefId?.ref_id || txnOrRefId?.ref || txnOrRefId?._id || txnOrRefId?.txn_id)
+      : txnOrRefId;
+
+    if (!targetId || targetId === 'undefined') {
+      throw new Error('A valid transaction or payment reference ID is required to approve payment');
+    }
+
+    const response = await apiClient.post(ENDPOINTS.DASHBOARD.APPROVE_PAYMENT(targetId), {
       confirmation: confirmationStatus,
       remarks,
     });

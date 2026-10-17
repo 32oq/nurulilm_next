@@ -11,8 +11,8 @@ export const catalogService = {
   /**
    * Fetches books catalog with optional search, category and pagination filters
    */
-  async getBooks(params = {}) {
-    const response = await apiClient.get(ENDPOINTS.DASHBOARD.RESOURCES, { params });
+  async getBooks(params = {}, options = {}) {
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.RESOURCES, { params, ...options });
     const data = response?.data?.results?.data || response?.data?.results || [];
     return Array.isArray(data) ? data : [];
   },

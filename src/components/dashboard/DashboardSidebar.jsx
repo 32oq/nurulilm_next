@@ -1,27 +1,27 @@
 "use client";
 
-import { Home, CreditCard, BookOpen, Settings, LogOut, BookMarked, Users, Newspaper, Bell, Layers, Pin, Timer, MapPin } from "lucide-react";
+import { Home, CreditCard, BookOpen, Settings, LogOut, BookMarked, Users, Newspaper, Bell, Layers, Pin, Timer, MapPin, Sparkles } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 
 const NavItem = ({ icon: Icon, label, isActive, onClick, showDot, dotCount }) => (
   <button
     onClick={onClick}
-    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-150 text-left cursor-pointer
+    className={`relative flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-colors text-left cursor-pointer text-xs
       ${isActive
-        ? "bg-[#244232] dark:bg-[#2D5E44] text-white font-semibold shadow-xs"
-        : "text-[#B9C4BC] hover:bg-[#1A2E23] hover:text-white"
+        ? "bg-[#004B87] text-white font-semibold shadow-2xs"
+        : "text-slate-300 hover:bg-white/10 hover:text-white"
       }
     `}
   >
     <div className="relative flex-shrink-0">
-      <Icon size={17} strokeWidth={isActive ? 2.2 : 1.7} />
+      <Icon size={16} strokeWidth={isActive ? 2.2 : 1.7} />
       {showDot && (
-        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-[#D97706] text-white text-[9px] font-bold">
+        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-amber-500 text-slate-900 text-[9px] font-bold">
           {dotCount}
         </span>
       )}
     </div>
-    <span className="text-xs whitespace-nowrap">{label}</span>
+    <span className="whitespace-nowrap">{label}</span>
   </button>
 );
 
@@ -39,7 +39,7 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
     <aside
       className={`
         flex-shrink-0 flex flex-col
-        bg-[#13221A] text-white border-r border-[#1C3A2B]
+        bg-[#0A192F] text-white border-r border-[#1E3A5F]
         fixed md:static top-0 z-50 md:z-auto
         h-screen
         transition-transform duration-200 ease-in-out md:transition-none
@@ -48,37 +48,37 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
       `}
     >
       {/* Brand Crest */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-[#1C3A2B] flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 h-16 border-b border-[#1E3A5F] flex-shrink-0">
         <img
-          src="/assets/logo.jpeg"
+          src="/assets/logo-crest.svg"
           alt="Library Crest"
-          className="w-8 h-8 rounded-full object-cover ring-2 ring-[#244232]"
+          className="w-8 h-8 rounded-full object-contain bg-white p-0.5 ring-1 ring-white/20"
         />
         <div className="flex flex-col min-w-0">
-          <span className="font-serif-lib text-sm font-bold text-white whitespace-nowrap truncate">
+          <span className="text-sm font-bold text-white whitespace-nowrap truncate">
             Nurul Ilm Library
           </span>
-          <span className="text-[10px] text-[#8EA295] tracking-wider uppercase">
+          <span className="text-[10px] text-slate-400 tracking-wider uppercase">
             {type === 'admin' ? 'Admin Desk' : 'Patron Desk'}
           </span>
         </div>
       </div>
 
       {/* Member Plaque */}
-      <div className="flex items-center gap-3 px-3.5 py-4 border-b border-[#1C3A2B] min-w-0 bg-[#0F1B15]">
-        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-[#FAF8F5] text-[#13221A] flex items-center justify-center text-xs font-bold select-none">
+      <div className="flex items-center gap-3 px-3.5 py-3.5 border-b border-[#1E3A5F] min-w-0 bg-[#071322]">
+        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-white text-[#0A192F] flex items-center justify-center text-xs font-bold select-none">
           {initials}
         </div>
         <div className="min-w-0 overflow-hidden">
           <p className="text-xs font-semibold text-white truncate">{fullName}</p>
-          <span className="inline-block text-[10px] text-[#A2B5A8] capitalize truncate mt-0.5">
+          <span className="inline-block text-[10px] text-slate-400 capitalize truncate">
             {user?.act || 'Patron'}
           </span>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-2 space-y-1 overflow-y-auto no-scrollbar">
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto no-scrollbar">
         <NavItem
           icon={Home}
           label="Desk Overview"
@@ -90,6 +90,12 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
           label="Quiet Focus Sprint"
           isActive={view === "focus_sprint" || view === "focus_sprint_admin"}
           onClick={() => nav("focus_sprint")}
+        />
+        <NavItem
+          icon={Sparkles}
+          label="Scholar Path Daily"
+          isActive={view === "scholar_path"}
+          onClick={() => { setView("scholar_path"); if (setOpen) setOpen(false); }}
         />
         <NavItem
           icon={CreditCard}
@@ -163,7 +169,7 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
         />
         <NavItem
           icon={Settings}
-          label="Settings & Aadhaar"
+          label="Settings & Verification"
           isActive={view === "Settings" || view === "Settings_admin"}
           showDot={verificationPending}
           dotCount={1}
@@ -172,13 +178,13 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
       </nav>
 
       {/* Theme Toggle & Sign Out */}
-      <div className="p-2 border-t border-[#1C3A2B] space-y-1">
+      <div className="p-2 border-t border-[#1E3A5F] space-y-1">
         <ThemeToggle variant="sidebar" />
         <button
           onClick={logout}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg w-full text-xs font-medium text-[#C2CBC4] hover:bg-[#341818] hover:text-[#FFA0A0] transition duration-150 cursor-pointer"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg w-full text-xs font-medium text-slate-300 hover:bg-rose-950/40 hover:text-rose-300 transition duration-150 cursor-pointer"
         >
-          <LogOut size={16} />
+          <LogOut size={15} />
           <span>Sign Out</span>
         </button>
       </div>

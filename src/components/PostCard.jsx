@@ -18,7 +18,7 @@ const InstagramEmbed = ({ url }) => {
   };
 
   return (
-    <div className="w-full aspect-[4/5] bg-[#F4EFE6] dark:bg-[#142019] overflow-hidden rounded-xl mt-3 border border-[#E5DFD5] dark:border-[#24382D]">
+    <div className="w-full aspect-[4/5] bg-slate-100 dark:bg-slate-900 overflow-hidden rounded-xl mt-3 border border-slate-200 dark:border-slate-800">
       <iframe
         title="Instagram post embed"
         src={getEmbedUrl(url)}
@@ -40,22 +40,22 @@ const PostCard = ({ post }) => {
   const dateStr = post.cr_dt ? formatRelativeDate(post.cr_dt) : (post.date || '');
 
   return (
-    <article className="bg-white dark:bg-[#131E18] border border-[#E5DFD5] dark:border-[#22352B] rounded-xl overflow-hidden p-5 shadow-xs hover:border-[#1C3A2B]/40 dark:hover:border-[#367252]/50 transition-colors">
+    <article className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden p-5 shadow-xs hover:border-[#004B87]/40 dark:hover:border-blue-500/50 transition-colors">
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-lg bg-[#EDF3EE] dark:bg-[#1A2E23] text-[#1C3A2B] dark:text-[#8FD4AE] font-semibold flex items-center justify-center text-xs select-none shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#004B87] dark:text-blue-400 font-semibold flex items-center justify-center text-xs select-none shrink-0">
             {author?.[0]?.toUpperCase() || 'L'}
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-[#1C1E1B] dark:text-[#E8F0EB] truncate">{author}</p>
+            <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">{author}</p>
             {dateStr && (
-              <p className="text-[11px] text-[#7F8781] dark:text-[#889C90]">{dateStr}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">{dateStr}</p>
             )}
           </div>
         </div>
 
         {post.pinned && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EAF2EC] dark:bg-[#1E3025] text-[#2D5A3F] dark:text-[#8FD4AE] border border-[#CDE0D3] dark:border-[#2C4A37]">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
             <Pin size={11} className="rotate-45" />
             <span>PINNED</span>
           </span>
@@ -63,19 +63,19 @@ const PostCard = ({ post }) => {
       </div>
 
       {title && (
-        <h3 className="font-medium text-sm text-[#1C1E1B] dark:text-[#F0F5F2] mb-1.5">
+        <h3 className="font-semibold text-sm text-slate-900 dark:text-white mb-1.5">
           {title}
         </h3>
       )}
 
       {content && (
-        <p className="text-xs sm:text-sm text-[#383E39] dark:text-[#CAD6CF] leading-relaxed whitespace-pre-line">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
           {content}
         </p>
       )}
 
       {post.image_url && (
-        <div className="mt-3 rounded-lg overflow-hidden border border-[#E5DFD5] dark:border-[#22352B] max-h-80">
+        <div className="mt-3 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 max-h-80">
           <img
             src={post.image_url}
             alt={title || "Notice attachment"}

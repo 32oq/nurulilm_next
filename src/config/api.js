@@ -37,7 +37,11 @@ export const ENDPOINTS = Object.freeze({
     PACKAGE_UPDATE: (id) => `${DASHBOARD_API_BASE}/package/update/${id}`,
     PACKAGE_DELETE: (id) => `${DASHBOARD_API_BASE}/package/delete/${id}`,
     PENDING_PAYMENTS: `${DASHBOARD_API_BASE}/pending/payments`,
-    APPROVE_PAYMENT: (id) => `${DASHBOARD_API_BASE}/payments/approve/${id}`,
+    APPROVE_PAYMENT: (id) => {
+      const validId = (id && id !== 'undefined') ? id : null;
+      if (!validId) throw new Error('APPROVE_PAYMENT requires a valid payment or reference ID');
+      return `${DASHBOARD_API_BASE}/payments/approve/${validId}`;
+    },
     RESOURCES: `${DASHBOARD_API_BASE}/resources`,
     RESOURCE_CREATE: `${DASHBOARD_API_BASE}/resources/new`,
     RESOURCE_UPDATE: (id) => `${DASHBOARD_API_BASE}/resources/update/${id}`,

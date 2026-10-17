@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { use, useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOther } from '../context/OtherContext';
 import Header from '../components/Header';
@@ -15,19 +15,77 @@ import VerificationPage from '../views/VerificationPage';
 import PolicePendingBanner from '../components/PolicePendingBanner';
 import EnrollmentWizard from '../views/EnrollmentWizard';
 import PatronStatusHub from '../views/PatronStatusHub';
+import CookieConsentBanner from '../components/common/CookieConsentBanner';
+import DailyGamePage from '../views/DailyGamePage';
 import { Loader2 } from 'lucide-react';
 
-export default function Home() {
+export default function Home(props) {
   const { state: { isAuthenticated, act, user, authRestoring } } = useAuth();
   const { state: { txns }, fetchTxns, fetchLibraryTimings } = useOther();
 
-  const [page, setPage] = useState('home');
+  // Safely resolve Next.js 15 searchParams on both server and client to guarantee identical hydration tree
+  const resolvedParams = props?.searchParams
+    ? (typeof props.searchParams.then === 'function' ? use(props.searchParams) : props.searchParams)
+    : null;
+  const initialPage = resolvedParams?.page || 'home';
+
+  const [page, setPageState] = useState(initialPage);
   const [selectedPackage, setPackage] = useState({});
   const [additionalParams, setAddParams] = useState({});
+
+  const navigateTo = useCallback((targetPage, extraParams = null) => {
+    if (typeof targetPage === 'function') {
+      setPageState(prev => {
+        const next = targetPage(prev);
+        if (typeof window !== 'undefined' && typeof next === 'string') {
+          const currentUrl = new URL(window.location.href);
+          currentUrl.searchParams.set('page', next);
+          window.history.pushState({ page: next }, '', currentUrl.toString());
+        }
+        return next;
+      });
+      return;
+    }
+
+    if (extraParams && typeof extraParams === 'object') {
+      if (extraParams.name || extraParams.recurring_payment || extraParams.id || extraParams._id) {
+        setPackage(extraParams);
+      } else {
+        setAddParams(extraParams);
+      }
+    }
+
+    setPageState(targetPage);
+    if (typeof window !== 'undefined') {
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('page', targetPage);
+      window.history.pushState({ page: targetPage }, '', currentUrl.toString());
+    }
+  }, []);
+
+  const setPage = navigateTo;
 
   useEffect(() => {
     if (fetchLibraryTimings) fetchLibraryTimings();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const urlPage = params.get('page') || 'home';
+        setPageState(urlPage);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (resolvedParams?.page && resolvedParams.page !== page) {
+      setPageState(resolvedParams.page);
+    }
+  }, [resolvedParams?.page, page]);
 
   const hasFetchedRef = useRef(false);
   const isStudent = isAuthenticated && act !== 'admin';
@@ -67,7 +125,9 @@ export default function Home() {
       }
     } else if (!authRestoring) {
       hasFetchedRef.current = false;
-      setPage('home');
+      if (page === 'dashboard') {
+        setPage('home');
+      }
       setPackage({});
     }
   }, [isAuthenticated, act, isStudent, authRestoring]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -102,8 +162,8 @@ export default function Home() {
       if (txns === null && (page === 'dashboard' || page === 'packages' || page === 'payment_pending')) {
         return (
           <div className="w-full min-h-[60vh] flex flex-col items-center justify-center gap-3">
-            <Loader2 size={24} className="animate-spin text-[#33462C] dark:text-[#8FD4AE]" />
-            <p className="text-xs text-[#0B0E0A] dark:text-[#9FB1A6]">Verifying membership credentials…</p>
+            <Loader2 size={24} className="animate-spin text-[#004B87] dark:text-blue-400" />
+            <p className="text-xs text-slate-600 dark:text-slate-400">Verifying membership credentials…</p>
           </div>
         );
       }
@@ -132,6 +192,7 @@ export default function Home() {
         ? <AdminDashboard />
         : <DashboardLayout {...additionalParams} />;
     }
+    if (page === 'daily_puzzle' || page === 'game') return <DailyGamePage setPage={setPage} />;
     if (page === 'login') return <LoginPage setPage={setPage} />;
     if (page === 'police_verification') return <VerificationPage setPage={setPage} />;
     if (page === 'forgot_password') return <ForgotPasswordPage setPage={setPage} />;
@@ -140,15 +201,15 @@ export default function Home() {
 
   if (authRestoring) {
     return (
-      <div className="w-full min-h-screen bg-[#FCFCFB] dark:bg-[#0E1411] flex flex-col items-center justify-center gap-3 transition-colors">
-        <div className="w-14 h-14 rounded-2xl overflow-hidden ring-1 ring-[#33462C]/20 shadow-sm bg-white p-1 flex items-center justify-center">
-          <img src="/assets/logo.jpeg" alt="Nurul Ilm Crest" className="w-full h-full object-cover rounded-xl" />
+      <div className="w-full min-h-screen bg-[#F6F8FB] dark:bg-[#0B0F19] flex flex-col items-center justify-center gap-3 transition-colors">
+        <div className="w-14 h-14 rounded-2xl overflow-hidden ring-1 ring-slate-200 dark:ring-slate-800 shadow-sm bg-white dark:bg-[#111827] p-1 flex items-center justify-center">
+          <img src="/assets/logo-crest.svg" alt="Nurul Ilm Crest" className="w-full h-full object-contain" />
         </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#33462C] dark:text-[#8FD4AE] mt-2">
-          <Loader2 size={16} className="animate-spin text-[#33462C] dark:text-[#8FD4AE]" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-[#004B87] dark:text-blue-400 mt-2">
+          <Loader2 size={16} className="animate-spin text-[#004B87] dark:text-blue-400" />
           <span>Restoring library session…</span>
         </div>
-        <p className="text-[11px] text-[#0B0E0A] dark:text-[#9FB1A6]">Nurul Ilm Public Library • Handwara</p>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400">Nurul Ilm Library  • Handwara</p>
       </div>
     );
   }
@@ -156,7 +217,7 @@ export default function Home() {
   const isDashboard = page === 'dashboard';
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-200 ${isDashboard ? 'bg-[#FCFCFB] dark:bg-[#0E1411]' : 'bg-[#FCFCFB] dark:bg-[#0E1411] text-[#0B0E0A] dark:text-[#E5EBE7] pt-20'}`} style={{ overflowX: 'hidden' }}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-200 ${isDashboard ? 'bg-[#F6F8FB] dark:bg-[#0B0F19]' : 'bg-[#F6F8FB] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 pt-20'}`} style={{ overflowX: 'hidden' }}>
       {!isDashboard && <Header currentPage={page} setPage={setPage} isVerified={isVerified} hasPendingPayment={hasPendingPayment} hasNoPackage={hasNoPackage} />}
       {isAuthenticated && act !== 'admin' && isVerified && page !== 'dashboard' && !user?.verified && (
         <PolicePendingBanner
@@ -165,33 +226,34 @@ export default function Home() {
           setAddParams={setAddParams}
         />
       )}
-      <main className={`flex-1 ${isDashboard ? "" : "flex justify-center w-full"}`}>
+      <main className={`flex-1 ${isDashboard ? "" : "flex justify-center w-full pb-20 sm:pb-8"}`}>
         {renderPage()}
       </main>
       {!isDashboard && <BottomNav currentPage={page} setPage={setPage} isVerified={isVerified} hasPendingPayment={hasPendingPayment} hasNoPackage={hasNoPackage} />}
       {!isDashboard && (
-        <footer className="mt-auto py-8 bg-white dark:bg-[#0E1411] text-[#0B0E0A] dark:text-[#9FB1A6] border-t border-[#DFE6DC] dark:border-[#26362D]">
+        <footer className="mt-auto py-8 bg-white dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
-              <span className="font-serif-lib text-base font-semibold text-[#24341E] dark:text-[#8FD4AE]">Nurul Ilm Library</span>
-              <span className="hidden sm:inline text-[#33462C]/40 dark:text-[#8FD4AE]/40">•</span>
-              <span className="text-[#0B0E0A] dark:text-[#9FB1A6]">New Bus Stand Rd, Handwara, J&amp;K</span>
+              <span className="font-serif-lib text-base font-bold text-slate-900 dark:text-white">Nurul Ilm Library </span>
+              <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+              <span className="text-slate-600 dark:text-slate-400">New Bus Stand Rd, Handwara, J&amp;K</span>
             </div>
             <div className="flex items-center gap-4 text-xs font-medium">
-              <a href="/privacy" className="text-[#33462C] dark:text-[#8FD4AE] hover:underline">
+              <a href="/privacy" className="text-[#004B87] dark:text-blue-400 hover:underline">
                 Privacy Policy
               </a>
-              <span className="text-[#DFE6DC] dark:text-[#26362D]">•</span>
-              <a href="/terms" className="text-[#33462C] dark:text-[#8FD4AE] hover:underline">
+              <span className="text-slate-300 dark:text-slate-700">•</span>
+              <a href="/terms" className="text-[#004B87] dark:text-blue-400 hover:underline">
                 Terms &amp; Conditions
               </a>
             </div>
-            <p className="text-center sm:text-right text-[#0B0E0A] dark:text-[#9FB1A6] text-[11px]">
+            <p className="text-center sm:text-right text-slate-500 dark:text-slate-400 text-[11px]">
               © {new Date().getFullYear()} Nurul Ilm Library. Dedicated to student scholarship and community knowledge.
             </p>
           </div>
         </footer>
       )}
+      <CookieConsentBanner />
     </div>
   );
 }

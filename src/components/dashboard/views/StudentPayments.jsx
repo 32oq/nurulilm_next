@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import moment from "moment";
-import { CreditCard, PlusCircle, RefreshCw, Calendar, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { CreditCard, PlusCircle, RefreshCw, Calendar, CheckCircle2, Clock, XCircle, Printer } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useOther } from "../../../context/OtherContext";
 import PayMonthsModal from "../PayMonthsModal";
+import PrintableReceiptModal from "../PrintableReceiptModal";
 import { LoadingRow, ErrorRow } from "../shared";
 
 export default function StudentPayments() {
@@ -15,6 +16,7 @@ export default function StudentPayments() {
   const txnsList = Array.isArray(txns) ? txns : (Array.isArray(txns?.allPayments) ? txns.allPayments : (Array.isArray(txns?.data) ? txns.data : []));
 
   const [showPay, setShowPay] = useState(false);
+  const [receiptTxn, setReceiptTxn] = useState(null);
 
   useEffect(() => {
     fetchTxns();
@@ -77,24 +79,24 @@ export default function StudentPayments() {
 
     if (isOk) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#EDF3EE] text-[#1C3A2B] border border-[#D9E2DC] dark:bg-[#1A2E23] dark:text-[#8FD4AE] dark:border-[#263D30] whitespace-nowrap">
-          <CheckCircle2 size={12} className="text-[#1C3A2B] dark:text-[#8FD4AE]" />
-          <span>Confirmed on Ledger</span>
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 whitespace-nowrap">
+          <CheckCircle2 size={11} className="text-emerald-600 dark:text-emerald-400" />
+          <span>Confirmed</span>
         </span>
       );
     }
     if (isRejected) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FAF0F0] text-[#B91C1C] border border-[#FEE2E2] dark:bg-[#2D1414] dark:text-[#FCA5A5] dark:border-[#5C2323] whitespace-nowrap">
-          <XCircle size={12} className="text-[#B91C1C] dark:text-[#F87171]" />
-          <span>Rejected / Review</span>
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 whitespace-nowrap">
+          <XCircle size={11} className="text-rose-600 dark:text-rose-400" />
+          <span>Rejected</span>
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] dark:bg-[#2E2108] dark:text-[#FBBF24] dark:border-[#5C4312] whitespace-nowrap">
-        <Clock size={12} className="text-[#D97706] dark:text-[#F59E0B]" />
-        <span>Awaiting Coordinator Approval</span>
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800 whitespace-nowrap">
+        <Clock size={11} className="text-amber-600 dark:text-amber-400" />
+        <span>Pending Review</span>
       </span>
     );
   };
@@ -104,13 +106,13 @@ export default function StudentPayments() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#88B89C]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Membership Ledger
           </span>
-          <h2 className="font-serif-lib text-2xl font-bold text-[#1C2E24] dark:text-[#8FD4AE] mt-0.5">
-            Membership Dues &amp; Payment History
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+            Membership Dues and Receipts
           </h2>
-          <p className="text-xs text-[#5D6B62] dark:text-[#9FB1A6] mt-1">
+          <p className="text-xs text-slate-500 mt-0.5">
             Review your monthly reading pass receipts and ledger confirmations.
           </p>
         </div>
@@ -118,16 +120,18 @@ export default function StudentPayments() {
           <button
             onClick={fetchTxns}
             disabled={loading}
-            className="p-2.5 rounded-lg bg-white dark:bg-[#142019] border border-[#DFE6DC] dark:border-[#22352B] text-[#5D6B62] dark:text-[#A1B3A7] hover:text-[#1C2E24] dark:hover:text-white hover:bg-[#FAF8F5] transition disabled:opacity-50 shadow-xs cursor-pointer"
+            className="p-2 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-50 transition disabled:opacity-50 shadow-2xs cursor-pointer"
             title="Refresh Ledger"
+            aria-label="Refresh Ledger"
           >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
           <button
             onClick={() => setShowPay(true)}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-[#1C3A2B] hover:bg-[#142B20] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white rounded-lg text-xs font-semibold transition shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#004B87] hover:bg-[#003865] text-white rounded-lg text-xs font-semibold transition shadow-2xs cursor-pointer"
           >
-            <PlusCircle size={15} /> Pay Monthly Dues
+            <PlusCircle size={14} />
+            <span>Pay Monthly Dues</span>
           </button>
         </div>
       </div>
@@ -136,19 +140,19 @@ export default function StudentPayments() {
       {error   && <ErrorRow message={error} />}
 
       {!loading && (
-        <div className="bg-white dark:bg-[#142019] border border-[#DFE6DC] dark:border-[#22352B] rounded-2xl shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xs overflow-hidden">
           {!txnsList?.length ? (
-            <div className="flex flex-col items-center justify-center py-16 px-6 gap-2 text-center">
-              <div className="w-12 h-12 rounded-xl bg-[#FAF8F5] dark:bg-[#18261F] text-[#7F8781] dark:text-[#8FD4AE] flex items-center justify-center mb-1">
-                <CreditCard size={24} />
+            <div className="flex flex-col items-center justify-center py-14 px-6 gap-2 text-center">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center mb-1">
+                <CreditCard size={20} />
               </div>
-              <p className="font-serif-lib text-base font-bold text-[#1C2E24] dark:text-[#8FD4AE]">No payment records found</p>
-              <p className="text-xs text-[#5D6B62] dark:text-[#9FB1A6] max-w-sm">
-                You have not submitted any fee records yet. Use the button below to submit monthly dues.
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100">No payment records found</p>
+              <p className="text-xs text-slate-500 max-w-sm">
+                You have not submitted any fee records yet.
               </p>
               <button
                 onClick={() => setShowPay(true)}
-                className="mt-3 px-4 py-2 bg-[#1C3A2B] hover:bg-[#142B20] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white rounded-lg text-xs font-semibold transition shadow-xs cursor-pointer"
+                className="mt-2 px-3.5 py-1.5 bg-[#004B87] hover:bg-[#003865] text-white rounded-lg text-xs font-semibold transition shadow-2xs cursor-pointer"
               >
                 Submit Monthly Pass Payment
               </button>
@@ -159,15 +163,16 @@ export default function StudentPayments() {
               <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full text-xs">
                   <thead>
-                    <tr className="border-b border-[#EFEBE4] dark:border-[#22352B] bg-[#FAF8F5] dark:bg-[#18261F] text-[#6D8374] dark:text-[#88B89C] text-[11px] font-semibold uppercase tracking-wider">
-                      <th className="px-5 py-3.5 text-left">Period Covered</th>
-                      <th className="px-5 py-3.5 text-left">UPI / Bank Reference</th>
-                      <th className="px-5 py-3.5 text-left">Payed Via</th>
-                      <th className="px-5 py-3.5 text-left">Amount</th>
-                      <th className="px-5 py-3.5 text-left">Ledger Status</th>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left">Period Covered</th>
+                      <th className="px-4 py-3 text-left">Reference Number</th>
+                      <th className="px-4 py-3 text-left">Payment Method</th>
+                      <th className="px-4 py-3 text-left">Amount</th>
+                      <th className="px-4 py-3 text-left">Status</th>
+                      <th className="px-4 py-3 text-right">Receipt Voucher</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#EFEBE4] dark:divide-[#22352B]">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {txnsList.map((item, i) => {
                       const period = formatPeriod(item);
                       const refId = getReferenceId(item);
@@ -176,43 +181,59 @@ export default function StudentPayments() {
                       const dateSubmitted = item.cr_dt ? moment(item.cr_dt).format("DD MMM YYYY") : null;
 
                       return (
-                        <tr key={item._id || i} className="hover:bg-[#FAF8F5] dark:hover:bg-[#18261F]/60 transition">
-                          <td className="px-5 py-3.5 text-[#1C2E24] dark:text-[#E8F0EB] font-medium">
+                        <tr key={item._id || i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                          <td className="px-4 py-3 text-slate-900 dark:text-slate-100 font-medium">
                             <div className="flex items-center gap-2">
-                              <span className="p-1 rounded-md bg-[#EDF3EE] dark:bg-[#18261F] text-[#1C3A2B] dark:text-[#8FD4AE]">
-                                <Calendar size={13} />
+                              <span className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                <Calendar size={12} />
                               </span>
                               <div>
                                 <span className="block font-semibold text-xs">{period}</span>
                                 {dateSubmitted && (
-                                  <span className="text-[10px] text-[#6D8374] dark:text-[#889C90]">Submitted: {dateSubmitted}</span>
+                                  <span className="text-[10px] text-slate-500">Submitted: {dateSubmitted}</span>
                                 )}
                               </div>
                             </div>
                           </td>
 
-                          <td className="px-5 py-3.5">
+                          <td className="px-4 py-3">
                             <span
-                              className="font-mono text-xs text-[#1C3A2B] dark:text-[#8FD4AE] bg-[#FAF8F5] dark:bg-[#18261F] px-2 py-0.5 rounded-md border border-[#DFE6DC] dark:border-[#22352B] inline-block max-w-[200px] truncate"
+                              className="font-mono text-xs text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 inline-block max-w-[200px] truncate"
                               title={refId}
                             >
                               {refId}
                             </span>
                           </td>
 
-                          <td className="px-5 py-3.5">
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium bg-[#EDF3EE] dark:bg-[#18261F] text-[#1C3A2B] dark:text-[#8FD4AE] border border-[#DFE6DC] dark:border-[#22352B]">
-                              <CreditCard size={11} className="text-[#1C3A2B] dark:text-[#8FD4AE]" />
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                              <CreditCard size={11} />
                               <span>{paidVia}</span>
                             </span>
                           </td>
 
-                          <td className="px-5 py-3.5 text-xs font-bold text-[#1C2E24] dark:text-[#8FD4AE]">
+                          <td className="px-4 py-3 text-xs font-bold text-slate-900 dark:text-slate-100">
                             {amount}
                           </td>
 
-                          <td className="px-5 py-3.5">
+                          <td className="px-4 py-3">
                             {renderStatusBadge(item)}
+                          </td>
+
+                          <td className="px-4 py-3 text-right">
+                            {item.confirmation ? (
+                              <button
+                                type="button"
+                                onClick={() => setReceiptTxn(item)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#004B87] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 hover:bg-blue-100 dark:hover:bg-blue-900/80 transition cursor-pointer"
+                                aria-label="View Printable Fee Voucher"
+                              >
+                                <Printer size={12} />
+                                <span>Voucher</span>
+                              </button>
+                            ) : (
+                              <span className="text-[11px] text-slate-400 italic">Pending Audit</span>
+                            )}
                           </td>
                         </tr>
                       );
@@ -222,7 +243,7 @@ export default function StudentPayments() {
               </div>
 
               {/* Mobile cards */}
-              <div className="md:hidden divide-y divide-[#EFEBE4] dark:divide-[#22352B]">
+              <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
                 {txnsList.map((item, i) => {
                   const period = formatPeriod(item);
                   const refId = getReferenceId(item);
@@ -231,46 +252,57 @@ export default function StudentPayments() {
                   const dateSubmitted = item.cr_dt ? moment(item.cr_dt).format("DD MMM YYYY") : null;
 
                   return (
-                    <div key={item._id || i} className="p-4 space-y-2.5">
+                    <div key={item._id || i} className="p-4 space-y-2">
                       <div className="flex justify-between items-start gap-2">
                         <div>
-                          <span className="text-[10px] uppercase font-semibold text-[#6D8374] dark:text-[#889C90] block">
+                          <span className="text-[10px] uppercase font-semibold text-slate-500 block">
                             Period Covered
                           </span>
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#1C2E24] dark:text-[#E8F0EB] mt-0.5">
-                            <Calendar size={13} className="text-[#6D8374]" />
+                          <div className="flex items-center gap-1 text-xs font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+                            <Calendar size={12} className="text-slate-400" />
                             <span>{period}</span>
                           </div>
                           {dateSubmitted && (
-                            <span className="text-[10px] text-[#6D8374] dark:text-[#889C90]">Submitted: {dateSubmitted}</span>
+                            <span className="text-[10px] text-slate-500">Submitted: {dateSubmitted}</span>
                           )}
                         </div>
-                        <span className="text-sm font-bold text-[#1C3A2B] dark:text-[#8FD4AE]">{amount}</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{amount}</span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-xs pt-1">
                         <div>
-                          <span className="text-[10px] text-[#6D8374] dark:text-[#889C90] block">Payed Via:</span>
-                          <span className="font-medium text-[#1C2E24] dark:text-[#CAD6CF] flex items-center gap-1 mt-0.5">
-                            <CreditCard size={12} className="text-[#1C3A2B] dark:text-[#8FD4AE]" />
+                          <span className="text-[10px] text-slate-500 block">Method:</span>
+                          <span className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
+                            <CreditCard size={11} className="text-slate-400" />
                             {paidVia}
                           </span>
                         </div>
 
                         <div>
-                          <span className="text-[10px] text-[#6D8374] dark:text-[#889C90] block">Ledger Status:</span>
+                          <span className="text-[10px] text-slate-500 block">Status:</span>
                           <div className="mt-0.5">
                             {renderStatusBadge(item)}
                           </div>
                         </div>
                       </div>
 
-                      <div className="pt-1 border-t border-[#EFEBE4] dark:border-[#22352B] flex items-center justify-between text-[11px]">
-                        <span className="text-[#6D8374] dark:text-[#889C90]">UPI / Bank Ref:</span>
-                        <span className="font-mono text-[#1C3A2B] dark:text-[#8FD4AE] bg-[#FAF8F5] dark:bg-[#18261F] px-2 py-0.5 rounded border border-[#DFE6DC] dark:border-[#22352B]">
+                      <div className="pt-1 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+                        <span className="text-slate-500">Ref:</span>
+                        <span className="font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
                           {refId}
                         </span>
                       </div>
+
+                      {item.confirmation && (
+                        <button
+                          type="button"
+                          onClick={() => setReceiptTxn(item)}
+                          className="w-full mt-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#004B87] dark:text-blue-400 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-slate-50 transition cursor-pointer"
+                        >
+                          <Printer size={12} />
+                          <span>Print Fee Voucher</span>
+                        </button>
+                      )}
                     </div>
                   );
                 })}
@@ -287,6 +319,14 @@ export default function StudentPayments() {
           joiningDate={user?.lastpayment}
         />
       )}
+
+      <PrintableReceiptModal
+        isOpen={!!receiptTxn}
+        onClose={() => setReceiptTxn(null)}
+        txn={receiptTxn}
+        studentName={[user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Patron'}
+        studentPhone={user?.phone_number || ''}
+      />
     </div>
   );
 }

@@ -10,33 +10,30 @@ export default function AdminSettings() {
   return (
     <div className="space-y-6 max-w-xl w-full">
       <div>
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093]">
-          Administration Credentials
-        </span>
-        <h2 className="font-serif-lib text-2xl font-bold text-[#1C3A2B] dark:text-[#FAF8F5] mt-0.5">
+        <h2 className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white">
           Admin Settings
         </h2>
-        <p className="text-xs text-[#5D645E] dark:text-[#9FB1A6] mt-1">
+        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
           Manage administrator security credentials and access permissions.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
         <button
           onClick={() => setPwOpen(o => !o)}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#FAF8F5] dark:hover:bg-[#1E2E25] transition text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] cursor-pointer"
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-xs font-semibold text-slate-900 dark:text-white cursor-pointer"
         >
           <div className="flex items-center gap-2">
-            <Lock size={15} className="text-[#6D8374] dark:text-[#8CA093]" />
+            <Lock size={15} className="text-slate-400" />
             <span>Change Administrator Password</span>
           </div>
           <ChevronDown
             size={16}
-            className={`text-[#7F8781] transition-transform duration-200 ${pwOpen ? "rotate-180" : ""}`}
+            className={`text-slate-400 transition-transform duration-200 ${pwOpen ? "rotate-180" : ""}`}
           />
         </button>
         {pwOpen && (
-          <div className="border-t border-[#EFEBE4] dark:border-[#26362D] p-5 bg-[#FAF8F5] dark:bg-[#111A14]">
+          <div className="border-t border-slate-200 dark:border-slate-800 p-5 bg-slate-50 dark:bg-slate-900">
             <ForgotPasswordPage call_src="dashboard" />
           </div>
         )}

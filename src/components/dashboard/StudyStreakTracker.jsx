@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Flame, Timer, TrendingUp, Trophy, Calendar,
   Award, Play, CheckCircle2, ChevronRight, Target,
-  Loader2, RefreshCw
+  Loader2, RefreshCw, Brain
 } from 'lucide-react';
 import { useOther } from '../../context/OtherContext';
 
-export default function StudyStreakTracker({ user, onOpenTimer }) {
+export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse }) {
   const { fetchFocusSprintHistory, fetchFocusSprintLeaderboard } = useOther();
 
   const [loading, setLoading] = useState(true);
@@ -94,6 +94,16 @@ export default function StudyStreakTracker({ user, onOpenTimer }) {
           >
             <RefreshCw size={15} className={loading ? 'animate-spin text-[#1677FF]' : ''} />
           </button>
+          {onOpenSynapse && (
+            <button
+              onClick={onOpenSynapse}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100 text-xs font-semibold shadow-2xs transition active:scale-95 cursor-pointer"
+              title="Daily 60-second mind break puzzle"
+            >
+              <Brain size={14} className="text-amber-600 dark:text-amber-400" />
+              <span>Synapse (60s Break)</span>
+            </button>
+          )}
           <button
             onClick={onOpenTimer}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1677FF] hover:bg-[#1264E8] text-white text-xs font-semibold shadow-xs transition active:scale-95 cursor-pointer"

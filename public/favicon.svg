@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340" width="100%" height="100%" fill="none">
+  <!-- Definitions for gradients -->
+  <defs>
+    <radialGradient id="crestGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFDE7A" />
+      <stop offset="70%" stop-color="#F6C453" />
+      <stop offset="100%" stop-color="#EDB338" />
+    </radialGradient>
+    <linearGradient id="crestDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#282A36" />
+      <stop offset="100%" stop-color="#1E202B" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(0, -10)">
+    <!-- Outer Concentric Circle -->
+    <circle cx="170" cy="170" r="122" stroke="#2B2D38" stroke-width="4.2" stroke-miterlimit="10" />
+    
+    <!-- Inner Concentric Circle -->
+    <circle cx="170" cy="170" r="113" stroke="#2B2D38" stroke-width="2.5" stroke-miterlimit="10" />
+
+    <!-- Candle Glow (The Nur / Warm Radiance) -->
+    <circle cx="170" cy="155" r="44" fill="url(#crestGlow)" />
+
+    <!-- Candle Left Outline -->
+    <path d="M 153 152 L 153 208" stroke="#2B2D38" stroke-width="4.2" stroke-linecap="round" />
+    
+    <!-- Candle Right Outline with Natural Wax Drip -->
+    <path d="M 187 152 
+             L 187 168 
+             C 187 176 181 182 175 182 
+             C 170 182 166 177 166 172 
+             C 166 167 162 163 158 163
+             M 175 182 
+             L 175 208 
+             M 187 178 
+             L 187 208" 
+          stroke="#2B2D38" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Candle Top Rim -->
+    <ellipse cx="170" cy="152" rx="17" ry="4.5" stroke="#2B2D38" stroke-width="3.6" fill="#FFFFFF" />
+
+    <!-- Flame Wick -->
+    <path d="M 170 148 Q 169 140 170 134" stroke="#2B2D38" stroke-width="3.2" stroke-linecap="round" />
+
+    <!-- Flame Outline & Inner Heart -->
+    <path d="M 170 134 
+             C 160 126 158 112 166 100 
+             C 169 95 170 85 170 85 
+             C 170 85 171 95 174 100 
+             C 182 112 180 126 170 134 Z" 
+          stroke="#2B2D38" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="#FFFFFF" fill-opacity="0.3" />
+
+    <!-- Open Book Pages (Symmetrical Fanned Stacks) -->
+    <!-- Top Left Arched Wing -->
+    <path d="M 167 212 
+             C 135 197 110 186 92 185 
+             C 97 192 103 201 108 207 
+             C 126 206 146 214 165 223 Z" 
+          fill="url(#crestDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Top Right Arched Wing -->
+    <path d="M 173 212 
+             C 205 197 230 186 248 185 
+             C 243 192 237 201 232 207 
+             C 214 206 194 214 175 223 Z" 
+          fill="url(#crestDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Middle Left Arched Wing -->
+    <path d="M 166 222 
+             C 130 209 100 201 72 204 
+             C 77 212 82 220 89 227 
+             C 114 221 138 228 164 236 Z" 
+          fill="url(#crestDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Middle Right Arched Wing -->
+    <path d="M 174 222 
+             C 210 209 240 201 268 204 
+             C 263 212 258 220 251 227 
+             C 226 221 202 228 176 236 Z" 
+          fill="url(#crestDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Bottom Broad Left Wing (Breaks Crest Base) -->
+    <path d="M 167 234 
+             C 122 222 88 219 50 230 
+             C 56 238 64 247 71 252 
+             C 104 237 137 238 168 246 Z" 
+          fill="url(#crestDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Bottom Broad Right Wing (Breaks Crest Base) -->
+    <path d="M 173 234 
+             C 218 222 252 219 290 230 
+             C 284 238 276 247 269 252 
+             C 236 237 203 238 172 246 Z" 
+          fill="url(#crestDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Central Spine Notch -->
+    <polygon points="166,210 170,217 174,210 170,205" fill="#2B2D38" />
+  </g>
+</svg>

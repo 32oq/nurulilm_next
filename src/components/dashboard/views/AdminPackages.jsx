@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   Layers, Plus, Edit2, Trash2, CheckCircle2, AlertCircle,
-  Tag, Sparkles, Star, Calendar, CalendarRange, Award,
+  Tag, Star, Calendar, CalendarRange, Award,
   BookOpen, Eye, EyeOff, Loader2, X, Percent, Check, Clock
 } from 'lucide-react';
 import { useOther } from '../../../context/OtherContext';
@@ -14,7 +14,6 @@ const ICON_MAP = {
   Calendar,
   CalendarRange,
   BookOpen,
-  Sparkles,
   Star,
   Layers,
 };
@@ -66,7 +65,7 @@ export default function AdminPackages() {
     : t;
 
   const [search, setSearch] = useState('');
-  const [filterTab, setFilterTab] = useState('all'); // 'all', 'active', 'offers'
+  const [filterTab, setFilterTab] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPkg, setEditingPkg] = useState(null);
   const [form, setForm] = useState({ ...DEFAULT_PACKAGE, timing: fullDaySchedule });
@@ -164,7 +163,7 @@ export default function AdminPackages() {
     try {
       if (editingPkg) {
         await updatePackage(editingPkg._id, form);
-        setFormSuccess('Package & timings updated successfully');
+        setFormSuccess('Package and timings updated successfully');
       } else {
         await createPackage(form);
         setFormSuccess('New package created successfully');
@@ -205,47 +204,44 @@ export default function AdminPackages() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093]">
-            Membership Product Catalog
-          </span>
-          <h2 className="font-serif-lib text-2xl font-bold text-[#1C3A2B] dark:text-[#FAF8F5] mt-0.5">
-            Reading Room Packages, Shifts &amp; Offers
+          <h2 className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white">
+            Membership Plans &amp; Shifts
           </h2>
-          <p className="text-xs text-[#5D645E] dark:text-[#9FB1A6] mt-1">
-            Configure student subscription tiers, reading room shifts &amp; timings, fees, and promotional discounts.
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+            Configure reading room access tiers, shift timings, fee structures, and promotional rates.
           </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1C3A2B] hover:bg-[#142C20] dark:bg-[#2A4D3B] dark:hover:bg-[#37614B] text-white text-xs font-semibold shadow-xs transition self-start sm:self-auto cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003B6B] text-white text-xs font-semibold shadow-xs transition self-start sm:self-auto cursor-pointer"
         >
           <Plus size={16} />
-          <span>Add New Package</span>
+          <span>Add New Plan</span>
         </button>
       </div>
 
       {/* Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">Total Packages</span>
-          <p className="font-serif-lib text-2xl font-bold text-[#1C1E1B] dark:text-white mt-1">{packageList.length}</p>
-          <p className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6] mt-0.5">configured plans</p>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Total Plans</span>
+          <p className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white mt-1">{packageList.length}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">configured tiers</p>
         </div>
-        <div className="bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">Active Tiers</span>
-          <p className="font-serif-lib text-2xl font-bold text-[#2E6B3F] dark:text-[#8FD4AE] mt-1">{activeCount}</p>
-          <p className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6] mt-0.5">available to students</p>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Active Tiers</span>
+          <p className="font-serif-lib text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-1">{activeCount}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">visible to students</p>
         </div>
-        <div className="bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">Special Offers</span>
-          <p className="font-serif-lib text-2xl font-bold text-[#D97706] dark:text-[#FDE68A] mt-1">{totalOffersCount}</p>
-          <p className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6] mt-0.5">discounts live</p>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Special Offers</span>
+          <p className="font-serif-lib text-2xl font-bold text-amber-700 dark:text-amber-400 mt-1">{totalOffersCount}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">active discounts</p>
         </div>
-        <div className="bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">Shift Timings</span>
-          <p className="font-serif-lib text-2xl font-bold text-[#1C3A2B] dark:text-[#8FD4AE] mt-1">Configured</p>
-          <p className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6] mt-0.5">hours per pass</p>
+        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Shift Timings</span>
+          <p className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white mt-1">Configured</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">hours per pass</p>
         </div>
       </div>
 
@@ -254,18 +250,18 @@ export default function AdminPackages() {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
           {[
             { id: 'all', label: `All Plans (${packageList.length})` },
-            { id: 'active', label: `Active Only (${activeCount})` },
-            { id: 'offers', label: `Special Offers (${totalOffersCount})`, alert: totalOffersCount > 0 },
+            { id: 'active', label: `Active (${activeCount})` },
+            { id: 'offers', label: `Offers (${totalOffersCount})`, alert: totalOffersCount > 0 },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setFilterTab(tab.id)}
-              className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 filterTab === tab.id
-                  ? 'bg-[#1C3A2B] text-white shadow-xs dark:bg-[#2A4D3B]'
+                  ? 'bg-[#004B87] text-white shadow-xs'
                   : tab.alert
-                    ? 'bg-[#FEF3C7] dark:bg-[#3B2C13] text-[#92400E] dark:text-[#FDE68A] border border-[#FDE68A] dark:border-[#574019] hover:bg-[#FDE68A]'
-                    : 'bg-white dark:bg-[#16211B] text-[#5D645E] dark:text-[#9FB1A6] border border-[#E5DFD5] dark:border-[#26362D] hover:bg-[#FAF8F5]'
+                    ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800'
+                    : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
               <span>{tab.label}</span>
@@ -276,8 +272,8 @@ export default function AdminPackages() {
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Filter by title, timing, or offer..."
-          className="w-full sm:w-72 bg-white dark:bg-[#16211B] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C] focus:border-[#1C3A2B] transition shadow-xs"
+          placeholder="Filter by plan name, timing, or offer..."
+          className="w-full sm:w-72 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-[#004B87] focus:outline-none transition shadow-xs"
         />
       </div>
 
@@ -295,42 +291,40 @@ export default function AdminPackages() {
             return (
               <div
                 key={pkg._id}
-                className={`bg-white dark:bg-[#16211B] rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-xs relative ${
+                className={`bg-white dark:bg-[#111827] rounded-xl border transition-all duration-150 flex flex-col justify-between overflow-hidden shadow-xs relative ${
                   isActive
-                    ? 'border-[#E5DFD5] dark:border-[#26362D] hover:border-[#1C3A2B] hover:shadow-md'
-                    : 'border-[#E5DFD5] dark:border-[#26362D] opacity-75 bg-[#FAF8F5] dark:bg-[#111A14]'
+                    ? 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700'
+                    : 'border-slate-200 dark:border-slate-800 opacity-60 bg-slate-50 dark:bg-slate-900'
                 }`}
               >
-                {/* Top Badge Strip & Action Shortcuts */}
                 <div className="p-5 pb-3">
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {pkg.isPopular ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#FEF3C7] dark:bg-[#3B2C13] text-[#92400E] dark:text-[#FDE68A] border border-[#FDE68A] dark:border-[#574019]">
-                          <Star size={10} className="fill-[#D97706] text-[#D97706]" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                          <Star size={10} className="fill-amber-600 text-amber-600" />
                           <span>Most Popular</span>
                         </span>
                       ) : null}
 
                       {isOffer && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#EDF3EE] dark:bg-[#1E2E25] text-[#1C3A2B] dark:text-[#8FD4AE] border border-[#C2D1C7] dark:border-[#2B4032]">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                           <Tag size={10} />
                           <span>{pkg.offer_tag || pkg.offer_text || `${pkg.discount_percent}% OFF`}</span>
                         </span>
                       )}
 
                       {pkg.badge && !pkg.isPopular && !isOffer && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#FAF8F5] dark:bg-[#203126] text-[#5D645E] dark:text-[#8CA093] border border-[#E5DFD5] dark:border-[#2B4032]">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                           {pkg.badge}
                         </span>
                       )}
                     </div>
 
-                    {/* Quick Action Top Bar (Edit & Toggle) */}
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleOpenEdit(pkg)}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#FAF8F5] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] border border-[#D9D3C7] dark:border-[#2B4032] hover:bg-[#EDF3EE] transition cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 transition cursor-pointer"
                         title="Edit package & timings"
                       >
                         <Edit2 size={10} />
@@ -339,12 +333,12 @@ export default function AdminPackages() {
 
                       <button
                         onClick={() => handleToggleActive(pkg)}
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border transition cursor-pointer ${
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold border transition cursor-pointer ${
                           isActive
-                            ? 'bg-[#EDF3EE] dark:bg-[#1E2E25] text-[#2E6B3F] dark:text-[#8FD4AE] border-[#D9E2DC] dark:border-[#2B4032] hover:bg-[#FAF0F0] hover:text-[#A83232]'
-                            : 'bg-[#FAF0F0] dark:bg-[#3D1A1A] text-[#A83232] dark:text-[#FCA5A5] border-[#F0D5D5] dark:border-[#5C2A2A] hover:bg-[#EDF3EE] hover:text-[#2E6B3F]'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-rose-50 hover:text-rose-800'
+                            : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-900 hover:bg-emerald-50 hover:text-emerald-800'
                         }`}
-                        title={isActive ? 'Click to hide package' : 'Click to make active'}
+                        title={isActive ? 'Click to hide plan' : 'Click to make active'}
                       >
                         {isActive ? <Eye size={11} /> : <EyeOff size={11} />}
                         <span>{isActive ? 'Active' : 'Hidden'}</span>
@@ -354,53 +348,53 @@ export default function AdminPackages() {
 
                   {/* Header Title & Icon */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#004B87] dark:text-slate-300 flex items-center justify-center flex-shrink-0">
                       <IconComp size={20} />
                     </div>
                     <div>
-                      <h3 className="font-serif-lib text-lg font-bold text-[#1C1E1B] dark:text-[#FAF8F5] leading-tight">
+                      <h3 className="font-serif-lib text-lg font-bold text-slate-900 dark:text-white leading-tight">
                         {pkg.name}
                       </h3>
-                      <p className="text-xs text-[#6F7770] dark:text-[#9FB1A6] mt-0.5 line-clamp-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
                         {pkg.tagline || pkg.description}
                       </p>
                     </div>
                   </div>
 
-                  {/* Term Duration & Shift Timing Pills */}
+                  {/* Term Duration & Shift Timing */}
                   <div className="mt-3.5 flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-[#FAF8F5] dark:bg-[#1E2E25] text-[#424A44] dark:text-[#C2D1C7] border border-[#E5DFD5] dark:border-[#2C4133]">
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                       {pkg.term_months} Month{pkg.term_months > 1 ? 's' : ''} Term
                     </span>
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-[#EDF3EE] dark:bg-[#1E2E25] text-[#1C3A2B] dark:text-[#8FD4AE] border border-[#C2D1C7] dark:border-[#2B4032] flex items-center gap-1.5">
-                      <Clock size={11} className="text-[#1C3A2B] dark:text-[#8FD4AE]" />
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
+                      <Clock size={11} className="text-slate-500" />
                       <span>{resolveTiming(pkg.timing)}</span>
                     </span>
                   </div>
 
                   {/* Pricing Block */}
-                  <div className="mt-4 pt-3.5 border-t border-[#EFEBE4] dark:border-[#26362D]">
+                  <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="font-serif-lib text-2xl font-bold text-[#1C3A2B] dark:text-[#8FD4AE]">
+                      <span className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white">
                         ₹{Number(pkg.recurring_payment || 0).toLocaleString('en-IN')}
                       </span>
-                      <span className="text-xs text-[#7F8781] dark:text-[#9FB1A6]">/ {pkg.term_months === 1 ? 'month' : `${pkg.term_months} mos`}</span>
+                      <span className="text-xs text-slate-500">/ {pkg.term_months === 1 ? 'month' : `${pkg.term_months} mos`}</span>
 
                       {pkg.saving > 0 && (
-                        <span className="text-xs text-[#2E6B3F] dark:text-[#8FD4AE] font-semibold ml-2">
+                        <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold ml-2">
                           Save ₹{pkg.saving}
                         </span>
                       )}
                     </div>
 
-                    <div className="mt-1 flex items-center justify-between text-[11px] text-[#7F8781] dark:text-[#9FB1A6]">
+                    <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
                       <span>Registration: ₹{pkg.registration_fee || 0}</span>
-                      <span className="font-medium text-[#1C1E1B] dark:text-white">Initial: ₹{pkg.initial_payment || (pkg.recurring_payment + (pkg.registration_fee || 0))}</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">Initial Total: ₹{pkg.initial_payment || (pkg.recurring_payment + (pkg.registration_fee || 0))}</span>
                     </div>
 
                     {pkg.offer_text && (
-                      <div className="mt-2.5 p-2 rounded-xl bg-[#FFFBEB] dark:bg-[#382B14] border border-[#FDE68A] dark:border-[#574019] text-[11px] text-[#92400E] dark:text-[#FDE68A] font-medium flex items-center gap-1.5">
-                        <Percent size={12} className="text-[#D97706] flex-shrink-0" />
+                      <div className="mt-2.5 p-2 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center gap-1.5">
+                        <Percent size={12} className="text-amber-700 flex-shrink-0" />
                         <span>{pkg.offer_text}</span>
                       </div>
                     )}
@@ -408,18 +402,18 @@ export default function AdminPackages() {
 
                   {/* Features List */}
                   <div className="mt-4 space-y-2">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">
                       Plan Inclusions
                     </span>
-                    <ul className="space-y-1.5 text-xs text-[#424A44] dark:text-[#C2D1C7]">
+                    <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                       {(pkg.features || []).slice(0, 4).map((f, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <CheckCircle2 size={13} className="text-[#2E6B3F] dark:text-[#8FD4AE] flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 size={13} className="text-emerald-600 flex-shrink-0 mt-0.5" />
                           <span className="line-clamp-1">{f}</span>
                         </li>
                       ))}
                       {(pkg.features || []).length > 4 && (
-                        <li className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6] italic pl-5">
+                        <li className="text-[11px] text-slate-500 italic pl-5">
                           + {(pkg.features || []).length - 4} more benefits
                         </li>
                       )}
@@ -428,23 +422,23 @@ export default function AdminPackages() {
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="p-4 bg-[#FAF8F5] dark:bg-[#1E2E25]/50 border-t border-[#EFEBE4] dark:border-[#26362D] flex items-center justify-between gap-2.5">
+                <div className="p-4 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2.5">
                   <button
                     onClick={() => handleOpenEdit(pkg)}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#1C3A2B] hover:bg-[#142C20] dark:bg-[#2A4D3B] text-white shadow-xs transition cursor-pointer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#004B87] hover:bg-[#003B6B] text-white shadow-xs transition cursor-pointer"
                   >
                     <Edit2 size={13} />
-                    <span>Edit Plan &amp; Timings</span>
+                    <span>Edit Plan</span>
                   </button>
 
                   <button
                     onClick={() => handleDelete(pkg)}
                     disabled={deletingId === pkg._id}
-                    className="p-2 rounded-xl text-[#A83232] dark:text-[#FCA5A5] hover:bg-[#FAF0F0] dark:hover:bg-[#3D1A1A] border border-[#F0D5D5] dark:border-[#5C2A2A] transition cursor-pointer disabled:opacity-50"
+                    className="p-2 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-rose-200 dark:border-rose-900 transition cursor-pointer disabled:opacity-50"
                     title="Delete package"
                   >
                     {deletingId === pkg._id ? (
-                      <Loader2 size={15} className="animate-spin text-[#A83232]" />
+                      <Loader2 size={15} className="animate-spin text-rose-600" />
                     ) : (
                       <Trash2 size={15} />
                     )}
@@ -458,77 +452,66 @@ export default function AdminPackages() {
 
       {/* Package Creation & Edit Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#1C1E1B]/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#16211B] rounded-2xl max-w-xl w-full border border-[#E5DFD5] dark:border-[#26362D] shadow-xl overflow-hidden my-8">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#EFEBE4] dark:border-[#26362D] bg-[#FAF8F5] dark:bg-[#1E2E25]">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-[#111827] rounded-xl max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden my-8">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 text-[#004B87] dark:text-slate-300 flex items-center justify-center">
                   {editingPkg ? <Edit2 size={18} /> : <Layers size={18} />}
                 </div>
                 <div>
-                  <h3 className="font-serif-lib text-base font-bold text-[#1C3A2B] dark:text-[#FAF8F5]">
-                    {editingPkg ? `Edit Package: ${editingPkg.name}` : 'Create New Subscription Package'}
+                  <h3 className="font-serif-lib text-base font-bold text-slate-900 dark:text-white">
+                    {editingPkg ? `Edit Plan: ${editingPkg.name}` : 'Create Subscription Plan'}
                   </h3>
-                  <p className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6]">
-                    {editingPkg
-                      ? 'Update package timing hours, pricing rates, and promotional discounts'
-                      : 'Configure plan specifications, reading room shifts, and promotional offers'}
+                  <p className="text-[11px] text-slate-500">
+                    Configure shift hours, pricing, and benefits
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1.5 rounded-lg text-[#7F8781] hover:bg-[#EFEBE4] dark:hover:bg-[#203126] transition cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 <X size={18} />
               </button>
             </div>
 
-            {/* Modal Body */}
             <form onSubmit={handleSave} className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-              {editingPkg && (
-                <div className="p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] text-[#424A44] dark:text-[#C2D1C7] text-[11px] flex items-center justify-between">
-                  <span>Currently editing: <strong className="text-[#1C3A2B] dark:text-[#8FD4AE]">{editingPkg.name}</strong></span>
-                  <span className="font-semibold text-[#2E6B3F] dark:text-[#8FD4AE]">Real-time catalog sync</span>
-                </div>
-              )}
-
               {formError && (
-                <div className="p-3 rounded-xl bg-[#FAF0F0] dark:bg-[#3D1A1A] border border-[#F0D5D5] dark:border-[#5C2A2A] text-[#A83232] dark:text-[#FCA5A5] text-xs flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2">
                   <AlertCircle size={15} className="flex-shrink-0" />
                   <span>{formError}</span>
                 </div>
               )}
 
               {formSuccess && (
-                <div className="p-3 rounded-xl bg-[#EDF3EE] dark:bg-[#1E2E25] border border-[#D9E2DC] dark:border-[#2B4032] text-[#2E6B3F] dark:text-[#8FD4AE] text-xs flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2">
                   <CheckCircle2 size={15} className="flex-shrink-0" />
                   <span>{formSuccess}</span>
                 </div>
               )}
 
-              {/* 1. General Identity & Term */}
+              {/* 1. General Identity */}
               <div className="space-y-3">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">
-                  1. Plan Identity &amp; Term Duration
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
+                  1. Plan Identity &amp; Term
                 </span>
 
                 <div>
-                  <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Package Name *</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Plan Name *</label>
                   <input
                     required
                     value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    placeholder="e.g. Semi-Annual Dedicated Carrel"
-                    className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                    placeholder="e.g. Full Day Scholar Pass"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Duration (Months) *</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Duration (Months) *</label>
                     <input
                       type="number"
                       min="1"
@@ -536,22 +519,21 @@ export default function AdminPackages() {
                       required
                       value={form.term_months}
                       onChange={e => setForm(f => ({ ...f, term_months: Number(e.target.value) }))}
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Display Icon</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Icon</label>
                     <select
                       value={form.icon}
                       onChange={e => setForm(f => ({ ...f, icon: e.target.value }))}
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     >
                       <option value="Calendar">Calendar (Monthly)</option>
                       <option value="CalendarRange">Calendar Range (Quarterly)</option>
-                      <option value="Award">Award (Annual / Best Value)</option>
+                      <option value="Award">Award (Annual)</option>
                       <option value="BookOpen">Book Open (Scholarly)</option>
-                      <option value="Sparkles">Sparkles (Special / VIP)</option>
                       <option value="Star">Star (Popular)</option>
                       <option value="Layers">Layers (Multi-Tier)</option>
                     </select>
@@ -559,37 +541,22 @@ export default function AdminPackages() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Tagline / Short Pitch</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Tagline</label>
                   <input
                     value={form.tagline}
                     onChange={e => setForm(f => ({ ...f, tagline: e.target.value }))}
-                    placeholder="e.g. Best choice for competitive civil service prep"
-                    className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Full Description</label>
-                  <textarea
-                    rows={2}
-                    value={form.description}
-                    onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                    placeholder="Comprehensive overview of reading room privileges included..."
-                    className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                    placeholder="e.g. Recommended for civil services preparation"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                   />
                 </div>
               </div>
 
-              {/* 2. Reading Room Timings & Shift Hours */}
-              <div className="space-y-3 pt-3 border-t border-[#EFEBE4] dark:border-[#26362D]">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">
-                    2. Reading Room Timing &amp; Shift Slot
-                  </span>
-                  <span className="text-[10px] text-[#7F8781] dark:text-[#9FB1A6]">Quick select shift or custom hours</span>
-                </div>
+              {/* 2. Reading Room Timings */}
+              <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
+                  2. Shift Hours
+                </span>
 
-                {/* Preset Shift Buttons */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {timingPresets.map((preset) => {
                     const isSelected = form.timing === preset.value;
@@ -598,203 +565,142 @@ export default function AdminPackages() {
                         key={preset.label}
                         type="button"
                         onClick={() => setForm(f => ({ ...f, timing: preset.value }))}
-                        className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between ${
+                        className={`p-2.5 rounded-lg border text-left transition cursor-pointer flex flex-col justify-between ${
                           isSelected
-                            ? 'bg-[#EDF3EE] dark:bg-[#203126] border-[#1C3A2B] dark:border-[#8FD4AE] text-[#1C3A2B] dark:text-[#8FD4AE] ring-1 ring-[#1C3A2B]'
-                            : 'bg-[#FAF8F5] dark:bg-[#111A14] border-[#D9D3C7] dark:border-[#26362D] text-[#424A44] dark:text-[#C2D1C7] hover:border-[#1C3A2B]/50'
+                            ? 'bg-slate-100 border-[#004B87] text-[#004B87] dark:bg-slate-800 dark:border-blue-400 dark:text-blue-300'
+                            : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold leading-tight">{preset.label}</span>
-                          {isSelected && <Check size={12} className="text-[#1C3A2B] dark:text-[#8FD4AE]" />}
+                          <span className="text-xs font-bold">{preset.label}</span>
+                          {isSelected && <Check size={12} className="text-[#004B87]" />}
                         </div>
-                        <span className="text-[10px] text-[#7F8781] dark:text-[#9FB1A6] mt-1">{preset.desc}</span>
+                        <span className="text-[10px] text-slate-400 mt-1">
+                          {preset.desc}
+                        </span>
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Custom Timing Text Input */}
                 <div>
-                  <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">
-                    Timing Hours Displayed on Pass *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#6D8374] dark:text-[#8CA093]">
-                      <Clock size={14} />
-                    </div>
-                    <input
-                      required
-                      value={form.timing}
-                      onChange={e => setForm(f => ({ ...f, timing: e.target.value }))}
-                      placeholder={`e.g. ${fullDaySchedule}`}
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl pl-9 pr-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
-                    />
-                  </div>
-                  <p className="text-[10px] text-[#7F8781] dark:text-[#9FB1A6] mt-1">
-                    This schedule is visible to students during enrollment and on their pass dashboard.
-                  </p>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Shift Display Text *</label>
+                  <input
+                    required
+                    value={form.timing}
+                    onChange={e => setForm(f => ({ ...f, timing: e.target.value }))}
+                    placeholder="e.g. Full Day (07:00 AM – 09:00 PM)"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
+                  />
                 </div>
               </div>
 
-              {/* 3. Pricing & Financials */}
-              <div className="space-y-3 pt-3 border-t border-[#EFEBE4] dark:border-[#26362D]">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">
-                  3. Pricing &amp; Registration Dues (₹)
+              {/* 3. Fee Structure */}
+              <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
+                  3. Fee Structure
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Term Fee (₹) *</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Monthly Dues (₹) *</label>
                     <input
                       type="number"
-                      required
                       min="0"
+                      required
                       value={form.recurring_payment}
-                      onChange={e => {
-                        const val = Number(e.target.value);
-                        setForm(f => ({
-                          ...f,
-                          recurring_payment: val,
-                          initial_payment: val + Number(f.registration_fee || 0)
-                        }));
-                      }}
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      onChange={e => setForm(f => ({ ...f, recurring_payment: Number(e.target.value) }))}
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Registration (₹)</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Admission Fee (₹)</label>
                     <input
                       type="number"
                       min="0"
                       value={form.registration_fee}
-                      onChange={e => {
-                        const val = Number(e.target.value);
-                        setForm(f => ({
-                          ...f,
-                          registration_fee: val,
-                          initial_payment: Number(f.recurring_payment || 0) + val
-                        }));
-                      }}
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      onChange={e => setForm(f => ({ ...f, registration_fee: Number(e.target.value) }))}
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Initial Checkout (₹)</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Initial Total (₹)</label>
                     <input
                       type="number"
                       min="0"
                       value={form.initial_payment}
                       onChange={e => setForm(f => ({ ...f, initial_payment: Number(e.target.value) }))}
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Discount Savings (₹)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={form.saving}
-                    onChange={e => setForm(f => ({ ...f, saving: Number(e.target.value) }))}
-                    placeholder="e.g. 1400 (displayed as strike-through savings)"
-                    className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
-                  />
                 </div>
               </div>
 
-              {/* 4. Promotional Offers & Merchandising */}
-              <div className="space-y-3 pt-3 border-t border-[#EFEBE4] dark:border-[#26362D]">
-                <div className="flex items-center gap-2">
-                  <Tag size={14} className="text-[#D97706]" />
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#92400E] dark:text-[#FDE68A]">
-                    4. Promotional Offers &amp; Badges
-                  </span>
-                </div>
+              {/* 4. Promotional Offers */}
+              <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
+                  4. Offers &amp; Badges
+                </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Offer Tag / Banner</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Offer Tag</label>
                     <input
                       value={form.offer_tag}
                       onChange={e => setForm(f => ({ ...f, offer_tag: e.target.value }))}
-                      placeholder="e.g. Ramadan Special 15% OFF"
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      placeholder="e.g. 15% OFF"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Discount Percentage (%)</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Discount (%)</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       value={form.discount_percent}
                       onChange={e => setForm(f => ({ ...f, discount_percent: Number(e.target.value) }))}
-                      placeholder="e.g. 15"
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none transition"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Offer Details / Terms</label>
-                  <input
-                    value={form.offer_text}
-                    onChange={e => setForm(f => ({ ...f, offer_text: e.target.value }))}
-                    placeholder="e.g. Registration fee waived + 1 free mock test booklet included"
-                    className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] block mb-1">Custom Ribbon Badge</label>
+                <div className="flex items-center gap-4 pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
-                      value={form.badge}
-                      onChange={e => setForm(f => ({ ...f, badge: e.target.value }))}
-                      placeholder="e.g. Recommended for UPSC"
-                      className="w-full bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-2 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B] transition"
+                      type="checkbox"
+                      checked={Boolean(form.isPopular)}
+                      onChange={e => setForm(f => ({ ...f, isPopular: e.target.checked ? 1 : 0 }))}
+                      className="w-4 h-4 text-[#004B87] rounded border-slate-300"
                     />
-                  </div>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Mark as Most Popular</span>
+                  </label>
 
-                  <div className="flex items-center gap-4 pt-4">
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(form.isPopular)}
-                        onChange={e => setForm(f => ({ ...f, isPopular: e.target.checked ? 1 : 0 }))}
-                        className="w-4 h-4 text-[#1C3A2B] rounded border-[#D9D3C7]"
-                      />
-                      <span className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5]">Mark as Most Popular</span>
-                    </label>
-
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(form.is_active)}
-                        onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))}
-                        className="w-4 h-4 text-[#1C3A2B] rounded border-[#D9D3C7]"
-                      />
-                      <span className="text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5]">Published (Active)</span>
-                    </label>
-                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(form.is_active)}
+                      onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))}
+                      className="w-4 h-4 text-[#004B87] rounded border-slate-300"
+                    />
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Active (Visible)</span>
+                  </label>
                 </div>
               </div>
 
-              {/* 5. Plan Features Bullet Points */}
-              <div className="space-y-3 pt-3 border-t border-[#EFEBE4] dark:border-[#26362D]">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#8CA093] block">
-                  5. Plan Features &amp; Inclusions
+              {/* 5. Plan Features */}
+              <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
+                  5. Plan Features
                 </span>
 
                 <div className="space-y-2">
                   {form.features.map((feat, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-[#EDF3EE] dark:bg-[#203126] text-[#2E6B3F] dark:text-[#8FD4AE] flex items-center justify-center flex-shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-emerald-600 flex items-center justify-center flex-shrink-0">
                         <Check size={12} />
                       </div>
                       <input
@@ -806,12 +712,12 @@ export default function AdminPackages() {
                             features: f.features.map((item, i) => i === idx ? val : item)
                           }));
                         }}
-                        className="flex-1 bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3 py-1.5 text-xs text-[#1C1E1B] dark:text-white focus:border-[#1C3A2B]"
+                        className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:border-[#004B87] focus:outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveFeature(idx)}
-                        className="p-1.5 text-[#A83232] hover:bg-[#FAF0F0] dark:hover:bg-[#3D1A1A] rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded transition cursor-pointer"
                         title="Remove feature"
                       >
                         <X size={14} />
@@ -825,13 +731,13 @@ export default function AdminPackages() {
                     value={newFeatureText}
                     onChange={e => setNewFeatureText(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddFeature(); } }}
-                    placeholder="Add a new feature inclusion..."
-                    className="flex-1 bg-white dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl px-3.5 py-1.5 text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C]"
+                    placeholder="Add an included amenity or feature..."
+                    className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#004B87]"
                   />
                   <button
                     type="button"
                     onClick={handleAddFeature}
-                    className="px-3 py-1.5 bg-[#FAF8F5] dark:bg-[#203126] hover:bg-[#EDF3EE] text-[#1C3A2B] dark:text-[#8FD4AE] border border-[#D9D3C7] dark:border-[#2B4032] rounded-xl text-xs font-semibold transition cursor-pointer"
+                    className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold transition cursor-pointer"
                   >
                     + Add
                   </button>
@@ -839,21 +745,21 @@ export default function AdminPackages() {
               </div>
 
               {/* Modal Footer */}
-              <div className="pt-4 border-t border-[#EFEBE4] dark:border-[#26362D] flex items-center justify-end gap-2.5">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#5D645E] dark:text-[#9FB1A6] hover:bg-[#FAF8F5] dark:hover:bg-[#203126] border border-[#D9D3C7] dark:border-[#26362D] transition cursor-pointer"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-semibold bg-[#1C3A2B] hover:bg-[#142C20] dark:bg-[#2A4D3B] text-white shadow-xs transition disabled:opacity-50 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-xs font-semibold bg-[#004B87] hover:bg-[#003B6B] text-white shadow-xs transition disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                  <span>{editingPkg ? 'Update Package & Timings' : 'Save & Publish Package'}</span>
+                  <span>{editingPkg ? 'Update Plan' : 'Publish Plan'}</span>
                 </button>
               </div>
             </form>

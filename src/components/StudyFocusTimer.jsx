@@ -136,17 +136,17 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="bg-white dark:bg-[#15201A] border border-[#DFE6DC] dark:border-[#26382D] rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl relative text-[#0B0E0A] dark:text-[#E8EFEA]"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-xl relative text-slate-900 dark:text-slate-100"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-xl hover:bg-[#EFF4EC] dark:hover:bg-[#1E2E25] text-[#24341E] hover:text-black dark:text-[#8FD4AE] transition cursor-pointer"
+            className="absolute top-5 right-5 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition cursor-pointer"
             aria-label="Close Study Focus Tool"
           >
             <X size={18} />
@@ -154,26 +154,26 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
 
           {/* Header */}
           <div className="text-center mb-6">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#EFF4EC] dark:bg-[#1E2F25] text-[#24341E] dark:text-[#88B89C] text-[11px] font-semibold uppercase tracking-wider">
-              <Sparkles size={12} />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+              <Clock size={12} />
               <span>Quiet Desk Focus Companion</span>
             </span>
-            <h3 className="font-serif-lib text-2xl font-bold text-[#24341E] dark:text-[#8ED4AB] mt-2">
+            <h3 className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white mt-2">
               Pomodoro Study Sprint
             </h3>
-            <p className="text-xs text-[#0B0E0A] dark:text-[#9FB1A6] mt-1">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
               Synchronize your concentration with Nurul Ilm's quiet room rhythm.
             </p>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex bg-[#EFF4EC] dark:bg-[#1B2921] p-1 rounded-xl mb-6">
+          <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-lg mb-6">
             <button
               onClick={() => handleModeChange('focus')}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-md flex items-center justify-center gap-1.5 transition cursor-pointer ${
                 mode === 'focus'
-                  ? 'bg-white dark:bg-[#25392E] text-[#24341E] dark:text-[#9EE5BC] shadow-xs'
-                  : 'text-[#0B0E0A] dark:text-[#8EA195] hover:text-[#24341E]'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Clock size={14} />
@@ -181,10 +181,10 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
             </button>
             <button
               onClick={() => handleModeChange('break')}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-md flex items-center justify-center gap-1.5 transition cursor-pointer ${
                 mode === 'break'
-                  ? 'bg-white dark:bg-[#25392E] text-[#24341E] dark:text-[#9EE5BC] shadow-xs'
-                  : 'text-[#0B0E0A] dark:text-[#8EA195] hover:text-[#24341E]'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Coffee size={14} />
@@ -201,7 +201,7 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
                 r="84"
                 stroke="currentColor"
                 strokeWidth="8"
-                className="text-[#DFE6DC] dark:text-[#233328]"
+                className="text-slate-200 dark:text-slate-800"
                 fill="none"
               />
               <circle
@@ -213,15 +213,15 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
                 strokeDasharray="527"
                 strokeDashoffset={527 - (527 * progressPercent) / 100}
                 strokeLinecap="round"
-                className="text-[#33462C] dark:text-[#52D38A] transition-all duration-500"
+                className="text-[#004B87] dark:text-blue-500 transition-all duration-500"
                 fill="none"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-mono text-4xl font-bold tracking-tight text-[#0B0E0A] dark:text-[#F3F7F5]">
+              <span className="font-mono text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
               </span>
-              <span className="text-[11px] font-medium text-[#24341E] dark:text-[#9FB1A6] mt-1">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">
                 {isRunning ? (mode === 'focus' ? 'Deep Focus Active' : 'Resting Eyes') : 'Paused'}
               </span>
             </div>
@@ -231,7 +231,7 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
           <div className="flex items-center justify-center gap-4 mb-5">
             <button
               onClick={resetTimer}
-              className="p-3 rounded-xl bg-white dark:bg-[#1E2E25] border border-[#DFE6DC] dark:border-[#2C4033] text-[#24341E] dark:text-[#A1B8AA] hover:bg-[#EFF4EC] transition active:scale-95 cursor-pointer"
+              className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer"
               title="Reset Timer"
               aria-label="Reset Timer"
             >
@@ -239,7 +239,7 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
             </button>
             <button
               onClick={() => setIsRunning(!isRunning)}
-              className="px-8 py-3.5 rounded-2xl bg-[#33462C] hover:bg-[#24341E] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white font-semibold text-sm flex items-center gap-2 shadow-md transition active:scale-95 cursor-pointer"
+              className="px-8 py-3.5 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white font-semibold text-sm flex items-center gap-2 shadow-xs transition cursor-pointer"
             >
               {isRunning ? (
                 <>
@@ -255,7 +255,7 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
             </button>
             <button
               onClick={playChime}
-              className="p-3 rounded-xl bg-white dark:bg-[#1E2E25] border border-[#DFE6DC] dark:border-[#2C4033] text-[#24341E] dark:text-[#A1B8AA] hover:bg-[#EFF4EC] transition active:scale-95 cursor-pointer"
+              className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer"
               title="Test Sanctuary Bell"
               aria-label="Test Bell"
             >
@@ -264,19 +264,19 @@ export default function StudyFocusTimer({ isOpen, onClose }) {
           </div>
 
           {/* Ambient Rain Audio Toggle */}
-          <div className="pt-4 border-t border-[#DFE6DC] dark:border-[#26382D] flex items-center justify-between">
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[#0B0E0A] dark:text-[#E8EFEA]">
+              <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                 Library Window Rain Sound
               </span>
-              <span className="text-[10px] text-[#24341E]/70 dark:text-[#8E9E93]">Warm noise</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">Warm noise</span>
             </div>
             <button
               onClick={() => setSoundOn(!soundOn)}
-              className={`p-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 soundOn
-                  ? 'bg-[#33462C] text-white dark:bg-[#52D38A] dark:text-[#0D1611]'
-                  : 'bg-white dark:bg-[#1E2E25] border border-[#DFE6DC] dark:border-[#2B3E32] text-[#24341E] dark:text-[#9EB3A6]'
+                  ? 'bg-[#004B87] text-white dark:bg-blue-600'
+                  : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
               }`}
             >
               {soundOn ? <Volume2 size={15} /> : <VolumeX size={15} />}

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  MapPin, CheckCircle2, Flame, Wifi, Zap,
-  Coffee, Users, Clock, ShieldCheck, Sparkles, X, Check,
-  Loader2, RefreshCw, Lock, AlertCircle, ArrowRightLeft, FileText, Send
+  MapPin, CheckCircle2,
+  Users, Clock, ShieldCheck, X, Check,
+  Loader2, RefreshCw, Lock, AlertCircle, ArrowRightLeft
 } from 'lucide-react';
 import { useOther } from '../../context/OtherContext';
 
@@ -100,7 +100,7 @@ export default function InteractiveDeskMap({ user, onClose }) {
       await reserveDesk(desk.desk_id);
       setClaimedDesk(desk.desk_id);
       setClaimedDeskDoc(desk);
-      setToastMsg(`✓ Desk ${desk.desk_id} successfully reserved and locked for your active semester session!`);
+      setToastMsg(`Desk ${desk.desk_id} successfully reserved for your active semester session.`);
       await loadDesksFromApi();
     } catch (err) {
       setToastError(true);
@@ -122,7 +122,7 @@ export default function InteractiveDeskMap({ user, onClose }) {
         requested_desk_id: changeTargetDesk,
         reason: changeReason.trim()
       });
-      setToastMsg(`✓ Desk change request submitted. Library administrator will review and reassign your seat.`);
+      setToastMsg(`Desk change request submitted. Library administrator will review and reassign your seat.`);
       setShowChangeModal(false);
       setChangeReason('');
       setChangeTargetDesk('');
@@ -147,44 +147,44 @@ export default function InteractiveDeskMap({ user, onClose }) {
   });
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-[#0B1726] border border-[#DCE3EC] dark:border-[#18283A] rounded-3xl max-w-3xl w-full shadow-2xl relative p-6 sm:p-8 space-y-6">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative p-4 sm:p-7 space-y-4">
         
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-[#E7ECF2] dark:border-[#18283A] pb-4">
+        <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1677FF] dark:text-[#00B8FF] flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#138A5B] animate-pulse"></span>
-                Carrel Allocation System
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+                Carrel Allocation
               </span>
-              <span className="text-xs text-[#64748B]">•</span>
-              <span className="text-xs text-[#138A5B] font-semibold">
+              <span className="text-xs text-slate-300 dark:text-slate-700">•</span>
+              <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                 {availableCount} Available • {occupiedCount} Occupied
               </span>
             </div>
-            <h2 className="font-serif-lib text-2xl font-bold text-[#0B1B2B] dark:text-white mt-1">
-              Study Carrel &amp; Reading Desks
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+              Study Desks and Carrel Seating
             </h2>
-            <p className="text-xs text-[#64748B] dark:text-[#A0ACBA] mt-0.5">
-              Strict seat reservation with concurrency protection. Once reserved, your seat is locked to protect your workspace.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Select an available carrel to reserve your study workspace. Once reserved, your seat is locked.
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button
               onClick={loadDesksFromApi}
               title="Refresh live availability"
-              className="p-1.5 rounded-xl text-[#64748B] hover:text-[#1677FF] hover:bg-[#EEF2F7] dark:hover:bg-[#0F1D2E] transition cursor-pointer"
+              className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
             >
-              <RefreshCw size={16} className={loading ? 'animate-spin text-[#1677FF]' : ''} />
+              <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
             </button>
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-xl text-[#64748B] hover:text-[#0B1B2B] dark:hover:text-white hover:bg-[#EEF2F7] dark:hover:bg-[#0F1D2E] transition cursor-pointer"
+                className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             )}
           </div>
@@ -192,22 +192,22 @@ export default function InteractiveDeskMap({ user, onClose }) {
 
         {/* Locked Active Reservation Plaque */}
         {claimedDesk && (
-          <div className="p-4 rounded-2xl bg-[#EAF8F1] dark:bg-[#142A1D] border border-[#138A5B]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="p-3.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#138A5B] text-white flex items-center justify-center font-mono font-bold text-sm shadow-xs flex-shrink-0">
-                <Lock size={18} />
+              <div className="w-8 h-8 rounded-md bg-[#004B87] text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                <Lock size={15} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-[#138A5B] dark:text-[#8FD4AE]">
-                    Your Reserved &amp; Locked Seat: Desk {claimedDesk}
+                  <span className="text-xs font-bold text-[#004B87] dark:text-blue-300">
+                    Your Reserved Seat: Desk {claimedDesk}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#138A5B]/20 text-[#138A5B] dark:text-[#8FD4AE] font-semibold uppercase">
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900/60 text-[#004B87] dark:text-blue-300 font-semibold uppercase">
                     Locked
                   </span>
                 </div>
-                <p className="text-[11px] text-[#2F6B4C] dark:text-[#9FB1A6] mt-0.5">
-                  Seats cannot be arbitrarily changed. If you require a different bay or lighting alcove, submit a request to administration.
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+                  Seats are assigned per active term. If you require a different bay or lighting alcove, submit a change request.
                 </p>
               </div>
             </div>
@@ -216,102 +216,100 @@ export default function InteractiveDeskMap({ user, onClose }) {
                 setChangeTargetDesk('');
                 setShowChangeModal(true);
               }}
-              className="px-4 py-2 rounded-xl bg-white dark:bg-[#0B1726] border border-[#138A5B]/40 hover:bg-[#F2FBF6] text-xs font-semibold text-[#138A5B] dark:text-[#8FD4AE] transition cursor-pointer flex items-center gap-1.5 self-end sm:self-auto shadow-xs"
+              className="px-3 py-1.5 rounded-md bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 text-xs font-semibold text-slate-800 dark:text-slate-200 transition cursor-pointer flex items-center gap-1.5 self-end sm:self-auto shadow-2xs"
             >
-              <ArrowRightLeft size={14} />
-              <span>Request Desk Change</span>
+              <ArrowRightLeft size={13} />
+              <span>Request Seat Change</span>
             </button>
           </div>
         )}
 
         {/* Toast alert */}
         {toastMsg && (
-          <div className={`p-3 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
+          <div className={`p-2.5 rounded-lg border text-xs font-semibold flex items-center gap-2 ${
             toastError
-              ? 'bg-[#FAF0F0] dark:bg-[#3D1A1A] border-[#F0D5D5] text-[#A83232] dark:text-[#FCA5A5]'
-              : 'bg-[#EAF2FF] dark:bg-[#0F1D2E] border-[#1677FF]/30 text-[#1677FF] dark:text-[#00B8FF]'
+              ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 text-rose-800 dark:text-rose-300'
+              : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 text-emerald-800 dark:text-emerald-300'
           }`}>
-            {toastError ? <AlertCircle size={15} /> : <Sparkles size={15} />}
+            <AlertCircle size={14} />
             <span>{toastMsg}</span>
           </div>
         )}
 
         {/* Filter Pills & Legend */}
         {desksList.length > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition cursor-pointer ${
                   filter === 'all'
-                    ? 'bg-[#1677FF] text-white shadow-xs'
-                    : 'bg-[#EEF2F7] dark:bg-[#081321] text-[#475569] dark:text-[#A0ACBA]'
+                    ? 'bg-[#004B87] text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                 }`}
               >
-                All Provisioned Desks ({desksList.length})
+                All Desks ({desksList.length})
               </button>
               <button
                 onClick={() => setFilter('available')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition cursor-pointer ${
                   filter === 'available'
-                    ? 'bg-[#1677FF] text-white shadow-xs'
-                    : 'bg-[#EEF2F7] dark:bg-[#081321] text-[#475569] dark:text-[#A0ACBA]'
+                    ? 'bg-[#004B87] text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                 }`}
               >
                 Available ({availableCount})
               </button>
               <button
                 onClick={() => setFilter('quiet')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition cursor-pointer ${
                   filter === 'quiet'
-                    ? 'bg-[#1677FF] text-white shadow-xs'
-                    : 'bg-[#EEF2F7] dark:bg-[#081321] text-[#475569] dark:text-[#A0ACBA]'
+                    ? 'bg-[#004B87] text-white shadow-2xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                 }`}
               >
                 Bay A Quiet Zone
               </button>
             </div>
 
-            <div className="flex items-center gap-3 text-[11px] text-[#64748B]">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500">
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-md bg-[#EAF8F1] border border-[#138A5B]/30" />
+                <span className="w-2.5 h-2.5 rounded bg-white dark:bg-[#111827] border border-slate-300" />
                 <span>Available</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-md bg-[#1677FF] border border-[#1677FF]" />
+                <span className="w-2.5 h-2.5 rounded bg-[#004B87]" />
                 <span>Your Desk</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-md bg-[#EEF2F7] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A]" />
+                <span className="w-2.5 h-2.5 rounded bg-slate-200 dark:bg-slate-800" />
                 <span>Occupied</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── DESK GRID OR HONEST EMPTY STATE ── */}
-        <div className="p-5 rounded-2xl bg-[#F6F8FB] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A]">
+        {/* Desk Grid */}
+        <div className="p-4 rounded-lg bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-              <Loader2 className="animate-spin text-[#1677FF]" size={28} />
-              <p className="text-xs text-[#64748B]">Querying database for real carrel desks...</p>
+            <div className="py-10 flex flex-col items-center justify-center text-center space-y-2">
+              <Loader2 className="animate-spin text-[#004B87]" size={22} />
+              <p className="text-xs text-slate-500">Loading carrel status...</p>
             </div>
           ) : desksList.length === 0 ? (
-            <div className="py-12 px-4 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#EEF2F7] dark:bg-[#16211B] text-[#64748B] mx-auto flex items-center justify-center">
-                <MapPin size={22} />
+            <div className="py-10 px-4 text-center space-y-2">
+              <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-500 mx-auto flex items-center justify-center">
+                <MapPin size={18} />
               </div>
-              <div className="space-y-1">
-                <h3 className="font-serif-lib text-base font-bold text-[#0B1B2B] dark:text-white">
-                  No Desks Configured Yet
-                </h3>
-                <p className="text-xs text-[#64748B] dark:text-[#8CA093] max-w-sm mx-auto leading-relaxed">
-                  No study desks have been provisioned in the database yet. Library administration will add carrels shortly.
-                </p>
-              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                No Desks Configured
+              </h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                No study desks are registered yet.
+              </p>
             </div>
           ) : (
-            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2.5">
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
               {filteredDesks.map(desk => {
                 const isClaimed = desk.desk_id === claimedDesk;
                 const isOccupied = (desk.status === 'occupied' || desk.status === 'reserved') && !isClaimed;
@@ -321,18 +319,18 @@ export default function InteractiveDeskMap({ user, onClose }) {
                   <button
                     key={desk.desk_id}
                     onClick={() => setSelectedDesk(desk)}
-                    className={`h-14 rounded-xl text-xs font-bold font-mono transition-all flex flex-col items-center justify-center p-1.5 cursor-pointer border ${
+                    className={`h-12 rounded-lg text-xs font-mono font-bold transition flex flex-col items-center justify-center p-1 cursor-pointer border ${
                       isClaimed
-                        ? 'bg-[#1677FF] text-white border-[#1677FF] shadow-sm ring-2 ring-[#1677FF]/40'
+                        ? 'bg-[#004B87] text-white border-[#004B87] shadow-2xs'
                         : isOccupied
-                        ? 'bg-[#E7ECF2] dark:bg-[#0F1D2E] text-[#64748B] border-[#DCE3EC] dark:border-[#18283A] cursor-not-allowed opacity-60'
+                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800 cursor-not-allowed opacity-60'
                         : isSelected
-                        ? 'bg-white dark:bg-[#0B1726] border-[#1677FF] text-[#1677FF] ring-2 ring-[#1677FF]'
-                        : 'bg-white dark:bg-[#0B1726] border-[#DCE3EC] dark:border-[#18283A] text-[#0B1B2B] dark:text-[#F5F7FA] hover:border-[#1677FF] hover:shadow-xs'
+                        ? 'bg-white dark:bg-[#111827] border-[#004B87] text-[#004B87] ring-1 ring-[#004B87]'
+                        : 'bg-white dark:bg-[#111827] border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 hover:border-[#004B87]'
                     }`}
                   >
-                    <span className="text-xs">{desk.desk_id}</span>
-                    <span className="text-[9px] uppercase font-sans font-normal opacity-70">
+                    <span className="text-xs leading-none">{desk.desk_id}</span>
+                    <span className="text-[9px] uppercase font-sans font-normal opacity-70 mt-0.5">
                       {isClaimed ? 'Yours' : isOccupied ? 'Occupied' : 'Free'}
                     </span>
                   </button>
@@ -344,30 +342,30 @@ export default function InteractiveDeskMap({ user, onClose }) {
 
         {/* Selected Desk Action Drawer */}
         {selectedDesk && (
-          <div className="p-4 rounded-2xl bg-[#EEF2F7] dark:bg-[#0F1D2E] border border-[#DCE3EC] dark:border-[#18283A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-base text-[#1677FF] dark:text-[#00B8FF]">
+                <span className="font-mono font-bold text-sm text-[#004B87] dark:text-blue-400">
                   Desk {selectedDesk.desk_id}
                 </span>
-                <span className="text-xs text-[#64748B]">•</span>
-                <span className="text-xs font-semibold text-[#0B1B2B] dark:text-white">
+                <span className="text-xs text-slate-400">•</span>
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {selectedDesk.bay_name || selectedDesk.bay || 'General Bay'}
                 </span>
               </div>
-              <p className="text-[11px] text-[#64748B] mt-0.5">
+              <p className="text-[11px] text-slate-500 mt-0.5">
                 Amenities: {(selectedDesk.amenities || ['Power Socket', 'Heated Zone']).join(' • ')}
               </p>
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-auto">
               {selectedDesk.desk_id === claimedDesk ? (
-                <span className="px-3.5 py-2 rounded-xl bg-[#138A5B]/15 text-[#138A5B] dark:text-[#19D68C] border border-[#138A5B]/30 text-xs font-bold flex items-center gap-1.5">
-                  <Check size={14} /> Currently Your Locked Desk
+                <span className="px-3 py-1.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
+                  <Check size={13} /> Your Locked Desk
                 </span>
               ) : (selectedDesk.status === 'occupied' || selectedDesk.status === 'reserved') ? (
-                <span className="px-4 py-2 rounded-xl bg-[#64748B]/15 text-[#64748B] text-xs font-medium">
-                  Occupied by Fellow Scholar
+                <span className="px-3 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-500 text-xs font-medium">
+                  Occupied
                 </span>
               ) : claimedDesk ? (
                 <button
@@ -375,18 +373,18 @@ export default function InteractiveDeskMap({ user, onClose }) {
                     setChangeTargetDesk(selectedDesk.desk_id);
                     setShowChangeModal(true);
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#1677FF] hover:bg-[#1264E8] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                  className="px-3 py-1.5 rounded-md bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
                 >
-                  <ArrowRightLeft size={14} />
+                  <ArrowRightLeft size={13} />
                   <span>Request Move to {selectedDesk.desk_id}</span>
                 </button>
               ) : (
                 <button
                   disabled={submitting}
                   onClick={() => handleClaimDesk(selectedDesk)}
-                  className="px-5 py-2.5 rounded-xl bg-[#1677FF] hover:bg-[#1264E8] text-white text-xs font-semibold transition active:scale-95 shadow-sm cursor-pointer flex items-center gap-2"
+                  className="px-4 py-1.5 rounded-md bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold transition shadow-2xs cursor-pointer flex items-center gap-1.5"
                 >
-                  {submitting && <Loader2 size={14} className="animate-spin" />}
+                  {submitting && <Loader2 size={13} className="animate-spin" />}
                   <span>Reserve Desk {selectedDesk.desk_id}</span>
                 </button>
               )}
@@ -394,32 +392,32 @@ export default function InteractiveDeskMap({ user, onClose }) {
           </div>
         )}
 
-        {/* Change Request History (if any) */}
+        {/* Change Request History */}
         {myRequests.length > 0 && (
-          <div className="space-y-2.5 pt-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#64748B] dark:text-[#A0ACBA]">
-              Your Desk Change Requests
+          <div className="space-y-2 pt-1">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Seat Change Requests
             </h4>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {myRequests.map(req => (
                 <div
                   key={req._id}
-                  className="p-3 rounded-xl bg-white dark:bg-[#111A14] border border-[#E5DFD5] dark:border-[#26362D] flex items-center justify-between text-xs"
+                  className="p-2.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span className="font-semibold text-[#1C1E1B] dark:text-white">
-                      Desk {req.current_desk_id} → Desk {req.requested_desk_id}
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      Desk {req.current_desk_id} to Desk {req.requested_desk_id}
                     </span>
-                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                    <p className="text-[11px] text-slate-500 mt-0.5">
                       Reason: {req.reason}
                     </p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
                     req.status === 'approved'
-                      ? 'bg-[#138A5B]/15 text-[#138A5B] dark:text-[#8FD4AE] border-[#138A5B]/30'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
                       : req.status === 'rejected'
-                      ? 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30'
-                      : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                      ? 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800'
+                      : 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
                   }`}>
                     {req.status}
                   </span>
@@ -429,46 +427,46 @@ export default function InteractiveDeskMap({ user, onClose }) {
           </div>
         )}
 
-        {/* ── DESK CHANGE REQUEST MODAL ── */}
+        {/* Desk Change Request Modal */}
         {showChangeModal && (
-          <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-[#0B1726] border border-[#DCE3EC] dark:border-[#18283A] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between border-b border-[#E7ECF2] dark:border-[#18283A] pb-3">
+          <div className="fixed inset-0 z-60 bg-slate-900/70 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl max-w-md w-full p-5 shadow-xl space-y-3.5">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                 <div className="flex items-center gap-2">
-                  <ArrowRightLeft size={16} className="text-[#1677FF]" />
-                  <h3 className="font-serif-lib text-base font-bold text-[#0B1B2B] dark:text-white">
+                  <ArrowRightLeft size={15} className="text-[#004B87] dark:text-blue-400" />
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                     Submit Desk Change Request
                   </h3>
                 </div>
                 <button
                   onClick={() => setShowChangeModal(false)}
-                  className="p-1 rounded-lg text-[#64748B] hover:text-[#0B1B2B] dark:hover:text-white"
+                  className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmitChangeRequest} className="space-y-3.5">
+              <form onSubmit={handleSubmitChangeRequest} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1C1E1B] dark:text-white mb-1">
+                  <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                     Current Assigned Desk
                   </label>
                   <input
                     disabled
                     value={claimedDesk || 'None'}
-                    className="w-full px-3 py-2 bg-[#F6F8FB] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs font-mono font-bold"
+                    className="w-full px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-700 dark:text-slate-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1C1E1B] dark:text-white mb-1">
+                  <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                     Requested New Desk *
                   </label>
                   <select
                     value={changeTargetDesk}
                     onChange={(e) => setChangeTargetDesk(e.target.value)}
                     required
-                    className="w-full px-3 py-2 bg-white dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100"
                   >
                     <option value="">Select an available desk</option>
                     {desksList
@@ -482,31 +480,31 @@ export default function InteractiveDeskMap({ user, onClose }) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1C1E1B] dark:text-white mb-1">
+                  <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                     Reason for Desk Change *
                   </label>
                   <textarea
                     rows={3}
                     value={changeReason}
                     onChange={(e) => setChangeReason(e.target.value)}
-                    placeholder="e.g. Need direct power socket for laptop research or prefer quieter bay"
+                    placeholder="e.g. Need direct power socket or prefer quieter bay"
                     required
-                    className="w-full px-3 py-2 bg-white dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2">
+                <div className="flex items-center justify-end gap-2 pt-1">
                   <button
                     type="button"
                     onClick={() => setShowChangeModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748B] hover:bg-[#EEF2F7] dark:hover:bg-[#16211B]"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || !changeTargetDesk || !changeReason.trim()}
-                    className="px-5 py-2 rounded-xl bg-[#1677FF] hover:bg-[#1264E8] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+                    className="px-4 py-1.5 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
                   >
                     {submitting && <Loader2 size={13} className="animate-spin" />}
                     <span>Submit Request</span>

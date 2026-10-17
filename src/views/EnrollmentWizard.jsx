@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOther } from '../context/OtherContext';
 import moment from 'moment';
@@ -56,15 +56,22 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-select package if passed or set default
+  // Auto-select package only if explicitly passed via props
   useEffect(() => {
     if (initialPackage?.name) {
       setSelectedPlan(initialPackage);
-    } else if (packages && packages.length > 0 && !selectedPlan) {
-      const popular = packages.find(p => p.isPopular) || packages[0];
-      setSelectedPlan(popular);
     }
-  }, [initialPackage, packages]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialPackage]);
+
+  // Visual lock-in state when user selects a plan
+  const [lockingPlanId, setLockingPlanId] = useState(null);
+  const lockTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
+    };
+  }, []);
 
   // When authentication status changes
   useEffect(() => {
@@ -74,11 +81,24 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
   }, [isAuthenticated, step]);
 
   const handlePlanSelect = (pkg) => {
+    const pkgId = pkg._id || pkg.id;
     setSelectedPlan(pkg);
+    setLockingPlanId(pkgId);
+
+    // Provide a brief high-satisfaction moment (500ms) showing the plan is locked, then advance
+    if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
+    lockTimerRef.current = setTimeout(() => {
+      setLockingPlanId(null);
+      if (isAuthenticated) {
+        setStep(3);
+      } else {
+        setStep(2);
+      }
+    }, 550);
   };
 
   const handleNextFromPlan = () => {
-    if (!selectedPlan) return;
+    if (!selectedPlan || lockingPlanId) return;
     if (isAuthenticated) {
       setStep(3);
     } else {
@@ -98,34 +118,27 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
       setAuthError('Please provide consent for institutional record verification and library identity card generation.');
       return;
     }
-    if (!captchaData.captcha_solution) {
-      setAuthError('Please complete the security verification challenge.');
+    if (!captchaData.captcha_id || !captchaData.captcha_solution) {
+      setAuthError('Please complete the security challenge.');
       return;
     }
 
     setAuthLoading(true);
-
     try {
-      const regPayload = {
-        first_name: form.first_name.trim(),
-        last_name: form.last_name.trim(),
-        email: form.email.trim(),
-        phone_number: form.phone_number.trim(),
-        password: form.password,
-        user_type: 'Patron',
-        paid: '0',
+      const payload = {
+        ...form,
         captcha_id: captchaData.captcha_id,
         captcha_solution: captchaData.captcha_solution,
+        user_type: 'Patron',
+        paid: '0'
       };
 
-      const ok = await register(regPayload);
-      if (ok) {
+      const success = await register(payload);
+      if (success) {
         setStep(3);
-      } else {
-        setAuthError('Could not complete registration. Please check your inputs.');
       }
     } catch (err) {
-      setAuthError(err?.message || 'Registration could not be completed. Please check the information provided.');
+      setAuthError(err?.message || 'Registration failed. Please check your information.');
     } finally {
       setAuthLoading(false);
     }
@@ -136,13 +149,9 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
     setPaymentError('');
 
     if (!txnId.trim() || txnId.trim().length < 4) {
-      setPaymentError('Please enter a valid 12-digit UPI Transaction / Reference ID.');
+      setPaymentError('Please enter a valid UPI Reference ID or UTR number from your payment app.');
       return;
     }
-
-    const subtotal = Number(selectedPlan?.recurring_payment || 0);
-    const regFee = Number(selectedPlan?.registration_fee || 0);
-    const total = subtotal + regFee;
 
     setPaymentSubmitting(true);
     try {
@@ -172,41 +181,41 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
   const total = subtotal + regFee;
 
   return (
-    <div className="w-full min-h-[calc(100vh-5rem)] bg-[#FCFCFB] dark:bg-[#0E1411] py-8 sm:py-12 px-4 sm:px-6 transition-colors">
+    <div className="w-full min-h-[calc(100vh-5rem)] bg-[#F6F8FB] dark:bg-[#0B0F19] py-8 sm:py-12 px-4 sm:px-6 transition-colors">
       <div className="max-w-4xl mx-auto">
 
         {/* Stepper Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#33462C] dark:text-[#88B89C]">
-              Patron Enrollment Workflow
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Patron Enrollment
             </span>
-            <span className="text-xs font-medium text-[#7F8781]">
+            <span className="text-xs font-medium text-slate-500">
               Step {step} of 3
             </span>
           </div>
 
           {/* Step Badges */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {/* Step 1 */}
             <button
               onClick={() => setStep(1)}
-              className={`p-3 rounded-2xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
+              className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
                 step === 1
-                  ? 'bg-white dark:bg-[#16211B] border-[#33462C] dark:border-[#8FD4AE] shadow-sm'
+                  ? 'bg-white dark:bg-[#111827] border-[#004B87] dark:border-blue-500 shadow-2xs'
                   : step > 1
-                  ? 'bg-[#EFF4EC] dark:bg-[#1E2E25] border-[#DFE6DC] dark:border-[#2C4133] text-[#24341E] dark:text-[#8FD4AE]'
-                  : 'bg-white/60 dark:bg-[#121B16] border-[#DFE6DC] dark:border-[#26362D] text-[#7F8781]'
+                  ? 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100'
+                  : 'bg-white/60 dark:bg-[#111827] border-slate-200 dark:border-slate-800 text-slate-400'
               }`}
             >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step > 1 ? 'bg-[#33462C] dark:bg-[#346F4F] text-white' : step === 1 ? 'bg-[#33462C] dark:bg-[#346F4F] text-white' : 'bg-[#DFE6DC] dark:bg-[#26362D] text-[#7F8781]'
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                step > 1 ? 'bg-[#004B87] text-white' : step === 1 ? 'bg-[#004B87] text-white' : 'bg-slate-200 text-slate-600'
               }`}>
                 {step > 1 ? '✓' : '1'}
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold text-[#24341E] dark:text-white">Select Tier</p>
-                <p className="text-[10px] text-[#7F8781]">Membership plan</p>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Select Plan</p>
+                <p className="text-[10px] text-slate-500">Membership tier</p>
               </div>
             </button>
 
@@ -214,22 +223,22 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
             <button
               onClick={() => { if (selectedPlan) setStep(2); }}
               disabled={!selectedPlan}
-              className={`p-3 rounded-2xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
+              className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
                 step === 2
-                  ? 'bg-white dark:bg-[#16211B] border-[#33462C] dark:border-[#8FD4AE] shadow-sm'
+                  ? 'bg-white dark:bg-[#111827] border-[#004B87] dark:border-blue-500 shadow-2xs'
                   : step > 2
-                  ? 'bg-[#EFF4EC] dark:bg-[#1E2E25] border-[#DFE6DC] dark:border-[#2C4133] text-[#24341E] dark:text-[#8FD4AE]'
-                  : 'bg-white/60 dark:bg-[#121B16] border-[#DFE6DC] dark:border-[#26362D] text-[#7F8781]'
+                  ? 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100'
+                  : 'bg-white/60 dark:bg-[#111827] border-slate-200 dark:border-slate-800 text-slate-400'
               }`}
             >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step > 2 ? 'bg-[#33462C] dark:bg-[#346F4F] text-white' : step === 2 ? 'bg-[#33462C] dark:bg-[#346F4F] text-white' : 'bg-[#DFE6DC] dark:bg-[#26362D] text-[#7F8781]'
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                step > 2 ? 'bg-[#004B87] text-white' : step === 2 ? 'bg-[#004B87] text-white' : 'bg-slate-200 text-slate-600'
               }`}>
                 {step > 2 ? '✓' : '2'}
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold text-[#24341E] dark:text-white">Account Details</p>
-                <p className="text-[10px] text-[#7F8781]">Patron profile</p>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Account Details</p>
+                <p className="text-[10px] text-slate-500">Patron credentials</p>
               </div>
             </button>
 
@@ -237,20 +246,20 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
             <button
               onClick={() => { if (selectedPlan && isAuthenticated) setStep(3); }}
               disabled={!selectedPlan || !isAuthenticated}
-              className={`p-3 rounded-2xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
+              className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
                 step === 3
-                  ? 'bg-white dark:bg-[#16211B] border-[#33462C] dark:border-[#8FD4AE] shadow-sm'
-                  : 'bg-white/60 dark:bg-[#121B16] border-[#DFE6DC] dark:border-[#26362D] text-[#7F8781]'
+                  ? 'bg-white dark:bg-[#111827] border-[#004B87] dark:border-blue-500 shadow-2xs'
+                  : 'bg-white/60 dark:bg-[#111827] border-slate-200 dark:border-slate-800 text-slate-400'
               }`}
             >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                step === 3 ? 'bg-[#33462C] dark:bg-[#346F4F] text-white' : 'bg-[#DFE6DC] dark:bg-[#26362D] text-[#7F8781]'
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                step === 3 ? 'bg-[#004B87] text-white' : 'bg-slate-200 text-slate-600'
               }`}>
                 3
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold text-[#24341E] dark:text-white">UPI Dues</p>
-                <p className="text-[10px] text-[#7F8781]">Payment scan &amp; UTR</p>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Fee Submission</p>
+                <p className="text-[10px] text-slate-500">Scan QR and submit UTR</p>
               </div>
             </button>
           </div>
@@ -258,112 +267,185 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
 
         {/* ── STEP 1: CHOOSE MEMBERSHIP TIER ── */}
         {step === 1 && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div className="text-left">
-              <h1 className="font-serif-lib text-2xl sm:text-3xl font-bold text-[#24341E] dark:text-[#8FD4AE]">
-                Choose Your Membership Tier
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
+                Choose Your Membership Plan
               </h1>
-              <p className="text-xs sm:text-sm text-[#0B0E0A] dark:text-[#9FB1A6] mt-1">
-                Select your preferred study pass duration. All tiers include quiet carrel desk access, high-speed Wi-Fi, and reference materials.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Select your preferred study pass duration. All plans include quiet carrel desk access, high-speed Wi-Fi, and reference materials.
               </p>
             </div>
 
             {/* Tier Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {(!packages || packages.length === 0) ? (
+              <div className="w-full py-16 flex flex-col items-center justify-center gap-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-[#111827]">
+                <Loader2 size={22} className="animate-spin text-[#004B87] dark:text-blue-400" />
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Loading available membership passes…</p>
+              </div>
+            ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {(packages || []).map((pkg) => {
-                const isSelected = selectedPlan?._id === pkg._id || selectedPlan?.id === pkg.id;
+                const pkgId = pkg._id || pkg.id;
+                const isSelected = selectedPlan?._id === pkgId || selectedPlan?.id === pkgId;
+                const isLocking = lockingPlanId === pkgId;
+                const isOtherLocking = Boolean(lockingPlanId && !isLocking);
                 const pkgTotal = Number(pkg.recurring_payment || 0) + Number(pkg.registration_fee || 0);
 
                 return (
                   <div
-                    key={pkg._id || pkg.id}
-                    onClick={() => handlePlanSelect(pkg)}
-                    className={`relative rounded-2xl p-5 border cursor-pointer transition-all flex flex-col justify-between ${
-                      isSelected
-                        ? 'bg-white dark:bg-[#16211B] border-[#33462C] dark:border-[#8FD4AE] ring-2 ring-[#33462C] dark:ring-[#8FD4AE] shadow-md'
-                        : 'bg-white dark:bg-[#16211B] border-[#DFE6DC] dark:border-[#26362D] hover:border-[#33462C]/40 hover:shadow-sm'
-                    }`}
+                    key={pkgId}
+                    onClick={() => !lockingPlanId && handlePlanSelect(pkg)}
+                    className={`relative rounded-xl p-5 border cursor-pointer transition-all duration-300 flex flex-col justify-between select-none ${
+                      isLocking
+                        ? 'bg-blue-50/70 dark:bg-blue-950/40 border-2 border-[#004B87] dark:border-blue-500 ring-4 ring-[#004B87]/25 dark:ring-blue-500/30 scale-[1.02] shadow-md z-10'
+                        : isSelected
+                        ? 'bg-white dark:bg-[#111827] border-2 border-[#004B87] dark:border-blue-500 shadow-xs ring-2 ring-[#004B87]/15'
+                        : 'bg-white dark:bg-[#111827] border-slate-200 dark:border-slate-800 hover:border-[#004B87]/50 dark:hover:border-slate-700 hover:shadow-xs'
+                    } ${isOtherLocking ? 'opacity-50 scale-[0.99] pointer-events-none' : ''}`}
                   >
-                    {pkg.isPopular === 1 && (
-                      <span className="absolute -top-2.5 right-4 bg-[#33462C] dark:bg-[#346F4F] text-white text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md flex items-center gap-1 shadow-2xs">
-                        <Sparkles size={10} /> Popular
-                      </span>
-                    )}
+                    {/* Badge: Locking vs Popular vs Selected */}
+                    <div className="absolute -top-2.5 right-4 flex items-center gap-1.5">
+                      {isLocking ? (
+                        <span className="inline-flex items-center gap-1.5 bg-[#004B87] dark:bg-blue-600 text-white text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded shadow-xs animate-pulse">
+                          <CheckCircle2 size={11} className="animate-spin text-white" />
+                          <span>Locked</span>
+                        </span>
+                      ) : isSelected ? (
+                        <span className="inline-flex items-center gap-1 bg-[#004B87] dark:bg-blue-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded shadow-2xs">
+                          <CheckCircle2 size={10} />
+                          <span>Selected</span>
+                        </span>
+                      ) : pkg.isPopular === 1 ? (
+                        <span className="bg-slate-800 text-white dark:bg-slate-700 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded shadow-2xs">
+                          Recommended
+                        </span>
+                      ) : null}
+                    </div>
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="font-serif-lib text-lg font-bold text-[#24341E] dark:text-[#8FD4AE]">
-                          {pkg.name}
+                        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                          <span>{pkg.name}</span>
+                          {isSelected && !isLocking && (
+                            <CheckCircle2 size={15} className="text-[#004B87] dark:text-blue-400" />
+                          )}
                         </h3>
-                        {isSelected && <CheckCircle2 size={18} className="text-[#33462C] dark:text-[#8FD4AE]" />}
                       </div>
-                      <p className="text-xs text-[#0B0E0A] dark:text-[#9FB1A6] mt-1 line-clamp-2">
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
                         {pkg.tagline || pkg.description}
                       </p>
 
                       {/* Shift Timing Badge */}
-                      <div className="mt-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#EFF4EC] dark:bg-[#1E2E25] text-[#24341E] dark:text-[#8FD4AE] border border-[#DFE6DC] dark:border-[#2C4133] text-[11px] font-semibold w-fit">
-                        <Clock size={11} className="text-[#33462C] dark:text-[#8FD4AE] flex-shrink-0" />
+                      <div className="mt-2 flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 text-[11px] font-medium w-fit">
+                        <Clock size={11} className="flex-shrink-0" />
                         <span>{resolveTiming(pkg.timing)}</span>
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-[#DFE6DC] dark:border-[#26362D]">
+                      <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
                         <div className="flex items-baseline gap-1">
-                          <span className="font-serif-lib text-2xl font-bold text-[#24341E] dark:text-[#8FD4AE]">
+                          <span className="text-xl font-bold text-slate-900 dark:text-slate-100">
                             ₹{pkg.recurring_payment}
                           </span>
-                          <span className="text-xs text-[#7F8781]">
+                          <span className="text-xs text-slate-500">
                             / {pkg.term_months > 1 ? `${pkg.term_months} mos` : 'month'}
                           </span>
                         </div>
                         {pkg.registration_fee > 0 ? (
-                          <p className="text-[11px] text-[#7F8781] mt-0.5">
-                            + ₹{pkg.registration_fee} one-time admission fee
+                          <p className="text-[11px] text-slate-500 mt-0.5">
+                            + ₹{pkg.registration_fee} one-time registration
                           </p>
                         ) : (
-                          <p className="text-[11px] font-semibold text-[#2E6B3F] dark:text-[#6BC68F] mt-0.5">
-                            Admission fee waived (Free)
+                          <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400 mt-0.5">
+                            Registration fee waived
                           </p>
                         )}
                       </div>
 
                       {/* Feature List */}
-                      <ul className="mt-4 space-y-2 text-xs text-[#0B0E0A] dark:text-[#9FB1A6]">
+                      <ul className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                         {(pkg.features || []).slice(0, 3).map((feat, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-[#33462C] dark:text-[#8FD4AE] font-bold text-xs">✓</span>
+                          <li key={idx} className="flex items-start gap-1.5">
+                            <span className="text-[#004B87] dark:text-blue-400 font-bold text-xs">✓</span>
                             <span>{feat}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-[#DFE6DC] dark:border-[#26362D] flex items-center justify-between">
-                      <span className="text-[11px] text-[#7F8781]">Total Payable:</span>
-                      <span className="font-serif-lib text-base font-bold text-[#24341E] dark:text-[#8FD4AE]">
-                        ₹{pkgTotal}
-                      </span>
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] text-slate-500">Total Payable:</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                          ₹{pkgTotal}
+                        </span>
+                      </div>
+
+                      {/* Tactile Card Action Button */}
+                      <button
+                        type="button"
+                        disabled={Boolean(lockingPlanId)}
+                        className={`w-full py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
+                          isLocking
+                            ? 'bg-[#004B87] text-white shadow-sm ring-2 ring-[#004B87]/30'
+                            : isSelected
+                            ? 'bg-blue-50 dark:bg-blue-950/50 text-[#004B87] dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-[#004B87] hover:text-white'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#004B87] hover:text-white dark:hover:bg-blue-600 dark:hover:text-white'
+                        }`}
+                      >
+                        {isLocking ? (
+                          <>
+                            <Loader2 size={13} className="animate-spin text-white" />
+                            <span>Locked! Advancing to Step 2...</span>
+                          </>
+                        ) : isSelected ? (
+                          <>
+                            <CheckCircle2 size={13} />
+                            <span>Selected • Click to Advance</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Select & Lock Plan</span>
+                            <ArrowRight size={13} />
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
                 );
               })}
             </div>
+            )}
 
             {/* Step 1 Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-[#DFE6DC] dark:border-[#26362D]">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setPage('home')}
-                className="text-xs font-semibold text-[#33462C] dark:text-[#8FD4AE] hover:underline transition cursor-pointer"
+                className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline transition cursor-pointer"
               >
                 Cancel and return to home
               </button>
               <button
                 onClick={handleNextFromPlan}
-                disabled={!selectedPlan}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#33462C] hover:bg-[#24341E] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white text-xs font-semibold shadow-sm transition disabled:opacity-50 cursor-pointer active:scale-95"
+                disabled={!selectedPlan || Boolean(lockingPlanId)}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold shadow-2xs transition disabled:opacity-40 cursor-pointer"
               >
-                <span>Continue to Step 2</span>
-                <ArrowRight size={14} />
+                {lockingPlanId ? (
+                  <>
+                    <Loader2 size={13} className="animate-spin text-white" />
+                    <span>Advancing…</span>
+                  </>
+                ) : selectedPlan ? (
+                  <>
+                    <span>Continue with {selectedPlan.name}</span>
+                    <ArrowRight size={13} />
+                  </>
+                ) : (
+                  <>
+                    <span>Select a Plan to Continue</span>
+                    <ArrowRight size={13} />
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -371,88 +453,88 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
 
         {/* ── STEP 2: PATRON PROFILE & KYC ── */}
         {step === 2 && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-serif-lib text-2xl sm:text-3xl font-bold text-[#24341E] dark:text-[#8FD4AE]">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
                   Patron Account Details
                 </h1>
-                <p className="text-xs sm:text-sm text-[#0B0E0A] dark:text-[#9FB1A6] mt-1">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Create your library membership credentials. Selected tier: <strong>{selectedPlan?.name}</strong>.
                 </p>
               </div>
               <button
                 onClick={() => setStep(1)}
-                className="text-xs font-semibold text-[#33462C] dark:text-[#8FD4AE] hover:underline transition flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline transition flex items-center gap-1 cursor-pointer"
               >
-                <ArrowLeft size={13} /> Change Tier
+                <ArrowLeft size={12} /> Change Plan
               </button>
             </div>
 
             {/* If user is already authenticated */}
             {isAuthenticated ? (
-              <div className="bg-white dark:bg-[#16211B] border border-[#DFE6DC] dark:border-[#26362D] rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#EFF4EC] dark:bg-[#1E2E25] text-[#33462C] dark:text-[#8FD4AE] flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-[#004B87] dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                     ✓
                   </div>
                   <div>
-                    <p className="font-serif-lib text-base font-bold text-[#24341E] dark:text-[#8FD4AE]">
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
                       Signed in as {user?.first_name} {user?.last_name}
                     </p>
-                    <p className="text-xs text-[#0B0E0A] dark:text-[#9FB1A6]">{user?.email}</p>
+                    <p className="text-xs text-slate-500">{user?.email}</p>
                   </div>
                 </div>
-                <div className="pt-4 border-t border-[#DFE6DC] dark:border-[#26362D] flex justify-end">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                   <button
                     onClick={() => setStep(3)}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#33462C] hover:bg-[#24341E] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white text-xs font-semibold shadow-sm transition cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold shadow-2xs transition cursor-pointer"
                   >
-                    <span>Proceed to UPI Payment</span>
-                    <ArrowRight size={14} />
+                    <span>Proceed to Payment</span>
+                    <ArrowRight size={13} />
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="bg-white dark:bg-[#16211B] border border-[#DFE6DC] dark:border-[#26362D] rounded-2xl p-6 sm:p-8 shadow-sm">
+              <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-2xs">
                 {authError && (
-                  <div className="mb-5 p-3 rounded-xl bg-[#FAF0F0] dark:bg-[#281616] border border-[#F0D5D5] dark:border-[#4B1E1E] text-[#A83232] dark:text-[#F87171] text-xs flex items-center gap-2">
-                    <AlertCircle size={15} />
+                  <div className="mb-4 p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2">
+                    <AlertCircle size={14} />
                     <span>{authError}</span>
                   </div>
                 )}
 
-                <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                   {/* Name Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-[#24341E] dark:text-[#E5EBE7] mb-1">
+                      <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                         First Name *
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
-                          <User size={15} />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                          <User size={14} />
                         </div>
                         <input
                           type="text"
                           required
-                          placeholder="e.g. Owais"
+                          placeholder="e.g. Zubair"
                           value={form.first_name}
                           onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-                          className="w-full pl-9 pr-3 py-2.5 bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#2C3E32] rounded-xl text-xs text-[#0B0E0A] dark:text-[#E8EFEA] focus:bg-white dark:focus:bg-[#16211B] focus:border-[#33462C] dark:focus:border-[#8FD4AE] transition"
+                          className="w-full pl-8 pr-3 py-2 bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#24341E] dark:text-[#E5EBE7] mb-1">
+                      <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                         Last Name
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Rafiq"
+                        placeholder="e.g. Peerzada"
                         value={form.last_name}
                         onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-                        className="w-full px-3 py-2.5 bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#2C3E32] rounded-xl text-xs text-[#0B0E0A] dark:text-[#E8EFEA] focus:bg-white dark:focus:bg-[#16211B] focus:border-[#33462C] dark:focus:border-[#8FD4AE] transition"
+                        className="w-full px-3 py-2 bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
                       />
                     </div>
                   </div>
@@ -460,12 +542,12 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
                   {/* Contact Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-[#24341E] dark:text-[#E5EBE7] mb-1">
+                      <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                         Email Address *
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
-                          <Mail size={15} />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                          <Mail size={14} />
                         </div>
                         <input
                           type="email"
@@ -473,17 +555,17 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
                           placeholder="name@example.com"
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
-                          className="w-full pl-9 pr-3 py-2.5 bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#2C3E32] rounded-xl text-xs text-[#0B0E0A] dark:text-[#E8EFEA] focus:bg-white dark:focus:bg-[#16211B] focus:border-[#33462C] dark:focus:border-[#8FD4AE] transition"
+                          className="w-full pl-8 pr-3 py-2 bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#24341E] dark:text-[#E5EBE7] mb-1">
+                      <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                         Mobile Number *
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
-                          <Phone size={15} />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                          <Phone size={14} />
                         </div>
                         <input
                           type="tel"
@@ -491,7 +573,7 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
                           placeholder="e.g. 9906000000"
                           value={form.phone_number}
                           onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
-                          className="w-full pl-9 pr-3 py-2.5 bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#2C3E32] rounded-xl text-xs text-[#0B0E0A] dark:text-[#E8EFEA] focus:bg-white dark:focus:bg-[#16211B] focus:border-[#33462C] dark:focus:border-[#8FD4AE] transition"
+                          className="w-full pl-8 pr-3 py-2 bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
                         />
                       </div>
                     </div>
@@ -499,96 +581,93 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
 
                   {/* Password */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#24341E] dark:text-[#E5EBE7] mb-1">
-                      Choose Password *
+                    <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
+                      Create Password *
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
-                        <Lock size={15} />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <Lock size={14} />
                       </div>
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
-                        placeholder="Create strong account password"
+                        placeholder="Create account password"
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
-                        className="w-full pl-9 pr-10 py-2.5 bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#2C3E32] rounded-xl text-xs text-[#0B0E0A] dark:text-[#E8EFEA] focus:bg-white dark:focus:bg-[#16211B] focus:border-[#33462C] dark:focus:border-[#8FD4AE] transition"
+                        className="w-full pl-8 pr-9 py-2 bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#7F8781] cursor-pointer"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 cursor-pointer"
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
-                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                        {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                       </button>
                     </div>
-                    <p className="text-[11px] text-[#7F8781] mt-1">
-                      Must contain at least 8 characters with uppercase, lowercase, number, and special symbol.
-                    </p>
                   </div>
 
-                  {/* Security Challenge (CAPTCHA) */}
+                  {/* CAPTCHA */}
                   <CaptchaField
                     onChange={setCaptchaData}
                     disabled={authLoading}
                   />
 
-                  {/* Explicit Unbundled Privacy & Terms Consent */}
-                  <div className="pt-2 space-y-2.5 border-t border-[#DFE6DC] dark:border-[#26362D]">
-                    <div className="flex items-start gap-2.5">
+                  {/* Explicit Consent */}
+                  <div className="pt-2 space-y-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-start gap-2">
                       <input
                         id="consent-terms"
                         type="checkbox"
                         required
                         checked={consentTerms}
                         onChange={(e) => setConsentTerms(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 rounded border-[#DFE6DC] text-[#33462C] focus:ring-[#33462C] cursor-pointer"
+                        className="mt-0.5 rounded border-slate-300 text-[#004B87] focus:ring-[#004B87] cursor-pointer"
                       />
-                      <label htmlFor="consent-terms" className="text-xs text-[#0B0E0A] dark:text-[#CAD6CF] leading-relaxed cursor-pointer">
+                      <label htmlFor="consent-terms" className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed cursor-pointer">
                         I have read and agree to the{' '}
-                        <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#33462C] dark:text-[#8FD4AE] font-semibold underline">
+                        <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#004B87] dark:text-blue-400 font-semibold underline">
                           Terms of Use
                         </a>{' '}
                         and{' '}
-                        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#33462C] dark:text-[#8FD4AE] font-semibold underline">
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#004B87] dark:text-blue-400 font-semibold underline">
                           Privacy Policy
                         </a>.
                       </label>
                     </div>
 
-                    <div className="flex items-start gap-2.5">
+                    <div className="flex items-start gap-2">
                       <input
                         id="consent-data"
                         type="checkbox"
                         required
                         checked={consentData}
                         onChange={(e) => setConsentData(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 rounded border-[#DFE6DC] text-[#33462C] focus:ring-[#33462C] cursor-pointer"
+                        className="mt-0.5 rounded border-slate-300 text-[#004B87] focus:ring-[#004B87] cursor-pointer"
                       />
-                      <label htmlFor="consent-data" className="text-xs text-[#0B0E0A] dark:text-[#CAD6CF] leading-relaxed cursor-pointer">
-                        I consent to the collection and institutional verification of my personal admission details for library attendance records and digital identity card issuance.
+                      <label htmlFor="consent-data" className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed cursor-pointer">
+                        I consent to the collection of my details for library attendance records and digital identity card issuance.
                       </label>
                     </div>
                   </div>
 
                   {/* Submit Button */}
-                  <div className="pt-4 border-t border-[#DFE6DC] dark:border-[#26362D] flex items-center justify-between">
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="text-xs font-semibold text-[#33462C] dark:text-[#8FD4AE] hover:underline transition cursor-pointer"
+                      className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline transition cursor-pointer"
                     >
-                      Back to Tiers
+                      Back to Plans
                     </button>
                     <button
                       type="submit"
                       disabled={authLoading}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#33462C] hover:bg-[#24341E] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white text-xs font-semibold shadow-sm transition disabled:opacity-50 cursor-pointer active:scale-95"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50 cursor-pointer"
                     >
-                      {authLoading && <Loader2 size={14} className="animate-spin" />}
-                      <span>Create Account &amp; Proceed to Payment</span>
-                      <ArrowRight size={14} />
+                      {authLoading && <Loader2 size={13} className="animate-spin" />}
+                      <span>Create Account and Proceed to Payment</span>
+                      <ArrowRight size={13} />
                     </button>
                   </div>
                 </form>
@@ -599,101 +678,101 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
 
         {/* ── STEP 3: OFFICIAL UPI QR & UTR SUBMISSION ── */}
         {step === 3 && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-serif-lib text-2xl sm:text-3xl font-bold text-[#24341E] dark:text-[#8FD4AE]">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
                   Submit Membership Dues
                 </h1>
-                <p className="text-xs sm:text-sm text-[#0B0E0A] dark:text-[#9FB1A6] mt-1">
-                  Pay directly via official UPI QR code and submit your reference ID for library ledger verification.
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Scan the official UPI QR code and submit your 12-digit transaction reference for verification.
                 </p>
               </div>
               <button
                 onClick={() => setStep(1)}
-                className="text-xs font-semibold text-[#33462C] dark:text-[#8FD4AE] hover:underline transition flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline transition flex items-center gap-1 cursor-pointer"
               >
-                <ArrowLeft size={13} /> Change Plan
+                <ArrowLeft size={12} /> Change Plan
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               {/* Left Column: QR Code + Input Form */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white dark:bg-[#16211B] border border-[#DFE6DC] dark:border-[#26362D] rounded-2xl p-6 shadow-sm space-y-6">
-                  <div className="flex items-center gap-2 border-b border-[#DFE6DC] dark:border-[#26362D] pb-3">
-                    <QrCode size={18} className="text-[#33462C] dark:text-[#8FD4AE]" />
-                    <h3 className="font-serif-lib text-base font-bold text-[#24341E] dark:text-[#8FD4AE]">
-                      Official Library UPI QR
+              <div className="lg:col-span-2 space-y-4">
+                <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4">
+                  <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                    <QrCode size={16} className="text-[#004B87] dark:text-blue-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Official Library Payment QR
                     </h3>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
+                  <div className="flex flex-col sm:flex-row items-center gap-5 justify-center">
                     {/* QR Box */}
-                    <div className="bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#26362D] p-3 rounded-2xl shadow-sm text-center">
+                    <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 p-2.5 rounded-xl shadow-2xs text-center">
                       <img
                         src="/assets/paymentqr.jpeg"
-                        alt="Official UPI QR Code"
-                        className="w-44 h-44 object-contain rounded-xl"
+                        alt="UPI QR Code"
+                        className="w-40 h-40 object-contain rounded-lg"
                       />
-                      <div className="mt-2.5 pt-2 border-t border-[#DFE6DC] dark:border-[#26362D]">
-                        <p className="text-xs font-semibold text-[#24341E] dark:text-white">OWAIS RAFIQ</p>
-                        <p className="text-[10px] text-[#33462C] dark:text-[#88B89C]">Library Accounts Coordinator</p>
+                      <div className="mt-2 pt-1.5 border-t border-slate-200 dark:border-slate-700">
+                        <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">OWAIS RAFIQ</p>
+                        <p className="text-[10px] text-slate-500">Accounts Coordinator</p>
                       </div>
                     </div>
 
                     {/* Step-by-Step Instructions */}
-                    <div className="space-y-3 text-xs text-[#0B0E0A] dark:text-[#9FB1A6] max-w-sm">
-                      <p className="font-semibold text-[#24341E] dark:text-white">How to complete payment:</p>
-                      <ol className="list-decimal pl-4 space-y-1.5 leading-relaxed">
-                        <li>Open <strong>Google Pay, PhonePe, Paytm</strong>, or any UPI app.</li>
+                    <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400 max-w-sm">
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">Payment Steps:</p>
+                      <ol className="list-decimal pl-4 space-y-1 leading-relaxed">
+                        <li>Open any UPI application (GPay, PhonePe, Paytm).</li>
                         <li>Scan the QR code and pay exactly <strong>₹{total}</strong>.</li>
-                        <li>Copy the 12-digit <strong>UPI Reference ID / Transaction ID</strong> from your receipt.</li>
-                        <li>Paste the ID below and click Submit to confirm your admission.</li>
+                        <li>Copy the 12-digit <strong>UPI Reference / UTR Number</strong> from your receipt.</li>
+                        <li>Paste the number below and submit.</li>
                       </ol>
                     </div>
                   </div>
 
                   {/* Form */}
-                  <form onSubmit={handlePaymentSubmit} className="pt-2 border-t border-[#DFE6DC] dark:border-[#26362D] space-y-4">
+                  <form onSubmit={handlePaymentSubmit} className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3.5">
                     {paymentError && (
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-[#FAF0F0] dark:bg-[#281616] border border-[#F0D5D5] dark:border-[#4B1E1E] text-[#A83232] dark:text-[#F87171] text-xs">
-                        <AlertCircle size={15} />
+                      <div className="flex items-center gap-2 p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs">
+                        <AlertCircle size={14} />
                         <span>{paymentError}</span>
                       </div>
                     )}
 
                     <div>
-                      <label htmlFor="txnId" className="block text-xs font-semibold text-[#24341E] dark:text-[#E5EBE7] mb-1.5">
+                      <label htmlFor="txnId" className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-1">
                         UPI Transaction / Reference ID (12 digits) *
                       </label>
                       <input
                         id="txnId"
                         type="text"
                         required
-                        placeholder="e.g. 430129482190 or UPI-Ref-ID"
+                        placeholder="e.g. 430129482190"
                         value={txnId}
                         onChange={(e) => setTxnId(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-[#FCFCFB] dark:bg-[#121B16] border border-[#DFE6DC] dark:border-[#2C3E32] rounded-xl text-xs font-mono text-[#0B0E0A] dark:text-[#E8EFEA] focus:bg-white dark:focus:bg-[#16211B] focus:border-[#33462C] dark:focus:border-[#8FD4AE] transition"
+                        className="w-full px-3 py-2 bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
                       />
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center justify-between pt-1">
                       <button
                         type="button"
                         onClick={() => setStep(2)}
-                        className="text-xs font-semibold text-[#33462C] dark:text-[#8FD4AE] hover:underline transition cursor-pointer"
+                        className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline transition cursor-pointer"
                       >
                         Back to Profile
                       </button>
                       <button
                         type="submit"
                         disabled={paymentSubmitting}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#33462C] hover:bg-[#24341E] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white text-xs font-semibold shadow-sm transition disabled:opacity-50 cursor-pointer active:scale-95"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50 cursor-pointer"
                       >
-                        {paymentSubmitting && <Loader2 size={14} className="animate-spin" />}
-                        <span>Complete &amp; Submit Dues</span>
-                        <ArrowRight size={14} />
+                        {paymentSubmitting && <Loader2 size={13} className="animate-spin" />}
+                        <span>Submit Payment Reference</span>
+                        <ArrowRight size={13} />
                       </button>
                     </div>
                   </form>
@@ -701,44 +780,44 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
               </div>
 
               {/* Right Column: Order Summary */}
-              <div className="space-y-4">
-                <div className="bg-white dark:bg-[#16211B] border border-[#DFE6DC] dark:border-[#26362D] rounded-2xl p-5 shadow-sm space-y-4">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-[#33462C] dark:text-[#88B89C]">
-                    Enrollment Summary
+              <div className="space-y-3.5">
+                <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                    Summary
                   </span>
                   <div>
-                    <h3 className="font-serif-lib text-lg font-bold text-[#24341E] dark:text-[#8FD4AE]">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
                       {selectedPlan?.name || 'Membership Pass'}
                     </h3>
-                    <p className="text-xs text-[#0B0E0A] dark:text-[#9FB1A6] mt-1">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {selectedPlan?.term_months || 1} Month Access
                     </p>
-                    <div className="mt-2 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#EFF4EC] dark:bg-[#1E2E25] text-[#24341E] dark:text-[#8FD4AE] text-[11px] font-semibold w-fit">
-                      <Clock size={11} className="text-[#33462C] dark:text-[#8FD4AE]" />
+                    <div className="mt-1.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-400 text-[11px] font-medium w-fit">
+                      <Clock size={11} />
                       <span>{resolveTiming(selectedPlan?.timing)}</span>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#DFE6DC] dark:border-[#26362D] space-y-2 text-xs">
-                    <div className="flex justify-between text-[#0B0E0A] dark:text-[#9FB1A6]">
-                      <span>Recurring Fee</span>
+                  <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 space-y-1.5 text-xs">
+                    <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                      <span>Subscription Fee</span>
                       <span>₹{subtotal}</span>
                     </div>
-                    <div className="flex justify-between text-[#0B0E0A] dark:text-[#9FB1A6]">
-                      <span>Registration / Admission</span>
+                    <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                      <span>Registration</span>
                       <span>{regFee > 0 ? `₹${regFee}` : 'Waived (Free)'}</span>
                     </div>
-                    <div className="pt-2 border-t border-[#DFE6DC] dark:border-[#26362D] flex justify-between font-bold text-sm text-[#24341E] dark:text-white">
+                    <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800 flex justify-between font-bold text-xs text-slate-900 dark:text-slate-100">
                       <span>Total Payable</span>
-                      <span className="font-serif-lib text-base text-[#33462C] dark:text-[#8FD4AE]">₹{total}</span>
+                      <span className="text-[#004B87] dark:text-blue-400">₹{total}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#EFF4EC] dark:bg-[#1E2E25] border border-[#DFE6DC] dark:border-[#2C4133] text-xs text-[#24341E] dark:text-[#8FD4AE] flex items-start gap-2.5">
-                  <ShieldCheck size={18} className="text-[#33462C] dark:text-[#8FD4AE] flex-shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2">
+                  <ShieldCheck size={16} className="text-[#004B87] dark:text-blue-400 flex-shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
-                    Official admission receipts are issued upon desk ledger reconciliation.
+                    Official payment receipts are generated upon coordinator review.
                   </p>
                 </div>
               </div>

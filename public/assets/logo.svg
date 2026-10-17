@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" width="100%" height="100%" fill="none">
+  <!-- Definitions for gradients and styling -->
+  <defs>
+    <!-- Warm Golden Light Gradient -->
+    <radialGradient id="candleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFDE7A" />
+      <stop offset="70%" stop-color="#F6C453" />
+      <stop offset="100%" stop-color="#EDB338" />
+    </radialGradient>
+    
+    <!-- Institutional Primary Shade -->
+    <linearGradient id="inkDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#282A36" />
+      <stop offset="100%" stop-color="#1E202B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Crest Container (Center 200, 185) -->
+  <g id="crest">
+    <!-- Outer Concentric Circle -->
+    <circle cx="200" cy="180" r="122" stroke="#2B2D38" stroke-width="4.2" stroke-miterlimit="10" />
+    
+    <!-- Inner Concentric Circle -->
+    <circle cx="200" cy="180" r="113" stroke="#2B2D38" stroke-width="2.5" stroke-miterlimit="10" />
+
+    <!-- Candle Glow (The "Nur" / Divine Radiance) -->
+    <circle cx="200" cy="165" r="44" fill="url(#candleGlow)" />
+
+    <!-- Candle Body & Wax Drips -->
+    <!-- Candle Left Outline -->
+    <path d="M 183 162 L 183 218" stroke="#2B2D38" stroke-width="4.2" stroke-linecap="round" />
+    
+    <!-- Candle Right Outline with Natural Wax Drip -->
+    <path d="M 217 162 
+             L 217 178 
+             C 217 186 211 192 205 192 
+             C 200 192 196 187 196 182 
+             C 196 177 192 173 188 173
+             M 205 192 
+             L 205 218 
+             M 217 188 
+             L 217 218" 
+          stroke="#2B2D38" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Candle Top Rim -->
+    <ellipse cx="200" cy="162" rx="17" ry="4.5" stroke="#2B2D38" stroke-width="3.6" fill="#FFFFFF" />
+
+    <!-- Flame Wick -->
+    <path d="M 200 158 Q 199 150 200 144" stroke="#2B2D38" stroke-width="3.2" stroke-linecap="round" />
+
+    <!-- Flame Outline & Inner Heart -->
+    <path d="M 200 144 
+             C 190 136 188 122 196 110 
+             C 199 105 200 95 200 95 
+             C 200 95 201 105 204 110 
+             C 212 122 210 136 200 144 Z" 
+          stroke="#2B2D38" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="#FFFFFF" fill-opacity="0.3" />
+
+    <!-- Open Book Pages (Symmetrical Fanned Stacks) -->
+    <!-- Top Left Arched Wing -->
+    <path d="M 197 222 
+             C 165 207 140 196 122 195 
+             C 127 202 133 211 138 217 
+             C 156 216 176 224 195 233 Z" 
+          fill="url(#inkDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Top Right Arched Wing -->
+    <path d="M 203 222 
+             C 235 207 260 196 278 195 
+             C 273 202 267 211 262 217 
+             C 244 216 224 224 205 233 Z" 
+          fill="url(#inkDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Middle Left Arched Wing -->
+    <path d="M 196 232 
+             C 160 219 130 211 102 214 
+             C 107 222 112 230 119 237 
+             C 144 231 168 238 194 246 Z" 
+          fill="url(#inkDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Middle Right Arched Wing -->
+    <path d="M 204 232 
+             C 240 219 270 211 298 214 
+             C 293 222 288 230 281 237 
+             C 256 231 232 238 206 246 Z" 
+          fill="url(#inkDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Bottom Broad Left Wing (Breaks Crest Base) -->
+    <path d="M 197 244 
+             C 152 232 118 229 80 240 
+             C 86 248 94 257 101 262 
+             C 134 247 167 248 198 256 Z" 
+          fill="url(#inkDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Bottom Broad Right Wing (Breaks Crest Base) -->
+    <path d="M 203 244 
+             C 248 232 282 229 320 240 
+             C 314 248 306 257 299 262 
+             C 266 247 233 248 202 256 Z" 
+          fill="url(#inkDark)" stroke="#2B2D38" stroke-width="1.5" stroke-linejoin="round" />
+
+    <!-- Central Spine Valley Notch -->
+    <polygon points="196,220 200,227 204,220 200,215" fill="#2B2D38" />
+  </g>
+
+  <!-- Institutional Typography Below Emblem -->
+  <!-- Primary Title -->
+  <text x="200" y="365" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Segoe UI', Roboto, sans-serif" 
+        font-size="34" 
+        font-weight="800" 
+        letter-spacing="-0.5" 
+        fill="#2B2D38">
+    Nurul Ilm Library
+  </text>
+
+  <!-- Tagline / Motto -->
+  <text x="200" y="398" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Segoe UI', Roboto, sans-serif" 
+        font-size="16" 
+        font-weight="500" 
+        letter-spacing="0.2" 
+        fill="#5A606E">
+    Illuminate your path with knowledge
+  </text>
+</svg>

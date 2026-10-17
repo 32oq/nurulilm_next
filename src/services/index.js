@@ -7,3 +7,4 @@ export { default as paymentService } from './paymentService';
 export { default as sprintService } from './sprintService';
 export { default as communityService } from './communityService';
 export { default as adminService } from './adminService';
+export { gameService } from './gameService';

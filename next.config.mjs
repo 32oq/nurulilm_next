@@ -20,6 +20,10 @@ const nextConfig = {
         destination: `${backendUrl}/payments/:path*`,
       },
       {
+        source: '/game/:path*',
+        destination: `${backendUrl}/game/:path*`,
+      },
+      {
         source: '/uploads/:path*',
         destination: `${backendUrl}/uploads/:path*`,
       },

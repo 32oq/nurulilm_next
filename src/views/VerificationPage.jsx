@@ -112,33 +112,33 @@ const VerificationPage = ({ setPage, onSuccess }) => {
 
   return (
     <div className="w-full flex items-center justify-center p-0">
-      <div className="max-w-lg w-full bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl p-6 sm:p-8 shadow-xs">
+      <div className="max-w-lg w-full bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-6 sm:p-8 shadow-xs">
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] mx-auto flex items-center justify-center mb-2.5">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#004B87] dark:text-blue-400 mx-auto flex items-center justify-center mb-2.5">
             <ShieldCheck size={24} strokeWidth={2} />
           </div>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6D8374] dark:text-[#8CA093]">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Mandatory Patron Compliance
           </span>
-          <h2 className="font-serif-lib text-2xl font-bold text-[#1C3A2B] dark:text-[#FAF8F5] mt-0.5">
+          <h2 className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white mt-0.5">
             Scholar Identity &amp; Photo Verification
           </h2>
-          <p className="text-xs text-[#5D645E] dark:text-[#9FB1A6] mt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
             Upload your verified portrait photo and official Aadhaar credentials to activate your digital library card and carrel seat reservation.
           </p>
         </div>
 
         {successMessage && (
-          <div className="mb-4 bg-[#EDF8F2] dark:bg-[#142A1D] text-[#138A5B] dark:text-[#8FD4AE] border border-[#138A5B]/30 p-3 rounded-xl text-xs text-center font-semibold flex items-center justify-center gap-2">
+          <div className="mb-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 p-3 rounded-lg text-xs text-center font-medium flex items-center justify-center gap-2">
             <CheckCircle2 size={16} />
             <span>{successMessage}</span>
           </div>
         )}
 
         {(error || photoError) && (
-          <div className="mb-4 bg-[#FAF0F0] dark:bg-[#3D1A1A] text-[#A83232] dark:text-[#FCA5A5] border border-[#F0D5D5] dark:border-[#5C2A2A] p-2.5 rounded-xl text-xs text-center font-medium flex items-center justify-center gap-1.5">
+          <div className="mb-4 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 p-2.5 rounded-lg text-xs text-center font-medium flex items-center justify-center gap-1.5">
             <AlertCircle size={15} />
             <span>{photoError || error}</span>
           </div>
@@ -147,19 +147,19 @@ const VerificationPage = ({ setPage, onSuccess }) => {
         <form className="space-y-4" onSubmit={handleSubmit}>
 
           {/* ── MANDATORY PROFILE PHOTO UPLOAD ── */}
-          <div className="p-4 rounded-xl border border-dashed border-[#D9D3C7] dark:border-[#26362D] bg-[#FAF8F5] dark:bg-[#111A14]">
+          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50">
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5]">
+              <label className="block text-xs font-semibold text-slate-900 dark:text-white">
                 Official Portrait Photo (Mandatory) *
               </label>
-              <span className="text-[10px] text-[#6D8374] dark:text-[#8CA093]">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
                 JPEG, PNG, WebP • Max 2MB
               </span>
             </div>
 
             {photoPreview || user?.profile_photo ? (
               <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#1C3A2B] dark:border-[#8FD4AE] shadow-xs flex-shrink-0 bg-white">
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-[#004B87] dark:border-blue-500 shadow-xs flex-shrink-0 bg-white">
                   <img
                     src={photoPreview || user?.profile_photo}
                     alt="Patron portrait preview"
@@ -167,25 +167,25 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <p className="text-xs font-semibold text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center gap-1">
+                  <p className="text-xs font-semibold text-[#004B87] dark:text-blue-400 flex items-center gap-1">
                     <CheckCircle2 size={13} /> Photo Verified Ready
                   </p>
-                  <p className="text-[11px] text-[#5D645E] dark:text-[#9FB1A6]">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     This photo will be printed on your digital library card.
                   </p>
                   <div className="flex items-center gap-2 pt-1">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-xs font-semibold text-[#1C3A2B] dark:text-[#8FD4AE] hover:underline cursor-pointer"
+                      className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline cursor-pointer"
                     >
                       Change Photo
                     </button>
-                    <span className="text-[#8A928C]">•</span>
+                    <span className="text-slate-300 dark:text-slate-600">•</span>
                     <button
                       type="button"
                       onClick={handleRemovePhoto}
-                      className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline cursor-pointer"
+                      className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
                     >
                       Remove
                     </button>
@@ -197,16 +197,16 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onClick={() => fileInputRef.current?.click()}
-                className="py-5 px-4 text-center rounded-xl border border-dashed border-[#CCD5CE] dark:border-[#23352A] bg-white dark:bg-[#16211B] hover:bg-[#F2F6F3] dark:hover:bg-[#1B2A20] transition cursor-pointer flex flex-col items-center justify-center space-y-1.5"
+                className="py-5 px-4 text-center rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition cursor-pointer flex flex-col items-center justify-center space-y-1.5"
               >
-                <div className="w-9 h-9 rounded-full bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-[#004B87] dark:text-blue-400 flex items-center justify-center">
                   <Camera size={18} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#1C1E1B] dark:text-white">
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                     Click to browse or drag &amp; drop portrait photo
                   </p>
-                  <p className="text-[10px] text-[#6D8374] dark:text-[#8CA093] mt-0.5">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
                     Clear face photo on neutral background required
                   </p>
                 </div>
@@ -224,11 +224,11 @@ const VerificationPage = ({ setPage, onSuccess }) => {
 
           {/* Full Name */}
           <div>
-            <label htmlFor="full_name" className="block text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] mb-1">
+            <label htmlFor="full_name" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Full Name (as on Aadhaar) *
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                 <User size={15} />
               </div>
               <input
@@ -239,18 +239,18 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                 value={form.full_name}
                 onChange={handleChange}
                 required
-                className="w-full pl-9 pr-3 py-2 bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C] focus:border-[#1C3A2B] transition"
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#004B87] dark:focus:ring-blue-500 focus:border-[#004B87] dark:focus:border-blue-500 transition"
               />
             </div>
           </div>
 
           {/* Father's Name */}
           <div>
-            <label htmlFor="father_name" className="block text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] mb-1">
+            <label htmlFor="father_name" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Father's / Guardian's Name *
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                 <User size={15} />
               </div>
               <input
@@ -261,18 +261,18 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                 value={form.father_name}
                 onChange={handleChange}
                 required
-                className="w-full pl-9 pr-3 py-2 bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C] focus:border-[#1C3A2B] transition"
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#004B87] dark:focus:ring-blue-500 focus:border-[#004B87] dark:focus:border-blue-500 transition"
               />
             </div>
           </div>
 
           {/* Aadhaar ID */}
           <div>
-            <label htmlFor="aadhaar_id" className="block text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] mb-1">
+            <label htmlFor="aadhaar_id" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Aadhaar Card Number (12 digits) *
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                 <FileCheck size={15} />
               </div>
               <input
@@ -285,7 +285,7 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                 maxLength={12}
                 pattern="[0-9]{12}"
                 required
-                className="w-full pl-9 pr-3 py-2 bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C] focus:border-[#1C3A2B] transition font-mono"
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#004B87] dark:focus:ring-blue-500 focus:border-[#004B87] dark:focus:border-blue-500 transition font-mono"
               />
             </div>
           </div>
@@ -293,11 +293,11 @@ const VerificationPage = ({ setPage, onSuccess }) => {
           {/* Police Station & City Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="police_station" className="block text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] mb-1">
+              <label htmlFor="police_station" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Police Station *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                   <Building size={14} />
                 </div>
                 <input
@@ -308,17 +308,17 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                   value={form.police_station}
                   onChange={handleChange}
                   required
-                  className="w-full pl-8 pr-2.5 py-2 bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C] focus:border-[#1C3A2B] transition"
+                  className="w-full pl-8 pr-2.5 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#004B87] dark:focus:ring-blue-500 focus:border-[#004B87] dark:focus:border-blue-500 transition"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="city" className="block text-xs font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] mb-1">
+              <label htmlFor="city" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 City / Town *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#7F8781]">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                   <MapPin size={14} />
                 </div>
                 <input
@@ -329,15 +329,15 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                   value={form.city}
                   onChange={handleChange}
                   required
-                  className="w-full pl-8 pr-2.5 py-2 bg-[#FAF8F5] dark:bg-[#111A14] border border-[#D9D3C7] dark:border-[#26362D] rounded-xl text-xs text-[#1C1E1B] dark:text-white placeholder-[#8A928C] focus:border-[#1C3A2B] transition"
+                  className="w-full pl-8 pr-2.5 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#004B87] dark:focus:ring-blue-500 focus:border-[#004B87] dark:focus:border-blue-500 transition"
                 />
               </div>
             </div>
           </div>
 
           {/* Explicit Informed Consent */}
-          <div className="pt-2 border-t border-[#E5DFD5] dark:border-[#26362D] space-y-2">
-            <label className="flex items-start gap-2.5 text-xs text-[#5D645E] dark:text-[#9FB1A6] cursor-pointer">
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+            <label className="flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
               <input
                 id="kyc-consent-box"
                 type="checkbox"
@@ -345,15 +345,15 @@ const VerificationPage = ({ setPage, onSuccess }) => {
                 checked={form.consent === 1}
                 onChange={handleChange}
                 required
-                className="mt-0.5 rounded border-[#D9D3C7] text-[#1C3A2B] focus:ring-[#1C3A2B] cursor-pointer"
+                className="mt-0.5 rounded border-slate-300 dark:border-slate-700 text-[#004B87] focus:ring-[#004B87] cursor-pointer"
               />
               <span className="leading-relaxed">
                 I affirm that my submitted identity details and photograph are authentic. I consent to their institutional use for library identity card generation, attendance security, and regulatory verification under the{' '}
-                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#1C3A2B] dark:text-[#8FD4AE] font-semibold underline">
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#004B87] dark:text-blue-400 font-semibold underline">
                   Privacy Policy
                 </a>{' '}
                 and{' '}
-                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#1C3A2B] dark:text-[#8FD4AE] font-semibold underline">
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#004B87] dark:text-blue-400 font-semibold underline">
                   Terms of Use
                 </a>.
               </span>
@@ -364,7 +364,7 @@ const VerificationPage = ({ setPage, onSuccess }) => {
           <button
             disabled={loading || !form.consent || (!photoBase64 && !user?.profile_photo)}
             type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-[#1C3A2B] hover:bg-[#142C20] dark:bg-[#2A4D3B] dark:hover:bg-[#37614B] text-white font-semibold py-2.5 rounded-xl transition disabled:opacity-50 text-xs shadow-xs mt-3 cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 bg-[#004B87] hover:bg-[#003865] text-white font-semibold py-2.5 rounded-lg transition disabled:opacity-50 text-xs shadow-xs mt-3 cursor-pointer"
           >
             {loading ? (
               <>

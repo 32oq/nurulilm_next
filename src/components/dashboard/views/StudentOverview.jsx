@@ -2,34 +2,34 @@
 
 import { useState, useEffect } from "react";
 import moment from "moment";
-import axios from "axios";
 import {
   DollarSign, User, ShieldCheck, ShieldAlert,
   BookMarked, BookOpen, AlertTriangle, Clock,
   CreditCard, Loader2, CalendarDays, ArrowRight,
-  Timer, Play, Pin, Send, QrCode, MapPin, Sparkles
+  Timer, Play, Pin, Send, QrCode, MapPin, Brain
 } from "lucide-react";
-import { useAuth, getMemoryToken } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useOther } from "../../../context/OtherContext";
-import { getApiBase } from "../../../config/api";
 import StudyFocusTimer from "../../StudyFocusTimer";
 import DigitalPatronIdCard from "../DigitalPatronIdCard";
 import InteractiveDeskMap from "../InteractiveDeskMap";
 import StudyStreakTracker from "../StudyStreakTracker";
 import ExamRepository from "../ExamRepository";
+import ScholarSynapseGame from "../ScholarSynapseGame";
 
 export default function StudentOverview({ setView }) {
   const { state: { user } } = useAuth();
-  const { state: { libraryTimings }, fetchMyLoans, fetchTxns, fetchLibraryTimings } = useOther();
+  const { state: { libraryTimings }, fetchMyLoans, fetchTxns, fetchLibraryTimings, submitCommunityNote } = useOther();
 
   const [loans,     setLoans]     = useState(null);
   const [txns,      setTxns]      = useState(null);
   const [loadStats, setLoadStats] = useState(true);
 
-  // Focus sprint companion modal
+  // Focus sprint & mind game companion modals
   const [isFocusTimerOpen, setIsFocusTimerOpen] = useState(false);
+  const [isSynapseOpen, setIsSynapseOpen] = useState(false);
 
-  // New Patron Platform modals
+  // Patron Platform modals
   const [showIdCard, setShowIdCard] = useState(false);
   const [showDeskMap, setShowDeskMap] = useState(false);
   const [showExamRepo, setShowExamRepo] = useState(false);
@@ -74,21 +74,14 @@ export default function StudentOverview({ setView }) {
     setNoteSubmitting(true);
     setNoteFeedback(null);
     try {
-      const token = getMemoryToken();
-      const res = await axios.post(
-        `${getApiBase()}/dashboard/community-notes/submit`,
-        {
-          note: noteText.trim(),
-          tag: noteTag.trim() || 'Study Focus',
-          author: noteAuthor.trim() || displayName
-        },
-        {
-          headers: token ? { 'x-access-token': token, Authorization: `Bearer ${token}` } : {}
-        }
-      );
+      const res = await submitCommunityNote({
+        note: noteText.trim(),
+        tag: noteTag.trim() || 'Study Focus',
+        author: noteAuthor.trim() || displayName
+      });
       setNoteFeedback({
         type: 'success',
-        msg: res?.data?.results?.msg || '✓ Your note has been submitted for audit. Once approved by library administration, it will be published on the Community Bulletin Board on the landing page.'
+        msg: res?.results?.msg || '✓ Your note has been submitted for audit. Once approved by library administration, it will be published on the Community Bulletin Board on the landing page.'
       });
       setNoteText('');
       setShowNoteForm(false);
@@ -96,7 +89,7 @@ export default function StudentOverview({ setView }) {
       console.error('Note submit error:', err);
       setNoteFeedback({
         type: 'error',
-        msg: err?.response?.data?.error?.msg || 'Failed to submit note. Please try again.'
+        msg: err?.message || 'Failed to submit note. Please try again.'
       });
     } finally {
       setNoteSubmitting(false);
@@ -109,34 +102,34 @@ export default function StudentOverview({ setView }) {
     <div className="space-y-6 w-full max-w-5xl">
 
       {/* ── Welcome Plaque ─────────────────────────────── */}
-      <div className="bg-[#1C3A2B] text-white rounded-2xl p-6 sm:p-7 shadow-sm border border-[#244232] relative overflow-hidden">
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#0F2D59] text-white rounded-xl p-6 sm:p-7 shadow-xs border border-[#1E3A5F] relative">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-white text-[#1C3A2B] flex items-center justify-center text-lg font-bold select-none shadow-sm font-serif-lib">
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white text-[#0F2D59] flex items-center justify-center text-base font-bold select-none shadow-xs">
               {initials}
             </div>
 
             <div className="min-w-0">
-              <span className="text-[#A2B5A8] text-[11px] font-semibold uppercase tracking-wider block">
-                Welcome to your desk
+              <span className="text-slate-300 text-[11px] font-semibold uppercase tracking-wider block">
+                Patron Desk
               </span>
-              <h2 className="font-serif-lib text-2xl font-bold text-white leading-tight truncate">
+              <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight truncate">
                 {displayName}
               </h2>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold
+              <div className="flex flex-wrap gap-2 mt-1.5">
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-semibold
                   ${isVerified
-                    ? "bg-[#2A4D3B] text-[#D8E6DE] border border-[#3E6B53]"
-                    : "bg-[#78350F] text-[#FDE68A] border border-[#B45309]"}`}>
+                    ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800"
+                    : "bg-amber-950/80 text-amber-300 border border-amber-800"}`}>
                   {isVerified ? <ShieldCheck size={11} /> : <ShieldAlert size={11} />}
                   {isVerified ? 'Identity Confirmed' : 'Verification Required'}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-[#244232] text-[#C2D1C7] capitalize">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-medium bg-white/10 text-slate-200 capitalize">
                   <User size={11} /> {user?.act || 'Active Patron'}
                 </span>
                 {isPaid && daysLeft !== null && daysLeft <= 7 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-[#B45309] text-[#FEF3C7]">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-amber-800 text-amber-100">
                     <Clock size={11} /> {daysLeft}d left on pass
                   </span>
                 )}
@@ -147,26 +140,26 @@ export default function StudentOverview({ setView }) {
                 <button
                   type="button"
                   onClick={() => setShowIdCard(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold backdrop-blur-xs transition active:scale-95 cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition cursor-pointer shadow-2xs"
                 >
-                  <QrCode size={14} className="text-[#00B8FF]" />
+                  <QrCode size={13} className="text-sky-300" />
                   <span>Digital Patron Pass</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDeskMap(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold backdrop-blur-xs transition active:scale-95 cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition cursor-pointer shadow-2xs"
                 >
-                  <MapPin size={14} className="text-[#52D38A]" />
+                  <MapPin size={13} className="text-emerald-300" />
                   <span>Reserve Study Desk</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowExamRepo(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold backdrop-blur-xs transition active:scale-95 cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition cursor-pointer shadow-2xs"
                 >
-                  <BookOpen size={14} className="text-[#FBBF24]" />
-                  <span>Exam PYQ Library</span>
+                  <BookOpen size={13} className="text-amber-300" />
+                  <span>Exam PYQ Archive</span>
                 </button>
               </div>
             </div>
@@ -194,16 +187,16 @@ export default function StudentOverview({ setView }) {
             }
 
             return (
-              <div className="sm:text-right border-t sm:border-t-0 border-[#2A4D3B] pt-3 sm:pt-0">
-                <p className="text-[11px] text-[#A2B5A8]">Library Center Status</p>
+              <div className="sm:text-right border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
+                <p className="text-[11px] text-slate-300">Center Schedule</p>
                 <div className="flex items-center sm:justify-end gap-1.5 mt-0.5">
-                  <span className={`w-2 h-2 rounded-full ${currentlyOpen ? 'bg-[#4ADE80] animate-pulse' : 'bg-[#F87171]'}`} />
-                  <p className="text-sm font-semibold text-white">
-                    {currentlyOpen ? 'Open Now' : 'Closed'} • {libraryTimings?.open_time || '07:00 AM'} – {libraryTimings?.close_time || '09:00 PM'}
+                  <span className={`w-2 h-2 rounded-full ${currentlyOpen ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                  <p className="text-xs font-semibold text-white">
+                    {currentlyOpen ? 'Open Now' : 'Closed'} ({libraryTimings?.open_time || '07:00 AM'} to {libraryTimings?.close_time || '09:00 PM'})
                   </p>
                 </div>
-                <p className="text-[10px] text-[#C2D1C7] mt-0.5">
-                  {libraryTimings?.days || 'Monday – Sunday'}
+                <p className="text-[10px] text-slate-300 mt-0.5">
+                  {libraryTimings?.days || 'Monday to Sunday'}
                 </p>
               </div>
             );
@@ -211,120 +204,156 @@ export default function StudentOverview({ setView }) {
         </div>
       </div>
 
-      {/* ── Aspirant Study Streak & Deep Work Engine (Step 3) ── */}
+      {/* ── Aspirant Study Streak & Deep Work Engine ── */}
       <StudyStreakTracker
         user={user}
         onOpenTimer={() => setIsFocusTimerOpen(true)}
+        onOpenSynapse={() => setIsSynapseOpen(true)}
       />
 
-      {/* ── Quiet Focus Sprint Launcher (Registered Patrons Only) ── */}
-      <div className="bg-gradient-to-r from-[#244232] to-[#1C3A2B] text-white rounded-2xl p-5 shadow-xs border border-[#2E523E] flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0 text-[#8FD4AE]">
-            <Timer size={22} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#A2D5B8] bg-black/20 px-2 py-0.5 rounded-md">
-                Patron Focus Tool
-              </span>
-              <span className="text-[11px] text-[#C4DDD0]">· 25m Pomodoro Protocol</span>
+      {/* ── Dual Scholar Companion Hub: Focus Sprint + Synapse Mind Break ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        {/* Card 1: Quiet Focus Sprint */}
+        <div className="bg-white dark:bg-[#111827] text-slate-900 dark:text-slate-100 rounded-xl p-5 shadow-2xs border border-slate-200 dark:border-slate-800 flex flex-col justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-[#004B87] dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+              <Timer size={20} />
             </div>
-            <h3 className="font-serif-lib text-base sm:text-lg font-bold mt-0.5">Quiet Study Focus Sprint</h3>
-            <p className="text-xs text-[#C4DDD0] mt-0.5">
-              Launch your dedicated study focus hub with ambient library sounds, streak counter, and scholarship history journal.
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                  Deep Focus
+                </span>
+                <span className="text-[11px] text-slate-500">25m Pomodoro Protocol</span>
+              </div>
+              <h3 className="text-sm font-bold mt-1">Quiet Study Focus Sprint</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                Log deep study intervals at your physical desk with ambient library acoustics and streak tracking.
+              </p>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
+            <button
+              onClick={() => setView('focus_sprint')}
+              className="px-3.5 py-1.5 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <Play size={12} className="fill-white" />
+              <span>Open Focus Hub</span>
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2.5 flex-shrink-0 self-start sm:self-auto">
-          <button
-            onClick={() => setView('focus_sprint')}
-            className="px-5 py-2.5 rounded-xl bg-[#52D38A] hover:bg-[#42B876] text-[#0E1A13] font-bold text-xs shadow-md transition active:scale-95 whitespace-nowrap flex items-center gap-2 cursor-pointer"
-          >
-            <Play size={14} className="fill-[#0E1A13]" />
-            <span>Open Focus Hub &amp; History</span>
-          </button>
+
+        {/* Card 2: Scholar Synapse Daily Mind Break */}
+        <div className="bg-white dark:bg-[#111827] text-slate-900 dark:text-slate-100 rounded-xl p-5 shadow-2xs border border-slate-200 dark:border-slate-800 flex flex-col justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+              <Brain size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950 px-2 py-0.5 rounded">
+                  Daily Mind Break
+                </span>
+                <span className="text-[11px] text-slate-500">60s Cognitive Reset</span>
+              </div>
+              <h3 className="text-sm font-bold mt-1">Scholar Synapse Puzzle</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                Take a brief intellectual break to relax stamina. Connect 4 clues to their underlying exam concept.
+              </p>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
+            <button
+              onClick={() => setIsSynapseOpen(true)}
+              className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <Brain size={12} />
+              <span>Launch Synapse (60s)</span>
+            </button>
+          </div>
         </div>
+
       </div>
 
       {/* ── Desk Activity Grid ───────────────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase tracking-wider">
-            Desk Activity &amp; Overview
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            Desk Activity Overview
           </span>
-          {loadStats && <Loader2 size={14} className="animate-spin text-[#1C3A2B] dark:text-[#8FD4AE]" />}
+          {loadStats && <Loader2 size={13} className="animate-spin text-slate-500" />}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
           {/* Books borrowed */}
           <div
             onClick={() => setView('loans')}
-            className="cursor-pointer rounded-2xl p-5 bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] shadow-xs hover:border-[#1C3A2B]/40 hover:shadow-md transition group"
+            className="cursor-pointer rounded-xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase">Currently Borrowed</span>
-              <div className="w-8 h-8 rounded-lg bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center">
-                <BookMarked size={16} />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Currently Borrowed</span>
+              <div className="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-400 flex items-center justify-center">
+                <BookMarked size={14} />
               </div>
             </div>
-            <p className="font-serif-lib text-3xl font-bold text-[#1C1E1B] dark:text-[#FAF8F5]">{dash ?? active.length}</p>
-            <p className="text-xs text-[#7F8781] dark:text-[#9FB1A6] mt-1">active loans</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{dash ?? active.length}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">active loans</p>
           </div>
 
           {/* Overdue */}
           <div
             onClick={() => setView('loans')}
-            className={`cursor-pointer rounded-2xl p-5 border shadow-xs transition
+            className={`cursor-pointer rounded-xl p-4 border shadow-2xs transition
               ${overdue.length > 0
-                ? 'bg-[#FAF0F0] dark:bg-[#2D1616] border-[#F0D5D5] dark:border-[#522323] hover:border-[#A83232]'
-                : 'bg-white dark:bg-[#16211B] border-[#E5DFD5] dark:border-[#26362D] hover:border-[#1C3A2B]/40'}`}
+                ? 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/40 hover:border-rose-400'
+                : 'bg-white dark:bg-[#111827] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase">Overdue Books</span>
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${overdue.length > 0 ? 'bg-[#FDE8E8] text-[#A83232]' : 'bg-[#FAF8F5] dark:bg-[#203126] text-[#7F8781] dark:text-[#8FD4AE]'}`}>
-                <AlertTriangle size={16} />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Overdue Books</span>
+              <div className={`w-7 h-7 rounded-md flex items-center justify-center ${overdue.length > 0 ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                <AlertTriangle size={14} />
               </div>
             </div>
-            <p className={`font-serif-lib text-3xl font-bold ${overdue.length > 0 ? 'text-[#A83232] dark:text-[#F87171]' : 'text-[#1C1E1B] dark:text-[#FAF8F5]'}`}>
+            <p className={`text-2xl font-bold ${overdue.length > 0 ? 'text-rose-700 dark:text-rose-300' : 'text-slate-900 dark:text-slate-100'}`}>
               {dash ?? overdue.length}
             </p>
-            <p className="text-xs text-[#7F8781] dark:text-[#9FB1A6] mt-1">{overdue.length > 0 ? 'return required' : 'all loans on time'}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{overdue.length > 0 ? 'return required' : 'all loans on schedule'}</p>
           </div>
 
           {/* Books read */}
           <div
             onClick={() => setView('loans')}
-            className="cursor-pointer rounded-2xl p-5 bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] shadow-xs hover:border-[#1C3A2B]/40 hover:shadow-md transition"
+            className="cursor-pointer rounded-xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase">Books Returned</span>
-              <div className="w-8 h-8 rounded-lg bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center">
-                <BookOpen size={16} />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Books Returned</span>
+              <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
+                <BookOpen size={14} />
               </div>
             </div>
-            <p className="font-serif-lib text-3xl font-bold text-[#1C3A2B] dark:text-[#8FD4AE]">{dash ?? returned.length}</p>
-            <p className="text-xs text-[#7F8781] dark:text-[#9FB1A6] mt-1">completed reading</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{dash ?? returned.length}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">completed loans</p>
           </div>
 
           {/* Fee status */}
           <div
             onClick={() => setView('payments')}
-            className={`cursor-pointer rounded-2xl p-5 border shadow-xs transition
+            className={`cursor-pointer rounded-xl p-4 border shadow-2xs transition
               ${isPaid
-                ? 'bg-white dark:bg-[#16211B] border-[#E5DFD5] dark:border-[#26362D] hover:border-[#1C3A2B]/40'
-                : 'bg-[#FFFBEB] dark:bg-[#2D2413] border-[#FDE68A] dark:border-[#573F14] hover:border-[#D97706]'}`}
+                ? 'bg-white dark:bg-[#111827] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40 hover:border-amber-400'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase">Membership Pass</span>
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isPaid ? 'bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE]' : 'bg-[#FEF3C7] dark:bg-[#45300F] text-[#92400E] dark:text-[#FDE68A]'}`}>
-                <DollarSign size={16} />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Membership Pass</span>
+              <div className={`w-7 h-7 rounded-md flex items-center justify-center ${isPaid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-100 text-amber-800'}`}>
+                <DollarSign size={14} />
               </div>
             </div>
-            <p className={`font-serif-lib text-3xl font-bold ${isPaid ? 'text-[#1C3A2B] dark:text-[#8FD4AE]' : 'text-[#92400E] dark:text-[#FDE68A]'}`}>
+            <p className={`text-2xl font-bold ${isPaid ? 'text-slate-900 dark:text-slate-100' : 'text-amber-800 dark:text-amber-300'}`}>
               {isPaid ? 'Active' : 'Due'}
             </p>
-            <p className="text-xs text-[#7F8781] dark:text-[#9FB1A6] mt-1">
+            <p className="text-[11px] text-slate-500 mt-0.5">
               {isPaid && daysLeft !== null
                 ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining`
                 : user?.lastpayment ? 'pass expired' : 'no active pass'}
@@ -334,30 +363,30 @@ export default function StudentOverview({ setView }) {
           {/* Payments made */}
           <div
             onClick={() => setView('payments')}
-            className="cursor-pointer rounded-2xl p-5 bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] shadow-xs hover:border-[#1C3A2B]/40 hover:shadow-md transition"
+            className="cursor-pointer rounded-xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase">Confirmed Receipts</span>
-              <div className="w-8 h-8 rounded-lg bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center">
-                <CreditCard size={16} />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Confirmed Receipts</span>
+              <div className="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-400 flex items-center justify-center">
+                <CreditCard size={14} />
               </div>
             </div>
-            <p className="font-serif-lib text-3xl font-bold text-[#1C1E1B] dark:text-[#FAF8F5]">{dash ?? confirmedPayments.length}</p>
-            <p className="text-xs text-[#7F8781] dark:text-[#9FB1A6] mt-1">verified ledger payments</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{dash ?? confirmedPayments.length}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">verified ledger receipts</p>
           </div>
 
           {/* Member since */}
-          <div className="rounded-2xl p-5 bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] shadow-xs">
+          <div className="rounded-xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase">Enrolled</span>
-              <div className="w-8 h-8 rounded-lg bg-[#FAF8F5] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex items-center justify-center">
-                <CalendarDays size={16} />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Enrolled</span>
+              <div className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center">
+                <CalendarDays size={14} />
               </div>
             </div>
-            <p className="font-serif-lib text-2xl font-bold text-[#1C1E1B] dark:text-[#FAF8F5]">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {user?.lastpayment ? moment(user.lastpayment).subtract(1, 'month').format('MMM YYYY') : 'Member'}
             </p>
-            <p className="text-xs text-[#7F8781] dark:text-[#9FB1A6] mt-1 capitalize">{user?.act || 'Patron'}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5 capitalize">{user?.act || 'Patron'}</p>
           </div>
         </div>
       </div>
@@ -366,37 +395,35 @@ export default function StudentOverview({ setView }) {
       {!loadStats && active.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6D8374] dark:text-[#8CA093] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Currently Issued to You
             </span>
-            <button onClick={() => setView('loans')} className="text-xs font-semibold text-[#1C3A2B] dark:text-[#8FD4AE] hover:underline flex items-center gap-1 cursor-pointer">
+            <button onClick={() => setView('loans')} className="text-xs font-semibold text-[#004B87] dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer">
               <span>View All Borrowed Books</span>
-              <ArrowRight size={12} />
+              <ArrowRight size={11} />
             </button>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {active.slice(0, 3).map(loan => {
               const days = moment(loan.due_date).diff(moment(), 'days');
               const isOv = days < 0;
               return (
-                <div key={loan._id} className="flex items-center justify-between gap-3 bg-white dark:bg-[#16211B] border border-[#E5DFD5] dark:border-[#26362D] rounded-2xl px-4 py-3.5 shadow-xs">
+                <div key={loan._id} className="flex items-center justify-between gap-3 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 shadow-2xs">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-[#EDF3EE] dark:bg-[#203126] text-[#1C3A2B] dark:text-[#8FD4AE] flex-shrink-0 flex items-center justify-center">
-                      <BookMarked size={16} />
+                    <div className="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-400 flex-shrink-0 flex items-center justify-center">
+                      <BookMarked size={14} />
                     </div>
                     <div>
-                      <p className="text-xs sm:text-sm font-semibold text-[#1C1E1B] dark:text-[#FAF8F5] truncate">{loan.resource_title}</p>
-                      <p className="text-[11px] text-[#7F8781] dark:text-[#9FB1A6]">Issued {moment(loan.issued_at).format('DD MMM YYYY')}</p>
+                      <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">{loan.resource_title}</p>
+                      <p className="text-[11px] text-slate-500">Issued {moment(loan.issued_at).format('DD MMM YYYY')}</p>
                     </div>
                   </div>
-                  <span className={`flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-md border
+                  <span className={`flex-shrink-0 text-xs font-medium px-2 py-0.5 rounded border
                     ${isOv
-                      ? 'bg-[#FAF0F0] dark:bg-[#3D1A1A] text-[#A83232] dark:text-[#FCA5A5] border-[#F0D5D5] dark:border-[#5C2A2A]'
+                      ? 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800'
                       : days === 0
-                        ? 'bg-[#FFFBEB] dark:bg-[#382B14] text-[#92400E] dark:text-[#FDE68A] border-[#FDE68A] dark:border-[#574019]'
-                        : days <= 3
-                          ? 'bg-[#FFFBEB] dark:bg-[#382B14] text-[#92400E] dark:text-[#FDE68A] border-[#FDE68A] dark:border-[#574019]'
-                          : 'bg-[#EDF3EE] dark:bg-[#1C2C22] text-[#1C3A2B] dark:text-[#8FD4AE] border-[#D9E2DC] dark:border-[#2B4032]'}`}>
+                        ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                        : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'}`}>
                     {isOv ? `${Math.abs(days)}d overdue` : days === 0 ? 'Due today' : `${days}d remaining`}
                   </span>
                 </div>
@@ -408,14 +435,14 @@ export default function StudentOverview({ setView }) {
 
       {/* ── Action Notice Banners ─────────────────────────── */}
       {!isPaid && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FFFBEB] dark:bg-[#2A2111] border border-[#FDE68A] dark:border-[#5A4217] rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
           <div>
-            <p className="font-semibold text-sm text-[#92400E] dark:text-[#FDE68A]">Membership Dues Notice</p>
-            <p className="text-xs text-[#78350F] dark:text-[#E8BD68] mt-0.5">Your monthly study pass is due. Renew online to maintain uninterrupted desk access.</p>
+            <p className="font-semibold text-xs text-amber-900 dark:text-amber-200">Membership Dues Notice</p>
+            <p className="text-xs text-amber-800 dark:text-amber-300 mt-0.5">Your monthly study pass is due. Renew online to maintain uninterrupted desk access.</p>
           </div>
           <button
             onClick={() => setView('payments')}
-            className="flex-shrink-0 px-4 py-2 bg-[#92400E] hover:bg-[#78350F] text-white rounded-xl text-xs font-semibold transition shadow-xs cursor-pointer"
+            className="flex-shrink-0 px-3.5 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-xs font-semibold transition cursor-pointer"
           >
             Pay Monthly Dues
           </button>
@@ -423,51 +450,51 @@ export default function StudentOverview({ setView }) {
       )}
 
       {!isVerified && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FAF8F5] dark:bg-[#16211B] border border-[#D9D3C7] dark:border-[#2A3B30] rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
           <div>
-            <p className="font-semibold text-sm text-[#1C3A2B] dark:text-[#8FD4AE]">Aadhaar Verification Pending</p>
-            <p className="text-xs text-[#5D645E] dark:text-[#9FB1A6] mt-0.5">Please submit your identity verification form to fulfill library safety compliance.</p>
+            <p className="font-semibold text-xs text-slate-900 dark:text-slate-100">Verification Pending</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Please submit your identity verification form to fulfill library safety compliance.</p>
           </div>
           <button
             onClick={() => setView('Settings')}
-            className="flex-shrink-0 px-4 py-2 bg-[#1C3A2B] hover:bg-[#142C20] text-white rounded-xl text-xs font-semibold transition shadow-xs cursor-pointer"
+            className="flex-shrink-0 px-3.5 py-1.5 bg-[#004B87] hover:bg-[#003865] text-white rounded-lg text-xs font-semibold transition cursor-pointer"
           >
             Complete Verification
           </button>
         </div>
       )}
 
-      {/* ── Community Bulletin Board: Pin a Study Note / Resolution ── */}
-      <div className="bg-white dark:bg-[#16211B] border border-[#DFE6DC] dark:border-[#26362D] rounded-2xl p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#DFE6DC] dark:border-[#26362D]">
+      {/* ── Community Bulletin Board: Pin a Study Note ── */}
+      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-[#EFF4EC] dark:bg-[#1E2E25] text-[#24341E] dark:text-[#8FD4AE]">
-              <Pin size={18} />
+            <span className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-[#004B87] dark:text-blue-400">
+              <Pin size={16} />
             </span>
             <div>
-              <h3 className="font-serif-lib text-base sm:text-lg font-bold text-[#24341E] dark:text-[#8FD4AE]">
-                Voices From The Study Hall · Community Bulletin
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                Community Bulletin Noticeboard
               </h3>
-              <p className="text-xs text-[#0B0E0A] dark:text-[#9FB1A6]">
-                Share your daily study resolution or advice. Pinned notes go to library administration for audit before appearing live on the landing page bulletin board.
+              <p className="text-xs text-slate-500">
+                Share a study goal or encouragement. Pinned notes are verified by library staff before appearing live.
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowNoteForm(!showNoteForm)}
-            className="px-4 py-2 rounded-xl bg-[#33462C] hover:bg-[#24341E] text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs cursor-pointer self-start sm:self-auto"
+            className="px-3.5 py-1.5 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer self-start sm:self-auto"
           >
-            <Send size={13} />
-            <span>{showNoteForm ? "Close Form" : "Pin a Note or Goal"}</span>
+            <Send size={12} />
+            <span>{showNoteForm ? "Close Form" : "Submit a Note"}</span>
           </button>
         </div>
 
         {noteFeedback && (
           <div
-            className={`p-3.5 rounded-xl text-xs font-semibold border flex items-center justify-between ${
+            className={`p-3 rounded-lg text-xs font-medium border flex items-center justify-between ${
               noteFeedback.type === 'success'
-                ? 'bg-[#EFF4EC] border-[#DFE6DC] text-[#24341E] dark:bg-[#1E2E25] dark:text-[#8FD4AE] dark:border-[#2B4032]'
-                : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/40 dark:border-red-900/40 dark:text-red-300'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                : 'bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300'
             }`}
           >
             <span>{noteFeedback.msg}</span>
@@ -476,73 +503,87 @@ export default function StudentOverview({ setView }) {
         )}
 
         {showNoteForm && (
-          <form onSubmit={handleNoteSubmit} className="space-y-3.5 pt-1">
+          <form onSubmit={handleNoteSubmit} className="space-y-3 pt-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-[#24341E] dark:text-[#8FD4AE] mb-1">
+                <label className="block text-[11px] font-semibold text-slate-800 dark:text-slate-200 mb-1">
                   Target Exam or Study Field
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. UPSC & Civil Services, NEET 2025, JKAS Aspirant"
+                  placeholder="e.g. UPSC, NEET 2025, JKAS Aspirant"
                   value={noteTag}
                   onChange={(e) => setNoteTag(e.target.value)}
-                  className="w-full bg-[#FCFCFB] dark:bg-[#111A14] border border-[#DFE6DC] dark:border-[#2A3D30] rounded-xl px-3 py-2 text-xs text-[#0B0E0A] dark:text-white focus:outline-none focus:border-[#33462C]"
+                  className="w-full bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#004B87]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-[#24341E] dark:text-[#8FD4AE] mb-1">
-                  Pen Name / Display Name
+                <label className="block text-[11px] font-semibold text-slate-800 dark:text-slate-200 mb-1">
+                  Display Name
                 </label>
                 <input
                   type="text"
                   placeholder={displayName}
                   value={noteAuthor}
                   onChange={(e) => setNoteAuthor(e.target.value)}
-                  className="w-full bg-[#FCFCFB] dark:bg-[#111A14] border border-[#DFE6DC] dark:border-[#2A3D30] rounded-xl px-3 py-2 text-xs text-[#0B0E0A] dark:text-white focus:outline-none focus:border-[#33462C]"
+                  className="w-full bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#004B87]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#24341E] dark:text-[#8FD4AE] mb-1">
-                Your Study Note, Habit Tip, or Encouragement
+              <label className="block text-[11px] font-semibold text-slate-800 dark:text-slate-200 mb-1">
+                Your Study Note or Advice
               </label>
               <textarea
                 required
                 rows={3}
-                placeholder="Share your daily target, favorite study desk tip, or advice for fellow scholars..."
+                placeholder="Share your daily study target or advice for fellow students..."
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
-                className="w-full bg-[#FCFCFB] dark:bg-[#111A14] border border-[#DFE6DC] dark:border-[#2A3D30] rounded-xl p-3 text-xs text-[#0B0E0A] dark:text-white focus:outline-none focus:border-[#33462C]"
+                className="w-full bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#004B87]"
               />
             </div>
 
+            <div className="pt-1">
+              <label className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  id="note-publication-consent"
+                  className="mt-0.5 rounded border-slate-300 dark:border-slate-700 text-[#004B87] focus:ring-[#004B87] cursor-pointer"
+                />
+                <span className="text-[11px] leading-relaxed">
+                  I consent to having my study resolution and chosen display name published on the public Community Noticeboard upon administrative review.
+                </span>
+              </label>
+            </div>
+
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[11px] text-[#0B0E0A]/60 dark:text-[#8EA596]">
-                🔒 Forwarded to Admin audit queue upon submission
+              <span className="text-[11px] text-slate-500">
+                Forwarded to administrator queue upon submission
               </span>
               <button
                 type="submit"
                 disabled={noteSubmitting}
-                className="px-5 py-2.5 rounded-xl bg-[#33462C] hover:bg-[#24341E] text-white text-xs font-semibold flex items-center gap-2 transition shadow-xs cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
               >
-                {noteSubmitting ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
-                <span>{noteSubmitting ? "Submitting..." : "Submit for Librarian Audit"}</span>
+                {noteSubmitting ? <Loader2 size={13} className="animate-spin" /> : <Send size={12} />}
+                <span>{noteSubmitting ? "Submitting..." : "Submit for Audit"}</span>
               </button>
             </div>
           </form>
         )}
       </div>
 
-      {/* ── Focus Companion Modal ── */}
+      {/* Focus Companion Modal */}
       <StudyFocusTimer
         isOpen={isFocusTimerOpen}
         onClose={() => setIsFocusTimerOpen(false)}
       />
 
-      {/* ── Step 1: Digital Patron ID Card Modal ── */}
+      {/* Digital Patron ID Card Modal */}
       {showIdCard && (
         <DigitalPatronIdCard
           user={user}
@@ -551,7 +592,7 @@ export default function StudentOverview({ setView }) {
         />
       )}
 
-      {/* ── Step 2: Interactive Desk Map Modal ── */}
+      {/* Interactive Desk Map Modal */}
       {showDeskMap && (
         <InteractiveDeskMap
           user={user}
@@ -559,14 +600,20 @@ export default function StudentOverview({ setView }) {
         />
       )}
 
-      {/* ── Step 4: Digital Exam Repository Modal ── */}
+      {/* Digital Exam Repository Modal */}
       {showExamRepo && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto">
           <div className="max-w-4xl w-full">
             <ExamRepository onClose={() => setShowExamRepo(false)} />
           </div>
         </div>
       )}
+
+      {/* Scholar Synapse Daily Mind Break Modal */}
+      <ScholarSynapseGame
+        isOpen={isSynapseOpen}
+        onClose={() => setIsSynapseOpen(false)}
+      />
 
     </div>
   );

@@ -226,7 +226,17 @@ export const OtherProvider = ({ children }) => {
   const updateConfirmation = useCallback(async (payload) => {
     dispatch({ type: ACTION_TYPES.REQUEST_START });
     try {
-      const data = await paymentService.confirmPayment(payload.txn_id, payload.confirmation, payload.remarks);
+      const targetId = typeof payload === 'object'
+        ? (payload?.id || payload?.ref_id || payload?.ref || payload?.payment_id || payload?._id || payload?.txn_id)
+        : payload;
+
+      const confirmationStatus = typeof payload === 'object' && payload?.confirmation !== undefined
+        ? payload.confirmation
+        : 1;
+
+      const remarks = typeof payload === 'object' ? (payload?.remarks || '') : '';
+
+      const data = await paymentService.confirmPayment(targetId, confirmationStatus, remarks);
       dispatch({ type: ACTION_TYPES.TXN_CONFIRMATION, payload: data });
       return data;
     } catch (error) {
@@ -407,12 +417,59 @@ export const OtherProvider = ({ children }) => {
     }
   }, []);
 
+  const createStudent = useCallback(async (studentData) => {
+    try {
+      const res = await adminService.createStudent(studentData);
+      await fetchAllStudents();
+      return res;
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to create student.'));
+    }
+  }, [fetchAllStudents]);
+
+  const recordPayment = useCallback(async (payload) => {
+    try {
+      const res = await paymentService.recordPayment(payload);
+      await fetchAllStudents();
+      return res;
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to record payment.'));
+    }
+  }, [fetchAllStudents]);
+
+  const changeStudentPassword = useCallback(async (studentId, newPassword) => {
+    try {
+      return await adminService.resetStudentPassword(studentId, newPassword);
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to update student password.'));
+    }
+  }, []);
+
+  const toggleStudentStatus = useCallback(async (studentId, status) => {
+    try {
+      const res = await adminService.toggleStudentStatus(studentId, status);
+      await fetchAllStudents();
+      return res;
+    } catch (error) {
+      throw new Error(getErrorMessage(error, 'Failed to update student status.'));
+    }
+  }, [fetchAllStudents]);
+
   /* ── 6. Desks & Reservations ────────────────────────────── */
   const fetchDesks = useCallback(async () => {
     try {
       return await deskService.getDesks();
     } catch (error) {
       throw new Error(getErrorMessage(error, 'Failed to fetch study desks.'));
+    }
+  }, []);
+
+  const fetchMyDesk = useCallback(async () => {
+    try {
+      return await deskService.getMyDesk();
+    } catch (error) {
+      console.warn('Failed to fetch patron desk:', error);
+      return null;
     }
   }, []);
 
@@ -434,9 +491,10 @@ export const OtherProvider = ({ children }) => {
 
   const fetchDeskRequests = useCallback(async () => {
     try {
-      return await deskService.getDeskRequests();
+      return await deskService.getMyDeskChangeRequests();
     } catch (error) {
-      throw new Error(getErrorMessage(error, 'Failed to fetch desk requests.'));
+      console.warn('Failed to fetch desk requests:', error);
+      return [];
     }
   }, []);
 
@@ -592,9 +650,9 @@ export const OtherProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.warn('[fetchLibraryTimings] Failed:', error);
-      return state.libraryTimings;
+      return null;
     }
-  }, [state.libraryTimings]);
+  }, []);
 
   const updateLibraryTimings = useCallback(async (timingsData) => {
     try {
@@ -650,6 +708,15 @@ export const OtherProvider = ({ children }) => {
     }
   }, []);
 
+  const fetchExamById = useCallback(async (id) => {
+    try {
+      return await catalogService.getExamById(id);
+    } catch (error) {
+      console.warn('[fetchExamById] Failed:', error);
+      return null;
+    }
+  }, []);
+
   const incrementExamDownload = useCallback(async (examId) => {
     try {
       return await catalogService.incrementExamDownload(examId);
@@ -672,15 +739,17 @@ export const OtherProvider = ({ children }) => {
     // Packages
     getPackages, createPackage, updatePackage, deletePackage,
     // Payments
-    checkout, fetchTxns, updatePendingTxn, fetchTxnsForConfirmation, updateConfirmation, fetchEarnings,
+    checkout, fetchTxns, updatePendingTxn, fetchTxnsForConfirmation, updateConfirmation, fetchEarnings, recordPayment,
     // Catalog Resources
     fetchResources, addResource, editResource, removeResource,
     // Loans
     fetchMyLoans, fetchLoans, createLoan, issueBook: createLoan, returnLoan, returnBook: returnLoan, extendLoan,
     // Students
-    fetchStudents, fetchAllStudents, fetchStudentStats, fetchPendingCounts, verifyStudentKYC,
+    fetchStudents, fetchAllStudents, fetchStudentStats, fetchPendingCounts, verifyStudentKYC, verifyStudent: verifyStudentKYC,
+    createStudent, changeStudentPassword, toggleStudentStatus,
     // Desks
-    fetchDesks, claimDesk, releaseDesk, fetchDeskRequests, requestDeskChange, auditDeskRequest,
+    fetchDesks, claimDesk, reserveDesk: claimDesk, fetchMyDesk, releaseDesk, fetchDeskRequests,
+    fetchMyDeskChangeRequests: fetchDeskRequests, requestDeskChange, submitDeskChangeRequest: requestDeskChange, auditDeskRequest,
     fetchAllDeskChangeRequestsAdmin, approveDeskChangeRequest, rejectDeskChangeRequest,
     adminReleaseDesk, adminCreateDesk, adminToggleDeskStatus, adminReassignDesk,
     // Focus Sprints
@@ -692,22 +761,23 @@ export const OtherProvider = ({ children }) => {
     // News
     fetchLibraryNews, createLibraryNews, updateLibraryNews, deleteLibraryNews,
     // Exams & Cards
-    fetchExams, incrementExamDownload, fetchPatronCard,
+    fetchExams, fetchExamById, incrementExamDownload, fetchPatronCard,
   }), [
     state,
     getPackages, createPackage, updatePackage, deletePackage,
-    checkout, fetchTxns, updatePendingTxn, fetchTxnsForConfirmation, updateConfirmation, fetchEarnings,
+    checkout, fetchTxns, updatePendingTxn, fetchTxnsForConfirmation, updateConfirmation, fetchEarnings, recordPayment,
     fetchResources, addResource, editResource, removeResource,
     fetchMyLoans, fetchLoans, createLoan, returnLoan, extendLoan,
     fetchStudents, fetchAllStudents, fetchStudentStats, fetchPendingCounts, verifyStudentKYC,
-    fetchDesks, claimDesk, releaseDesk, fetchDeskRequests, requestDeskChange, auditDeskRequest,
+    createStudent, changeStudentPassword, toggleStudentStatus,
+    fetchDesks, claimDesk, fetchMyDesk, releaseDesk, fetchDeskRequests, requestDeskChange, auditDeskRequest,
     fetchAllDeskChangeRequestsAdmin, approveDeskChangeRequest, rejectDeskChangeRequest,
     adminReleaseDesk, adminCreateDesk, adminToggleDeskStatus, adminReassignDesk,
     startFocusSprint, completeFocusSprint, fetchFocusSprintHistory, fetchFocusSprintLeaderboard,
     fetchCommunityNotes, submitCommunityNote, fetchAllCommunityNotes, auditCommunityNote,
     fetchLibraryTimings, updateLibraryTimings,
     fetchLibraryNews, createLibraryNews, updateLibraryNews, deleteLibraryNews,
-    fetchExams, incrementExamDownload, fetchPatronCard,
+    fetchExams, fetchExamById, incrementExamDownload, fetchPatronCard,
   ]);
 
   return (

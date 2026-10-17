@@ -3,24 +3,24 @@ import Providers from '../components/Providers';
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nurulilmlibrary.com'),
-  title: 'Nurul Ilm Public Library | Handwara, Kashmir',
+  title: 'Nurul Ilm Library  | Handwara, Kashmir',
   description: 'Public library and study sanctuary in Handwara, North Kashmir. Individual quiet carrels, winter heating, high-speed fiber connectivity, and curated reference stacks.',
   keywords: ['Nurul Ilm', 'Library Handwara', 'Study Space Kashmir', 'JKAS', 'UPSC', 'Reading Room', 'Kashmir Library', 'Kupwara Library'],
-  authors: [{ name: 'Nurul Ilm Public Library' }],
+  authors: [{ name: 'Nurul Ilm Library ' }],
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/assets/logo.jpeg', sizes: '192x192', type: 'image/jpeg' },
+      { url: '/assets/logo-crest.svg', type: 'image/svg+xml' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    shortcut: '/assets/logo.jpeg',
-    apple: '/assets/logo.jpeg',
+    shortcut: '/assets/logo-crest.svg',
+    apple: '/assets/logo-crest.svg',
   },
 };
 
 export const viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FAF8F5' },
-    { media: '(prefers-color-scheme: dark)', color: '#0C1410' },
+    { media: '(prefers-color-scheme: light)', color: '#F6F8FB' },
+    { media: '(prefers-color-scheme: dark)', color: '#0B0F19' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -29,7 +29,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-[#FCFCFB] dark:bg-[#0E1411] text-[#0B0E0A] dark:text-[#E5EBE7] font-sans antialiased selection:bg-[#33462C]/20 selection:text-[#1C3A2B]">
+      <body className="min-h-screen bg-[#F6F8FB] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] font-sans antialiased selection:bg-[#004B87]/20 selection:text-[#004B87] dark:selection:text-blue-300">
         <Providers>
           {children}
         </Providers>

@@ -45,30 +45,31 @@ export default function PayMonthsModal({ onClose, onPay, joiningDate }) {
   const isValid = selected.length > 0 && txnId.trim().length > 3;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C1E1B]/60 dark:bg-black/70 flex items-center justify-center px-4 backdrop-blur-xs">
-      <div className="bg-white dark:bg-[#142019] border border-[#E5DFD5] dark:border-[#22352B] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 shadow-xl space-y-5 text-[#2D3A31] dark:text-[#E8F0EB]">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center px-4">
+      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-xl space-y-4 text-slate-800 dark:text-slate-200">
 
         {/* Header */}
-        <div className="flex justify-between items-center border-b border-[#EFEBE4] dark:border-[#263D30] pb-3">
+        <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
           <div>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6D8374] dark:text-[#88B89C]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Fee Collection
             </span>
-            <h3 className="font-serif-lib text-lg font-bold text-[#1C2E24] dark:text-[#8FD4AE] flex items-center gap-2">
-              <Calendar size={18} className="text-[#1C3A2B] dark:text-[#8FD4AE]" /> Pay Monthly Study Dues
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Calendar size={16} className="text-[#004B87] dark:text-blue-400" />
+              <span>Pay Monthly Study Dues</span>
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-[#7F8781] hover:text-[#1C1E1B] dark:hover:text-white rounded-lg transition cursor-pointer"
+            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md transition cursor-pointer"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
         {/* Month Selector */}
         <div>
-          <label className="block text-xs font-semibold text-[#1C2E24] dark:text-[#CAD6CF] mb-2">
+          <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 mb-2">
             Select Months to Pay (₹{FEE} / month)
           </label>
           <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
@@ -81,12 +82,12 @@ export default function PayMonthsModal({ onClose, onPay, joiningDate }) {
                   key={m}
                   disabled={disabled}
                   onClick={() => toggle(m, index)}
-                  className={`py-2 px-1 rounded-lg text-xs font-semibold border transition text-center cursor-pointer ${
+                  className={`py-1.5 px-1 rounded-md text-xs font-semibold border transition text-center cursor-pointer ${
                     disabled
-                      ? "bg-[#FAF8F5] dark:bg-[#1A2620] border-[#E5DFD5] dark:border-[#24342B] text-[#A2AAA3] dark:text-[#64746A] cursor-not-allowed opacity-60"
+                      ? "bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-400 cursor-not-allowed opacity-60"
                       : active
-                      ? "bg-[#1C3A2B] dark:bg-[#346F4F] border-[#1C3A2B] dark:border-[#346F4F] text-white shadow-xs"
-                      : "bg-white dark:bg-[#18261F] border-[#E5DFD5] dark:border-[#283E31] text-[#2D3A31] dark:text-[#CAD6CF] hover:border-[#1C3A2B] hover:bg-[#FAF8F5]"
+                      ? "bg-[#004B87] border-[#004B87] text-white shadow-2xs"
+                      : "bg-white dark:bg-[#111827] border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-[#004B87]"
                   }`}
                 >
                   {m}
@@ -97,41 +98,41 @@ export default function PayMonthsModal({ onClose, onPay, joiningDate }) {
         </div>
 
         {/* QR Code and Payee Info */}
-        <div className="bg-[#FAF8F5] dark:bg-[#18261F] border border-[#E5DFD5] dark:border-[#263D30] rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4">
-          <div className="bg-white p-2 rounded-lg border border-[#E5DFD5] flex-shrink-0">
+        <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-lg p-3.5 flex flex-col sm:flex-row items-center gap-3.5">
+          <div className="bg-white p-1.5 rounded-md border border-slate-200 flex-shrink-0">
             <img
               src="/assets/paymentqr.jpeg"
               alt="Official Library QR"
-              className="w-24 h-24 object-contain"
+              className="w-20 h-20 object-contain"
             />
           </div>
-          <div className="space-y-1 text-xs text-[#5D6B62] dark:text-[#A1B3A7]">
-            <p className="font-semibold text-[#1C2E24] dark:text-[#E8F0EB]">Scan to Pay via UPI</p>
+          <div className="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">Scan to Pay via UPI</p>
             <p className="text-[11px]">Payee: <strong>OWAIS RAFIQ</strong> (Library Accounts)</p>
-            <p className="text-[11px] text-[#7F8781] dark:text-[#889C90]">
-              Scan using Google Pay, PhonePe, or Paytm and transfer ₹{selected.length * FEE || FEE}.
+            <p className="text-[11px] text-slate-500">
+              Scan using any UPI app and transfer ₹{selected.length * FEE || FEE}.
             </p>
           </div>
         </div>
 
         {/* Transaction ID input */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold text-[#1C2E24] dark:text-[#CAD6CF]">
+          <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200">
             UPI Transaction / Reference ID *
           </label>
           <input
             value={txnId}
             onChange={(e) => setTxnId(e.target.value)}
-            placeholder="e.g. 430129482190 or UPI-Ref-ID"
-            className="w-full bg-[#FAF8F5] dark:bg-[#18261F] border border-[#D9D3C7] dark:border-[#2A3E32] rounded-lg px-3 py-2 text-xs text-[#1C2E24] dark:text-[#E8F0EB] placeholder-[#8A928C] focus:bg-white dark:focus:bg-[#1E2E25] focus:border-[#1C3A2B] focus:ring-1 focus:ring-[#1C3A2B] transition"
+            placeholder="e.g. 430129482190"
+            className="w-full bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:bg-white dark:focus:bg-[#111827] focus:border-[#004B87] transition"
           />
         </div>
 
         {/* Total & Submit */}
-        <div className="border-t border-[#EFEBE4] dark:border-[#263D30] pt-4 space-y-3">
+        <div className="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2.5">
           <div className="flex justify-between items-baseline text-xs">
-            <span className="text-[#5D6B62] dark:text-[#A1B3A7]">Selected Months ({selected.length})</span>
-            <span className="font-serif-lib text-xl font-bold text-[#1C2E24] dark:text-[#8FD4AE]">
+            <span className="text-slate-500">Selected Months ({selected.length})</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
               ₹{selected.length * FEE}
             </span>
           </div>
@@ -139,13 +140,13 @@ export default function PayMonthsModal({ onClose, onPay, joiningDate }) {
           <button
             disabled={!isValid}
             onClick={handlePay}
-            className={`w-full py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-xs font-semibold shadow-xs cursor-pointer ${
+            className={`w-full py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition text-xs font-semibold shadow-2xs cursor-pointer ${
               isValid
-                ? "bg-[#1C3A2B] hover:bg-[#142B20] dark:bg-[#346F4F] dark:hover:bg-[#3F845F] text-white"
-                : "bg-[#E5DFD5] dark:bg-[#25352C] text-[#A2AAA3] dark:text-[#64746A] cursor-not-allowed"
+                ? "bg-[#004B87] hover:bg-[#003865] text-white"
+                : "bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
             }`}
           >
-            <CheckCircle2 size={15} />
+            <CheckCircle2 size={14} />
             <span>Submit Payment for Approval</span>
           </button>
         </div>
