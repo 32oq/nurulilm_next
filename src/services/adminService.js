@@ -13,7 +13,9 @@ export const adminService = {
    */
   async getLibraryTimings() {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.TIMINGS);
-    return response?.data?.results || {
+    const results = response?.data?.results;
+    const data = results?.data || results;
+    return (data && (data.open_time || data.close_time)) ? data : {
       open_time: '07:00 AM',
       close_time: '09:00 PM',
       days: 'Monday – Sunday',
@@ -27,7 +29,8 @@ export const adminService = {
    */
   async updateLibraryTimings(timingsData) {
     const response = await apiClient.post(ENDPOINTS.DASHBOARD.TIMINGS_UPDATE, timingsData);
-    return response?.data;
+    const results = response?.data?.results;
+    return results?.data || results || response?.data;
   },
 
   /**

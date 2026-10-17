@@ -646,8 +646,9 @@ export const OtherProvider = ({ children }) => {
   const fetchLibraryTimings = useCallback(async () => {
     try {
       const data = await adminService.getLibraryTimings();
-      dispatch({ type: ACTION_TYPES.LIBRARY_TIMINGS_FETCH, payload: data });
-      return data;
+      const timings = data?.data || data;
+      dispatch({ type: ACTION_TYPES.LIBRARY_TIMINGS_FETCH, payload: timings });
+      return timings;
     } catch (error) {
       console.warn('[fetchLibraryTimings] Failed:', error);
       return null;
@@ -657,6 +658,10 @@ export const OtherProvider = ({ children }) => {
   const updateLibraryTimings = useCallback(async (timingsData) => {
     try {
       const res = await adminService.updateLibraryTimings(timingsData);
+      const updated = res?.data || res;
+      if (updated && (updated.open_time || updated.close_time)) {
+        dispatch({ type: ACTION_TYPES.LIBRARY_TIMINGS_FETCH, payload: updated });
+      }
       await fetchLibraryTimings();
       return res;
     } catch (error) {

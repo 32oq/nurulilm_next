@@ -161,6 +161,16 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
                 </button>
               </div>
 
+              {/* Mobile quick sign out */}
+              <button
+                onClick={handleLogout}
+                className="sm:hidden p-2 rounded-md text-slate-700 dark:text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition border border-slate-200 dark:border-slate-700 cursor-pointer"
+                title="Sign out"
+                aria-label="Sign out"
+              >
+                <LogOut size={18} />
+              </button>
+
               {/* Mobile hamburger */}
               <button
                 className="sm:hidden p-2 rounded-md text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700 cursor-pointer"

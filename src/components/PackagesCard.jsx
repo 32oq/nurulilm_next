@@ -22,8 +22,9 @@ const PackageCard = ({ data, redirect }) => {
     timing,
   } = data;
 
-  const fullDaySchedule = libraryTimings?.open_time && libraryTimings?.close_time
-    ? `Full Day (${libraryTimings.open_time} – ${libraryTimings.close_time})`
+  const timings = libraryTimings?.data || libraryTimings;
+  const fullDaySchedule = timings?.open_time && timings?.close_time
+    ? `Full Day (${timings.open_time} – ${timings.close_time})`
     : 'Full Day (07:00 AM – 09:00 PM)';
   const displayTiming = (!timing || timing === 'Full Day' || (typeof timing === 'string' && timing.includes('6:00 AM – 11:00 PM')))
     ? fullDaySchedule

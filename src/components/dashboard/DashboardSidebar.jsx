@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, CreditCard, BookOpen, Settings, LogOut, BookMarked, Users, Newspaper, Bell, Layers, Pin, Timer, MapPin, Sparkles } from "lucide-react";
+import { Home, CreditCard, BookOpen, Settings, LogOut, BookMarked, Users, Newspaper, Bell, Layers, Pin, Timer, MapPin, Sparkles, X } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 
 const NavItem = ({ icon: Icon, label, isActive, onClick, showDot, dotCount }) => (
@@ -41,44 +41,63 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
         flex-shrink-0 flex flex-col
         bg-[#0A192F] text-white border-r border-[#1E3A5F]
         fixed md:static top-0 z-50 md:z-auto
-        h-screen
+        h-screen h-[100dvh] max-h-[100dvh]
         transition-transform duration-200 ease-in-out md:transition-none
         ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         w-60 shadow-xl md:shadow-none
       `}
     >
       {/* Brand Crest */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-[#1E3A5F] flex-shrink-0">
-        <img
-          src="/assets/logo-crest.svg"
-          alt="Library Crest"
-          className="w-8 h-8 rounded-full object-contain bg-white p-0.5 ring-1 ring-white/20"
-        />
-        <div className="flex flex-col min-w-0">
-          <span className="text-sm font-bold text-white whitespace-nowrap truncate">
-            Nurul Ilm Library
-          </span>
-          <span className="text-[10px] text-slate-400 tracking-wider uppercase">
-            {type === 'admin' ? 'Admin Desk' : 'Patron Desk'}
-          </span>
+      <div className="flex items-center justify-between px-4 h-16 border-b border-[#1E3A5F] flex-shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <img
+            src="/assets/logo-crest.svg"
+            alt="Library Crest"
+            className="w-8 h-8 rounded-full object-contain bg-white p-0.5 ring-1 ring-white/20"
+          />
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-bold text-white whitespace-nowrap truncate">
+              Nurul Ilm Library
+            </span>
+            <span className="text-[10px] text-slate-400 tracking-wider uppercase">
+              {type === 'admin' ? 'Admin Desk' : 'Patron Desk'}
+            </span>
+          </div>
         </div>
+        <button
+          onClick={() => setOpen && setOpen(false)}
+          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
+          aria-label="Close navigation"
+        >
+          <X size={18} />
+        </button>
       </div>
 
-      {/* Member Plaque */}
-      <div className="flex items-center gap-3 px-3.5 py-3.5 border-b border-[#1E3A5F] min-w-0 bg-[#071322]">
-        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-white text-[#0A192F] flex items-center justify-center text-xs font-bold select-none">
-          {initials}
+      {/* Member Plaque & Quick Sign Out */}
+      <div className="flex items-center justify-between gap-2 px-3.5 py-3 border-b border-[#1E3A5F] min-w-0 bg-[#071322] flex-shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex-shrink-0 w-8 h-8 rounded-md bg-white text-[#0A192F] flex items-center justify-center text-xs font-bold select-none">
+            {initials}
+          </div>
+          <div className="min-w-0 overflow-hidden">
+            <p className="text-xs font-semibold text-white truncate">{fullName}</p>
+            <span className="inline-block text-[10px] text-slate-400 capitalize truncate">
+              {user?.act || 'Patron'}
+            </span>
+          </div>
         </div>
-        <div className="min-w-0 overflow-hidden">
-          <p className="text-xs font-semibold text-white truncate">{fullName}</p>
-          <span className="inline-block text-[10px] text-slate-400 capitalize truncate">
-            {user?.act || 'Patron'}
-          </span>
-        </div>
+        <button
+          onClick={logout}
+          className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition flex-shrink-0 cursor-pointer"
+          title="Sign Out"
+          aria-label="Sign Out"
+        >
+          <LogOut size={15} />
+        </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto no-scrollbar">
+      <nav className="flex-1 min-h-0 p-2 space-y-0.5 overflow-y-auto no-scrollbar">
         <NavItem
           icon={Home}
           label="Desk Overview"
@@ -178,7 +197,7 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
       </nav>
 
       {/* Theme Toggle & Sign Out */}
-      <div className="p-2 border-t border-[#1E3A5F] space-y-1">
+      <div className="p-2 border-t border-[#1E3A5F] space-y-1 flex-shrink-0 pb-[max(8px,env(safe-area-inset-bottom))]">
         <ThemeToggle variant="sidebar" />
         <button
           onClick={logout}

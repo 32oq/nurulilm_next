@@ -100,14 +100,16 @@ export default function AdminOverview({ setView }) {
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const t = libraryTimings?.data || libraryTimings;
+
   useEffect(() => {
-    if (libraryTimings) {
+    if (t) {
       setTimingForm({
-        open_time: libraryTimings.open_time || '07:00 AM',
-        close_time: libraryTimings.close_time || '09:00 PM',
-        days: libraryTimings.days || 'Monday – Sunday',
-        status_note: libraryTimings.status_note || '',
-        is_open_today: libraryTimings.is_open_today !== false
+        open_time: t.open_time || '07:00 AM',
+        close_time: t.close_time || '09:00 PM',
+        days: t.days || 'Monday – Sunday',
+        status_note: t.status_note || '',
+        is_open_today: t.is_open_today !== false
       });
     }
   }, [libraryTimings]);
@@ -124,9 +126,9 @@ export default function AdminOverview({ setView }) {
   const unavailTitles = allResources.filter(r => (r.availability ?? 0) === 0).length;
 
   const isOpenNow = checkLibraryOpen(
-    libraryTimings?.open_time || timingForm.open_time,
-    libraryTimings?.close_time || timingForm.close_time,
-    libraryTimings?.is_open_today !== false
+    t?.open_time || timingForm.open_time,
+    t?.close_time || timingForm.close_time,
+    t?.is_open_today !== false
   );
 
   const recentLoans = [...allLoans]
@@ -136,13 +138,13 @@ export default function AdminOverview({ setView }) {
   const handleOpenTimingsModal = () => {
     setTimingSuccess('');
     setTimingError('');
-    if (libraryTimings) {
+    if (t) {
       setTimingForm({
-        open_time: libraryTimings.open_time || '07:00 AM',
-        close_time: libraryTimings.close_time || '09:00 PM',
-        days: libraryTimings.days || 'Monday – Sunday',
-        status_note: libraryTimings.status_note || '',
-        is_open_today: libraryTimings.is_open_today !== false
+        open_time: t.open_time || '07:00 AM',
+        close_time: t.close_time || '09:00 PM',
+        days: t.days || 'Monday – Sunday',
+        status_note: t.status_note || '',
+        is_open_today: t.is_open_today !== false
       });
     }
     setTimingsModalOpen(true);
@@ -211,15 +213,15 @@ export default function AdminOverview({ setView }) {
             </div>
             <div className="flex items-baseline gap-2 mt-0.5 flex-wrap">
               <h3 className="font-serif-lib text-lg font-bold text-slate-900 dark:text-white">
-                {libraryTimings?.open_time || '07:00 AM'} to {libraryTimings?.close_time || '09:00 PM'}
+                {t?.open_time || '07:00 AM'} to {t?.close_time || '09:00 PM'}
               </h3>
               <span className="text-xs text-slate-500">
-                ({libraryTimings?.days || 'Monday to Sunday'})
+                ({t?.days || 'Monday to Sunday'})
               </span>
             </div>
-            {libraryTimings?.status_note && (
+            {t?.status_note && (
               <p className="text-[11px] text-slate-500 mt-0.5">
-                {libraryTimings.status_note}
+                {t.status_note}
               </p>
             )}
           </div>

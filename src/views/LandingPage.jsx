@@ -214,8 +214,9 @@ export default function LandingPage({ setPage }) {
     return Array.from(new Set([...defaults, ...fromData]));
   }, [books]);
 
-  const openTime = libraryTimings?.open_time || '07:00 AM';
-  const closeTime = libraryTimings?.close_time || '09:00 PM';
+  const activeTimings = libraryTimings?.data || libraryTimings;
+  const openTime = activeTimings?.open_time || '07:00 AM';
+  const closeTime = activeTimings?.close_time || '09:00 PM';
 
   return (
     <div className="w-full bg-[#F6F8FB] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex flex-col min-h-screen transition-colors duration-150">
@@ -329,7 +330,7 @@ export default function LandingPage({ setPage }) {
           <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-center">
             <span className="text-[11px] uppercase font-semibold text-slate-500 dark:text-slate-400 tracking-wider block mb-1">Operating Hours</span>
             <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">{openTime} - {closeTime}</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{libraryTimings?.days || 'Open 7 days a week'}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{activeTimings?.days || 'Open 7 days a week'}</p>
           </div>
           <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-center">
             <span className="text-[11px] uppercase font-semibold text-slate-500 dark:text-slate-400 tracking-wider block mb-1">Location</span>
@@ -697,10 +698,10 @@ export default function LandingPage({ setPage }) {
                   <div>
                     <p className="font-semibold text-slate-900 dark:text-slate-100">Operating Hours</p>
                     <p className="text-slate-600 dark:text-slate-400">
-                      {libraryTimings?.days || 'Monday to Sunday'}: {openTime} to {closeTime}
+                      {activeTimings?.days || 'Monday to Sunday'}: {openTime} to {closeTime}
                     </p>
                     <p className="text-emerald-700 dark:text-emerald-400 font-medium">
-                      {libraryTimings?.status_note || 'Open throughout winter months'}
+                      {activeTimings?.status_note || 'Open throughout winter months'}
                     </p>
                   </div>
                 </div>

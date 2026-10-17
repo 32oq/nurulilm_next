@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, CreditCard, Users } from "lucide-react";
+import { Menu, CreditCard, Users, LogOut } from "lucide-react";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardContent from "./DashboardContent";
 import ThemeToggle from "../ThemeToggle";
@@ -109,6 +109,15 @@ export default function DashboardLayout({ navTo, type }) {
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" title="System Online" />
             <ThemeToggle className="ml-1" />
+            <button
+              onClick={logout}
+              className="flex items-center gap-1.5 p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700 sm:border-transparent transition cursor-pointer"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut size={16} />
+              <span className="text-xs font-medium hidden lg:inline">Sign Out</span>
+            </button>
           </div>
         </header>
 

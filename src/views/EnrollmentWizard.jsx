@@ -14,8 +14,9 @@ export default function EnrollmentWizard({ setPage, selectedPackage: initialPack
   const { state: { isAuthenticated, user }, register } = useAuth();
   const { state: { packages, libraryTimings }, getPackages, checkout, fetchTxns } = useOther();
 
-  const fullDaySchedule = libraryTimings?.open_time && libraryTimings?.close_time
-    ? `Full Day (${libraryTimings.open_time} – ${libraryTimings.close_time})`
+  const timings = libraryTimings?.data || libraryTimings;
+  const fullDaySchedule = timings?.open_time && timings?.close_time
+    ? `Full Day (${timings.open_time} – ${timings.close_time})`
     : 'Full Day (07:00 AM – 09:00 PM)';
   const resolveTiming = (t) => (!t || t === 'Full Day' || (typeof t === 'string' && t.includes('6:00 AM – 11:00 PM')))
     ? fullDaySchedule
