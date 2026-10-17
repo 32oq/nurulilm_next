@@ -833,3 +833,34 @@ html.dark .text-red-800,
 html.dark .text-red-600 {
   color: #F87171 !important;
 }
+
+/* =========================================================================
+   Mobile Viewport Auto-Zoom & UI Distortion Prevention
+   iOS Safari and mobile WebKit auto-zoom the entire page whenever an input,
+   textarea, or select element has a computed font-size < 16px.
+   Enforcing font-size: 16px on mobile viewports (< 768px) and touch-action:
+   manipulation permanently stops iOS/Android from breaking the layout.
+   ========================================================================= */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea,
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="url"],
+  input[type="date"],
+  input[type="datetime-local"] {
+    font-size: 16px !important;
+  }
+}
+
+input,
+select,
+textarea,
+button {
+  touch-action: manipulation;
+}
