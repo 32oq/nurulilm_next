@@ -19,7 +19,7 @@ export const initialAuthState = {
   isAuthenticated: false,
   user: null,
   loading: false,
-  authRestoring: false,
+  authRestoring: true,
   error: null,
   act: null,
   id: null,
@@ -118,43 +118,40 @@ export const AuthProvider = ({ children }) => {
     let isMounted = true;
 
     const restoreSession = async () => {
-      const hasStored = storage.getString('has_session') === '1';
-      if (!hasStored) {
-        return;
-      }
-
-      if (isMounted) {
-        dispatch({ type: AUTH_ACTIONS.RESTORE_START });
-      }
-
       try {
         const { token, user } = await authService.refreshSession();
-        if (token && isMounted) {
-          storage.setString('has_session', '1');
-          storage.setString('last_act', user?.act || '');
+        if (token && user && isMounted) {
           dispatch({
             type: AUTH_ACTIONS.LOGIN_SUCCESS,
             payload: { user },
           });
         } else if (isMounted) {
-          storage.remove('has_session');
-          storage.remove('last_act');
+          setClientToken(null);
           dispatch({ type: AUTH_ACTIONS.RESTORE_FINISHED });
         }
       } catch {
         if (isMounted) {
           setClientToken(null);
-          storage.remove('user');
-          storage.remove('has_session');
-          storage.remove('last_act');
           dispatch({ type: AUTH_ACTIONS.RESTORE_FINISHED });
         }
       }
     };
 
     restoreSession();
+
+    // Global listener for silent refresh failure or session expiration
+    const handleAuthExpired = () => {
+      if (isMounted) {
+        setClientToken(null);
+        dispatch({ type: AUTH_ACTIONS.LOGOUT });
+      }
+    };
+
+    window.addEventListener('nurulilm:auth-expired', handleAuthExpired);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('nurulilm:auth-expired', handleAuthExpired);
     };
   }, []);
 
@@ -162,9 +159,10 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.REQUEST_START });
     try {
       const { user } = await authService.login(credentials);
+      // Clean up any legacy storage keys to guarantee zero sensitive data in Web Storage
       storage.remove('user');
-      storage.setString('has_session', '1');
-      storage.setString('last_act', user?.act || '');
+      storage.remove('has_session');
+      storage.remove('last_act');
       dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: { user } });
       return true;
     } catch (error) {
@@ -195,6 +193,7 @@ export const AuthProvider = ({ children }) => {
     } catch {
       // Best-effort server invalidation
     } finally {
+      setClientToken(null);
       storage.remove('user');
       storage.remove('has_session');
       storage.remove('last_act');

@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import Providers from '../components/Providers';
+import AppShell from '../components/AppShell';
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nurulilmlibrary.com'),
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-[#F6F8FB] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] font-sans antialiased selection:bg-[#004B87]/20 selection:text-[#004B87] dark:selection:text-blue-300">
         <Providers>
-          {children}
+          <AppShell>
+            {children}
+          </AppShell>
         </Providers>
       </body>
     </html>

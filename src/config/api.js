@@ -6,12 +6,10 @@
 
 import { ENV } from './env';
 
-export const getApiBase = () => ENV.API_BASE_URL;
-
-export const API_BASE = getApiBase();
-export const USER_API_BASE = `${API_BASE}/user`;
-export const DASHBOARD_API_BASE = `${API_BASE}/dashboard`;
-export const PAYMENTS_API_BASE = `${API_BASE}/payments`;
+export const API_BASE = '';
+export const USER_API_BASE = '/user';
+export const DASHBOARD_API_BASE = '/dashboard';
+export const PAYMENTS_API_BASE = '/payments';
 
 export const ENDPOINTS = Object.freeze({
   AUTH: {

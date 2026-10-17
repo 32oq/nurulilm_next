@@ -23,7 +23,7 @@ export const ENV = Object.freeze({
    * On server side: defaults to direct local backend port 6001.
    */
   API_BASE_URL: isBrowser
-    ? (process.env.NEXT_PUBLIC_API_URL !== undefined ? process.env.NEXT_PUBLIC_API_URL : '')
+    ? (process.env.NEXT_PUBLIC_API_URL !== undefined ? process.env.NEXT_PUBLIC_API_URL : '/api')
     : (process.env.BACKEND_URL || 'http://127.0.0.1:6001'),
 
   /**

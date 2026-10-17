@@ -1,18 +1,60 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { LogIn, UserPlus, LogOut, LayoutDashboard, Menu, X, Rss, BookOpen, Clock, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import LibraryLogo from './common/LibraryLogo';
 
+const ROUTE_MAP = {
+  home: '/',
+  feed: '/feed',
+  dashboard: '/dashboard',
+  daily_puzzle: '/daily-puzzle',
+  game: '/daily-puzzle',
+  login: '/login',
+  packages: '/packages',
+  register: '/packages',
+  checkout: '/packages',
+  payment_pending: '/payment-pending',
+  police_verification: '/verification',
+  verification: '/verification',
+  forgot_password: '/forgot-password',
+};
+
 const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = false, hasNoPackage = false }) => {
   const { state: { isAuthenticated, user }, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname() || '/';
+
+  const getActivePage = () => {
+    if (currentPage) return currentPage;
+    if (pathname === '/') return 'home';
+    if (pathname.startsWith('/feed')) return 'feed';
+    if (pathname.startsWith('/dashboard')) return 'dashboard';
+    if (pathname.startsWith('/daily-puzzle')) return 'daily_puzzle';
+    if (pathname.startsWith('/login')) return 'login';
+    if (pathname.startsWith('/packages') || pathname.startsWith('/register')) return 'packages';
+    if (pathname.startsWith('/payment-pending')) return 'payment_pending';
+    if (pathname.startsWith('/verification')) return 'police_verification';
+    if (pathname.startsWith('/forgot-password')) return 'forgot_password';
+    return '';
+  };
+
+  const activePage = getActivePage();
 
   const handleNav = (p) => {
     if (setPage) setPage(p);
+    const targetRoute = ROUTE_MAP[p] || (p.startsWith('/') ? p : `/${p}`);
+    router.push(targetRoute);
     setMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
   };
 
   const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || 'M';
@@ -22,7 +64,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
     <button
       onClick={() => handleNav(page)}
       className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer
-        ${currentPage === page
+        ${activePage === page
           ? 'bg-blue-900 text-white dark:bg-blue-600'
           : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'}`}
     >
@@ -35,7 +77,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
     <button
       onClick={() => handleNav(page)}
       className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer
-        ${currentPage === page
+        ${activePage === page
           ? 'bg-blue-900 text-white dark:bg-blue-600'
           : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'}`}
     >
@@ -110,7 +152,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
                   <span className="text-xs font-medium text-slate-800 dark:text-slate-200 max-w-[140px] truncate">{displayName}</span>
                 </div>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer"
                   title="Sign out"
                 >
@@ -136,7 +178,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
                 <button
                   onClick={() => handleNav('packages')}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer
-                    ${currentPage === 'packages'
+                    ${activePage === 'packages'
                       ? 'bg-blue-900 text-white dark:bg-blue-600'
                       : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'}`}
                 >
@@ -194,7 +236,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
                 <ThemeToggle variant="pill" />
               </div>
               <button
-                onClick={() => { logout(); setMenuOpen(false); }}
+                onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition mt-2 cursor-pointer"
               >
                 <LogOut size={16} /> Sign Out

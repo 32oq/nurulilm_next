@@ -11,14 +11,19 @@ export const authService = {
    * Refreshes JWT session token using HttpOnly cookie
    */
   async refreshSession() {
-    const response = await apiClient.post(`${USER_API_BASE}/token/refresh`, {});
-    const results = response?.data?.results;
-    const token = results?.access_token;
-    const user = results?.user || results;
-    if (token) {
-      setClientToken(token);
+    try {
+      const response = await apiClient.post(`${USER_API_BASE}/token/refresh`, {});
+      const results = response?.data?.results;
+      const token = results?.access_token;
+      const user = results?.user || results;
+      if (token) {
+        setClientToken(token);
+      }
+      return { token, user };
+    } catch {
+      setClientToken(null);
+      return { token: null, user: null };
     }
-    return { token, user };
   },
 
   /**
