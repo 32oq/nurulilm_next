@@ -1,5 +1,10 @@
-import { redirect } from 'next/navigation';
+import RegisterPageClient from './RegisterPageClient';
 
-export default function RegisterRedirect() {
-  redirect('/packages');
+export const metadata = {
+  title: 'Patron Admission & Sign Up | Nurul Ilm Library',
+  description: 'Create your official Nurul Ilm Library patron account to reserve reading carrels, borrow books, and access dedicated study facilities in Handwara.',
+};
+
+export default function RegisterPage() {
+  return <RegisterPageClient />;
 }

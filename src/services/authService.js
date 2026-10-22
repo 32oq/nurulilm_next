@@ -130,7 +130,7 @@ export const authService = {
       { photo: photoData },
       token ? { headers: { 'x-access-token': token } } : {}
     );
-    return response?.data?.results?.profile_photo;
+    return response?.data?.results?.profile_photo || response?.data?.results?.photo_url;
   },
 
   /**

@@ -48,16 +48,13 @@ export default function AdminPackages() {
     getPackages, createPackage, updatePackage, deletePackage, fetchLibraryTimings
   } = useOther();
 
-  const fullDaySchedule = libraryTimings?.open_time && libraryTimings?.close_time
-    ? `Full Day (${libraryTimings.open_time} – ${libraryTimings.close_time})`
-    : 'Full Day (07:00 AM – 09:00 PM)';
+  const t = libraryTimings?.data || libraryTimings;
+  const fullDaySchedule = t?.open_time && t?.close_time
+    ? `Full Day (${t.open_time} – ${t.close_time})`
+    : 'Full Day (Operating Hours)';
 
   const timingPresets = [
-    { label: 'Full Day (Library Hours)', value: fullDaySchedule, desc: `${libraryTimings?.open_time || '7 AM'} to ${libraryTimings?.close_time || '9 PM'} full access` },
-    { label: 'Morning Shift', value: `Morning Shift (${libraryTimings?.open_time || '6:00 AM'} – 2:00 PM)`, desc: 'Morning study slot' },
-    { label: 'Evening Shift', value: `Evening Shift (2:00 PM – ${libraryTimings?.close_time || '10:00 PM'})`, desc: 'Evening study slot' },
-    { label: 'Night Shift', value: 'Night Shift (6:00 PM – 2:00 AM)', desc: 'Night study slot' },
-    { label: '24x7 Round Clock', value: '24x7 Round the Clock Access', desc: 'Unrestricted 24 hours' },
+    { label: 'Full Day (Admin Hours)', value: fullDaySchedule, desc: (t?.open_time && t?.close_time) ? `${t.open_time} to ${t.close_time} (Admin Configured)` : 'Full access during center operating hours' },
   ];
 
   const resolveTiming = (t) => (!t || t === 'Full Day' || (typeof t === 'string' && t.includes('6:00 AM – 11:00 PM')))
@@ -205,10 +202,10 @@ export default function AdminPackages() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white">
-            Membership Plans &amp; Shifts
+            Membership Plans &amp; Passes
           </h2>
           <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-            Configure reading room access tiers, shift timings, fee structures, and promotional rates.
+            Configure reading room access tiers, library operating hours, fee structures, and promotional rates.
           </p>
         </div>
 
@@ -239,9 +236,9 @@ export default function AdminPackages() {
           <p className="text-[11px] text-slate-500 mt-0.5">active discounts</p>
         </div>
         <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-xs">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Shift Timings</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Operating Hours</span>
           <p className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white mt-1">Configured</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">hours per pass</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">admin-scheduled</p>
         </div>
       </div>
 
@@ -324,7 +321,7 @@ export default function AdminPackages() {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleOpenEdit(pkg)}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 transition cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                         title="Edit package & timings"
                       >
                         <Edit2 size={10} />
@@ -335,8 +332,8 @@ export default function AdminPackages() {
                         onClick={() => handleToggleActive(pkg)}
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold border transition cursor-pointer ${
                           isActive
-                            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-rose-50 hover:text-rose-800'
-                            : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-900 hover:bg-emerald-50 hover:text-emerald-800'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-800 dark:hover:text-rose-300'
+                            : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-800 dark:hover:text-emerald-300'
                         }`}
                         title={isActive ? 'Click to hide plan' : 'Click to make active'}
                       >
@@ -737,7 +734,7 @@ export default function AdminPackages() {
                   <button
                     type="button"
                     onClick={handleAddFeature}
-                    className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold transition cursor-pointer"
+                    className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold transition cursor-pointer"
                   >
                     + Add
                   </button>

@@ -11,7 +11,8 @@ export default function LoginPageClient() {
       <LoginPageView
         setPage={(page) => {
           if (page === 'forgot_password') router.push('/forgot-password');
-          else if (page === 'register' || page === 'packages') router.push('/packages');
+          else if (page === 'register' || page === 'signup') router.push('/register');
+          else if (page === 'packages') router.push('/packages');
           else if (page === 'dashboard') router.push('/dashboard');
           else router.push(`/${page === 'home' ? '' : page}`);
         }}

@@ -120,7 +120,7 @@ export default function StudentPayments() {
           <button
             onClick={fetchTxns}
             disabled={loading}
-            className="p-2 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-50 transition disabled:opacity-50 shadow-2xs cursor-pointer"
+            className="p-2 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 shadow-2xs cursor-pointer"
             title="Refresh Ledger"
             aria-label="Refresh Ledger"
           >
@@ -297,7 +297,7 @@ export default function StudentPayments() {
                         <button
                           type="button"
                           onClick={() => setReceiptTxn(item)}
-                          className="w-full mt-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#004B87] dark:text-blue-400 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-slate-50 transition cursor-pointer"
+                          className="w-full mt-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#004B87] dark:text-blue-400 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
                         >
                           <Printer size={12} />
                           <span>Print Fee Voucher</span>

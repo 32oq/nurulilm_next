@@ -58,7 +58,7 @@ export default function ThemeToggle({ variant = 'icon', className = '' }) {
           ) : (
             <Moon size={14} className="text-sky-300" />
           )}
-          <span>{activeDark ? 'Evening Mode' : 'Daylight Mode'}</span>
+          <span>{activeDark ? 'Daylight Mode' : 'Evening Mode'}</span>
         </div>
         <span className="text-[10px] px-1.5 py-0.5 rounded uppercase font-mono bg-white/10 text-slate-200">
           {activeDark ? 'Dark' : 'Light'}

@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { BookOpen, ArrowLeft, VolumeX, AlertTriangle, Clock, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export const metadata = {
-  title: 'Terms & Conditions | Nurul Ilm Library ',
-  description: 'Official library terms, reading room rules, quiet hours policy, and study desk regulations for patrons at Nurul Ilm Library  in Handwara.',
+  title: 'Terms & Conditions | Nurul Ilm Library',
+  description: 'Official library terms, reading room rules, quiet hours policy, and study desk regulations for patrons at Nurul Ilm Library in Handwara.',
 };
 
 export default function TermsAndConditionsPage() {
@@ -35,7 +35,7 @@ export default function TermsAndConditionsPage() {
             </div>
           </div>
           <p className="text-xs text-slate-500">
-            Effective Date: January 1, 2025 | Operating Authority: Nurul Ilm Library , Handwara
+            Effective Date: January 1, 2025 | Operating Authority: Nurul Ilm Library, Handwara
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export default function TermsAndConditionsPage() {
               <span>1. Admission and Membership Validity</span>
             </h2>
             <p>
-              Admission to the reading rooms and lending services of Nurul Ilm Library  is restricted to verified, registered patrons. Each patron receives an official Digital Patron ID card upon successful document audit. Memberships are non-transferable and can only be used by the enrolled individual.
+              Admission to the reading rooms and lending services of Nurul Ilm Library is restricted to verified, registered patrons. Each patron receives an official Digital Patron ID card upon successful document audit. Memberships are non-transferable and can only be used by the enrolled individual.
             </p>
           </section>
 
@@ -73,10 +73,10 @@ export default function TermsAndConditionsPage() {
               <span>3. Study Carrels and Desk Allocation Rules</span>
             </h2>
             <p>
-              Desks are assigned based on the selected membership shift (Morning Shift, Evening Shift, or Full Day).
+              Desks are assigned for the library operating shift established by the administration.
             </p>
             <ul className="list-disc pl-5 space-y-1 text-xs">
-              <li>Assigned desks are reserved exclusively for the registered patron during their designated shift.</li>
+              <li>Assigned desks are reserved exclusively for the registered patron during active library operating hours.</li>
               <li>Patrons must clear their study desks of personal trash upon completing their study session.</li>
               <li>The library accepts no liability for personal electronics left unattended on reading carrels.</li>
             </ul>
@@ -126,7 +126,7 @@ export default function TermsAndConditionsPage() {
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-500 pt-2">
-          <p>© {new Date().getFullYear()} Nurul Ilm Library . All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Nurul Ilm Library. All rights reserved.</p>
         </div>
 
       </div>

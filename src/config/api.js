@@ -10,6 +10,7 @@ export const API_BASE = '';
 export const USER_API_BASE = '/user';
 export const DASHBOARD_API_BASE = '/dashboard';
 export const PAYMENTS_API_BASE = '/payments';
+export const getApiBase = () => API_BASE;
 
 export const ENDPOINTS = Object.freeze({
   AUTH: {
@@ -83,6 +84,7 @@ export const ENDPOINTS = Object.freeze({
     DESK_ADMIN_REASSIGN: `${DASHBOARD_API_BASE}/desks/admin/reassign`,
     DESK_ADMIN_RELEASE: (id) => `${DASHBOARD_API_BASE}/desks/admin/release/${id}`,
     DESK_ADMIN_CREATE: `${DASHBOARD_API_BASE}/desks/admin/create`,
+    ENGAGEMENT_METRICS: `${DASHBOARD_API_BASE}/engagement/metrics`,
     DESK_ADMIN_TOGGLE_STATUS: (id) => `${DASHBOARD_API_BASE}/desks/admin/status/${id}`,
     EXAMS_LIST: `${DASHBOARD_API_BASE}/exams/list`,
     EXAM_BY_ID: (id) => `${DASHBOARD_API_BASE}/exams/paper/${id}`,

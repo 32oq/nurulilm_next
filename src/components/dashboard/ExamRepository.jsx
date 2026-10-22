@@ -237,7 +237,7 @@ export default function ExamRepository({ onClose }) {
             <div className="h-80 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 overflow-y-auto space-y-4 text-sm text-slate-900 dark:text-slate-100 leading-relaxed">
               <div className="text-center border-b border-slate-200 dark:border-slate-800 pb-3">
                 <p className="font-bold text-xs uppercase tracking-wider text-[#004B87] dark:text-blue-400">
-                  Nurul Ilm Library  Reference Archives • Solved Master Paper
+                  Nurul Ilm Library Reference Archives • Solved Master Paper
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{previewDoc.title}</p>
                 <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5">

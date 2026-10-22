@@ -4,10 +4,11 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import {
   ShieldCheck, Printer, CheckCircle2,
-  X, Share2, Check, RefreshCw, Camera
+  X, Share2, Check, RefreshCw, Camera, UploadCloud
 } from 'lucide-react';
 import { useOther } from '../../context/OtherContext';
 import VerificationPage from '../../views/VerificationPage';
+import PatronPhotoCaptureModal from './PatronPhotoCaptureModal';
 
 export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
   const { fetchPatronCard } = useOther();
@@ -16,6 +17,7 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
   const [loading, setLoading] = useState(true);
   const [cardData, setCardData] = useState(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showPhotoStudio, setShowPhotoStudio] = useState(false);
 
   const loadCardData = useCallback(async () => {
     setLoading(true);
@@ -127,25 +129,35 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
 
         {/* Missing photo state */}
         {(isPhotoRequired || isOnboardingIncomplete) && !showVerificationModal ? (
-          <div className="py-6 px-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-center space-y-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 mx-auto flex items-center justify-center">
-              <Camera size={20} />
+          <div className="py-6 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-center space-y-3.5">
+            <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 mx-auto flex items-center justify-center">
+              <Camera size={24} />
             </div>
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200">
-                Portrait Photo Required
+                Verified Photo Required
               </h3>
               <p className="text-xs text-amber-800 dark:text-amber-300 max-w-sm mx-auto leading-relaxed">
                 Under library security rules, your Digital Library Card cannot be issued without a verified portrait photo on file.
               </p>
             </div>
-            <button
-              onClick={() => setShowVerificationModal(true)}
-              className="px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold shadow-2xs transition cursor-pointer inline-flex items-center gap-1.5"
-            >
-              <ShieldCheck size={14} />
-              <span>Complete Verification and Upload Photo</span>
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowPhotoStudio(true)}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#004B87] hover:bg-[#003865] text-white text-xs font-semibold shadow-xs transition cursor-pointer inline-flex items-center justify-center gap-1.5 active:scale-[0.98]"
+              >
+                <Camera size={14} />
+                <span>Take Selfie or Upload Photo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowVerificationModal(true)}
+                className="w-full sm:w-auto px-3.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                Full KYC Verification
+              </button>
+            </div>
           </div>
         ) : showVerificationModal ? (
           <div className="pt-1">
@@ -177,7 +189,7 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
                   />
                   <div>
                     <h3 className="text-xs font-bold tracking-tight text-white leading-tight">
-                      Nurul Ilm Library 
+                      Nurul Ilm Library
                     </h3>
                     <p className="text-[9px] text-slate-300 uppercase tracking-wider">
                       Handwara, North Kashmir
@@ -192,7 +204,7 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
               {/* Card Body */}
               <div className="p-4 flex items-center justify-between gap-3">
                 {photoUrl ? (
-                  <div className="relative w-16 h-20 rounded-md overflow-hidden border border-slate-300 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
+                  <div className="relative group w-16 h-20 rounded-md overflow-hidden border border-slate-300 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
                     <img
                       src={photoUrl}
                       alt={displayName}
@@ -201,6 +213,16 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
                     <div className="absolute bottom-0 inset-x-0 bg-slate-900/80 py-0.5 text-[7px] font-mono text-center font-bold text-white uppercase">
                       VERIFIED
                     </div>
+                    {/* Retake/update overlay on hover */}
+                    <button
+                      type="button"
+                      onClick={() => setShowPhotoStudio(true)}
+                      title="Update or Retake Photo"
+                      className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white cursor-pointer"
+                    >
+                      <Camera size={15} />
+                      <span className="text-[8px] font-semibold mt-0.5">Retake</span>
+                    </button>
                   </div>
                 ) : null}
 
@@ -255,8 +277,10 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
               {/* Card Footer: Metadata Band */}
               <div className="grid grid-cols-3 gap-2 px-4 py-2.5 bg-slate-50 dark:bg-[#071322] border-t border-slate-200 dark:border-[#1E3A5F] text-[10px]">
                 <div>
-                  <span className="text-slate-500 dark:text-slate-400 block uppercase text-[9px]">Shift Hours</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200 truncate block">07 AM to 09 PM</span>
+                  <span className="text-slate-500 dark:text-slate-400 block uppercase text-[9px]">Library Hours</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 truncate block">
+                    {cardData?.card?.timing || cardData?.timing || user?.timing || '07 AM to 10 PM'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-slate-500 dark:text-slate-400 block uppercase text-[9px]">Valid Until</span>
@@ -294,6 +318,16 @@ export default function DigitalPatronIdCard({ user, txns = [], onClose }) {
             </div>
           </>
         )}
+
+        {/* ── Patron Photo Capture & Upload Studio Modal ── */}
+        <PatronPhotoCaptureModal
+          isOpen={showPhotoStudio}
+          onClose={() => setShowPhotoStudio(false)}
+          onSuccess={() => {
+            setShowPhotoStudio(false);
+            loadCardData();
+          }}
+        />
 
       </div>
     </div>

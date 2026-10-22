@@ -177,14 +177,14 @@ export default function AdminNews() {
                     <button onClick={() => handleTogglePin(post)}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition border cursor-pointer ${
                         post.pinned 
-                          ? 'text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 hover:bg-amber-100' 
-                          : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50'
+                          ? 'text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/40' 
+                          : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                       }`}>
                       {post.pinned ? <PinOff size={11} /> : <Pin size={11} />}
                       {post.pinned ? 'Unpin' : 'Pin'}
                     </button>
                     <button onClick={() => openEdit(post)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 transition cursor-pointer">
+                      className="flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
                       <Pencil size={11} /> Edit
                     </button>
                     <button onClick={() => handleDelete(post._id)} disabled={deleting === post._id}

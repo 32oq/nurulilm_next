@@ -65,7 +65,7 @@ export default function EmotionalHook() {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Clock size={13} className="text-slate-400" />
-                    <span>Open Daily for Morning &amp; Evening Shifts</span>
+                    <span>Open Daily • Official Operating Hours</span>
                   </span>
                 </div>
 

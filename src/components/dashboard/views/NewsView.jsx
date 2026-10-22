@@ -197,7 +197,7 @@ const ArticleCard = ({ item, bookmarks, onToggleBookmark, onSelect }) => {
             <button
               onClick={(e) => { e.stopPropagation(); onToggleBookmark(item); }}
               title={saved ? "Remove bookmark" : "Save for later"}
-              className={`p-1 rounded transition-colors cursor-pointer ${saved ? 'text-[#004B87] dark:text-blue-400 bg-slate-100 dark:bg-slate-800' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'}`}
+              className={`p-1 rounded transition-colors cursor-pointer ${saved ? 'text-[#004B87] dark:text-blue-400 bg-slate-100 dark:bg-slate-800' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
             >
               {saved ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
             </button>
@@ -371,7 +371,7 @@ export default function NewsView() {
             [&_figure]:my-4 [&_figure]:rounded-lg [&_figure]:overflow-hidden
             [&_img]:w-full [&_img]:rounded-lg [&_img]:my-3
             [&_figcaption]:text-xs [&_figcaption]:text-slate-500 [&_figcaption]:mt-1
-            [&_h2]:text-base [&_h2]:font-serif-lib [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:mt-6 [&_h2]:mb-2
+            [&_h2]:text-base [&_h2]:font-serif-lib [&_h2]:font-bold [&_h2]:text-slate-900 dark:[&_h2]:text-slate-100 [&_h2]:mt-6 [&_h2]:mb-2
             [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5
             [&_li]:leading-6
             [&_a]:text-[#004B87] dark:[&_a]:text-blue-400 [&_a]:underline"
@@ -404,7 +404,7 @@ export default function NewsView() {
         {activeTab === 'feed' && (
           <button onClick={() => fetchNews(activeCat.url, true)} disabled={newsLoading}
             title="Refresh current feed"
-            className="self-start sm:self-auto p-2 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 text-slate-600 dark:text-slate-400 hover:text-slate-900 transition disabled:opacity-50 shadow-xs cursor-pointer">
+            className="self-start sm:self-auto p-2 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition disabled:opacity-50 shadow-xs cursor-pointer">
             <RefreshCw size={15} className={newsLoading ? 'animate-spin' : ''} />
           </button>
         )}
@@ -552,12 +552,12 @@ export default function NewsView() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
               <button onClick={() => setNewsPage(p => p - 1)} disabled={newsPage === 0}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer">
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer">
                 <ArrowRight size={13} className="rotate-180" /> Previous
               </button>
               <span className="text-xs text-slate-500">Page {newsPage + 1} of {totalPages}</span>
               <button onClick={() => setNewsPage(p => p + 1)} disabled={newsPage >= totalPages - 1}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer">
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-xs cursor-pointer">
                 Next <ArrowRight size={13} />
               </button>
             </div>

@@ -1,14 +1,19 @@
 "use client";
 
-import { Home, CreditCard, BookOpen, Settings, LogOut, BookMarked, Users, Newspaper, Bell, Layers, Pin, Timer, MapPin, Sparkles, X } from "lucide-react";
+import {
+  Home, CreditCard, BookOpen, Settings, LogOut,
+  BookMarked, Users, Newspaper, Bell, Layers,
+  Pin, Timer, MapPin, Brain, X, Activity, Sparkles
+} from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
+import { LibraryLogo } from "../common";
 
 const NavItem = ({ icon: Icon, label, isActive, onClick, showDot, dotCount }) => (
   <button
     onClick={onClick}
-    className={`relative flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-colors text-left cursor-pointer text-xs
+    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-left cursor-pointer text-xs hig-spring active:scale-[0.98] transition-all
       ${isActive
-        ? "bg-[#004B87] text-white font-semibold shadow-2xs"
+        ? "bg-[#004B87] text-white font-semibold shadow-sm"
         : "text-slate-300 hover:bg-white/10 hover:text-white"
       }
     `}
@@ -21,13 +26,13 @@ const NavItem = ({ icon: Icon, label, isActive, onClick, showDot, dotCount }) =>
         </span>
       )}
     </div>
-    <span className="whitespace-nowrap">{label}</span>
+    <span className="whitespace-nowrap font-medium">{label}</span>
   </button>
 );
 
 export default function DashboardSidebar({ view, setView, open, setOpen, type, user, logout, pendingCounts }) {
   const verificationPending = !user?.verified;
-  const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || 'M';
+  const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || 'P';
   const fullName = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Library Member';
 
   const nav = (base) => {
@@ -50,50 +55,41 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
       {/* Brand Crest */}
       <div className="flex items-center justify-between px-4 h-16 border-b border-[#1E3A5F] flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <img
-            src="/assets/logo-crest.svg"
-            alt="Library Crest"
-            className="w-8 h-8 rounded-full object-contain bg-white p-0.5 ring-1 ring-white/20"
-          />
+          <div className="w-8 h-8 rounded-xl bg-white/95 flex items-center justify-center p-1 shadow-xs shrink-0 ring-1 ring-white/20">
+            <LibraryLogo variant="emblem" size={24} />
+          </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-bold text-white whitespace-nowrap truncate">
+            <span className="text-sm font-bold text-white whitespace-nowrap truncate tracking-tight">
               Nurul Ilm Library
             </span>
-            <span className="text-[10px] text-slate-400 tracking-wider uppercase">
-              {type === 'admin' ? 'Admin Desk' : 'Patron Desk'}
+            <span className="text-[10px] text-slate-400 tracking-wider uppercase font-medium">
+              {type === 'admin' ? 'Administration' : 'Patron Portal'}
             </span>
           </div>
         </div>
         <button
           onClick={() => setOpen && setOpen(false)}
-          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
+          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition hig-spring cursor-pointer"
           aria-label="Close navigation"
         >
           <X size={18} />
         </button>
       </div>
 
-      {/* Member Plaque & Quick Sign Out */}
-      <div className="flex items-center justify-between gap-2 px-3.5 py-3 border-b border-[#1E3A5F] min-w-0 bg-[#071322] flex-shrink-0">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex-shrink-0 w-8 h-8 rounded-md bg-white text-[#0A192F] flex items-center justify-center text-xs font-bold select-none">
-            {initials}
-          </div>
-          <div className="min-w-0 overflow-hidden">
-            <p className="text-xs font-semibold text-white truncate">{fullName}</p>
-            <span className="inline-block text-[10px] text-slate-400 capitalize truncate">
+      {/* Member Plaque */}
+      <div className="flex items-center gap-2.5 px-3.5 py-3 border-b border-[#1E3A5F] min-w-0 bg-[#071322] flex-shrink-0">
+        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-white text-[#0A192F] flex items-center justify-center text-xs font-bold select-none shadow-xs">
+          {initials}
+        </div>
+        <div className="min-w-0 overflow-hidden">
+          <p className="text-xs font-semibold text-white truncate">{fullName}</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="text-[10px] text-slate-400 capitalize truncate font-medium">
               {user?.act || 'Patron'}
             </span>
           </div>
         </div>
-        <button
-          onClick={logout}
-          className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition flex-shrink-0 cursor-pointer"
-          title="Sign Out"
-          aria-label="Sign Out"
-        >
-          <LogOut size={15} />
-        </button>
       </div>
 
       {/* Navigation */}
@@ -104,18 +100,30 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
           isActive={view === "overview" || view === "overview_admin"}
           onClick={() => nav("overview")}
         />
-        <NavItem
-          icon={Timer}
-          label="Quiet Focus Sprint"
-          isActive={view === "focus_sprint" || view === "focus_sprint_admin"}
-          onClick={() => nav("focus_sprint")}
-        />
-        <NavItem
-          icon={Sparkles}
-          label="Scholar Path Daily"
-          isActive={view === "scholar_path"}
-          onClick={() => { setView("scholar_path"); if (setOpen) setOpen(false); }}
-        />
+        {type !== 'admin' && (
+          <NavItem
+            icon={Timer}
+            label="Quiet Focus Sprint"
+            isActive={view === "focus_sprint"}
+            onClick={() => nav("focus_sprint")}
+          />
+        )}
+        {type !== 'admin' && (
+          <NavItem
+            icon={Brain}
+            label="Scholar Path Daily"
+            isActive={view === "scholar_path"}
+            onClick={() => { setView("scholar_path"); if (setOpen) setOpen(false); }}
+          />
+        )}
+        {type === 'admin' && (
+          <NavItem
+            icon={Activity}
+            label="Student Engagement"
+            isActive={view === "engagement_admin"}
+            onClick={() => nav("engagement")}
+          />
+        )}
         <NavItem
           icon={CreditCard}
           label={type === 'admin' ? "Fee Submissions" : "Membership Dues"}
@@ -201,7 +209,7 @@ export default function DashboardSidebar({ view, setView, open, setOpen, type, u
         <ThemeToggle variant="sidebar" />
         <button
           onClick={logout}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg w-full text-xs font-medium text-slate-300 hover:bg-rose-950/40 hover:text-rose-300 transition duration-150 cursor-pointer"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl w-full text-xs font-medium text-slate-300 hover:bg-rose-950/40 hover:text-rose-300 transition hig-spring cursor-pointer"
         >
           <LogOut size={15} />
           <span>Sign Out</span>

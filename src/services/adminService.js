@@ -15,13 +15,7 @@ export const adminService = {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.TIMINGS);
     const results = response?.data?.results;
     const data = results?.data || results;
-    return (data && (data.open_time || data.close_time)) ? data : {
-      open_time: '07:00 AM',
-      close_time: '09:00 PM',
-      days: 'Monday – Sunday',
-      status_note: 'Open 7 days a week • Winter heating & quiet cabins active',
-      is_open_today: true,
-    };
+    return (data && (data.open_time || data.close_time)) ? data : null;
   },
 
   /**
@@ -173,6 +167,14 @@ export const adminService = {
   async getPatronCard() {
     const response = await apiClient.get(ENDPOINTS.DASHBOARD.PATRON_CARD);
     return response?.data?.results;
+  },
+
+  /**
+   * Fetches aggregated student study engagement and game analytics (admin)
+   */
+  async getEngagementMetrics() {
+    const response = await apiClient.get(ENDPOINTS.DASHBOARD.ENGAGEMENT_METRICS);
+    return response?.data?.results || response?.data;
   },
 };
 

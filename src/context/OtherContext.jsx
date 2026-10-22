@@ -7,7 +7,7 @@
 
 "use client";
 
-import { createContext, useReducer, useContext, useMemo, useCallback } from "react";
+import { createContext, useReducer, useContext, useMemo, useCallback, useEffect } from "react";
 import { catalogService } from "../services/catalogService";
 import { deskService } from "../services/deskService";
 import { loansService } from "../services/loansService";
@@ -16,6 +16,19 @@ import { sprintService } from "../services/sprintService";
 import { communityService } from "../services/communityService";
 import { adminService } from "../services/adminService";
 import { getErrorMessage } from "../utils/errors";
+
+const getStoredTimings = () => {
+  if (typeof window !== 'undefined') {
+    try {
+      const cached = localStorage.getItem('nurulilm_library_timings');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && (parsed.open_time || parsed.close_time)) return parsed;
+      }
+    } catch {}
+  }
+  return null;
+};
 
 /* ---------- Initial State ---------- */
 export const initialState = {
@@ -31,13 +44,7 @@ export const initialState = {
   earnings: { total: 0, count: 0 },
   studentStats: { total: 0, verified: 0, pending_kyc: 0, paid: 0 },
   pendingCounts: { pendingPayments: 0, pendingUsers: 0 },
-  libraryTimings: {
-    open_time: '07:00 AM',
-    close_time: '09:00 PM',
-    days: 'Monday - Sunday',
-    status_note: 'Open 7 days a week • Winter heating & quiet cabins active',
-    is_open_today: true,
-  },
+  libraryTimings: getStoredTimings(),
 };
 
 /* ---------- Action Types ---------- */
@@ -647,7 +654,14 @@ export const OtherProvider = ({ children }) => {
     try {
       const data = await adminService.getLibraryTimings();
       const timings = data?.data || data;
-      dispatch({ type: ACTION_TYPES.LIBRARY_TIMINGS_FETCH, payload: timings });
+      if (timings && (timings.open_time || timings.close_time)) {
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('nurulilm_library_timings', JSON.stringify(timings));
+          } catch {}
+        }
+        dispatch({ type: ACTION_TYPES.LIBRARY_TIMINGS_FETCH, payload: timings });
+      }
       return timings;
     } catch (error) {
       console.warn('[fetchLibraryTimings] Failed:', error);
@@ -660,6 +674,11 @@ export const OtherProvider = ({ children }) => {
       const res = await adminService.updateLibraryTimings(timingsData);
       const updated = res?.data || res;
       if (updated && (updated.open_time || updated.close_time)) {
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('nurulilm_library_timings', JSON.stringify(updated));
+          } catch {}
+        }
         dispatch({ type: ACTION_TYPES.LIBRARY_TIMINGS_FETCH, payload: updated });
       }
       await fetchLibraryTimings();
@@ -667,6 +686,11 @@ export const OtherProvider = ({ children }) => {
     } catch (error) {
       throw new Error(getErrorMessage(error, 'Failed to update library timings.'));
     }
+  }, [fetchLibraryTimings]);
+
+  // Automatically fetch fresh library timings from MongoDB on provider mount
+  useEffect(() => {
+    fetchLibraryTimings();
   }, [fetchLibraryTimings]);
 
   /* ── 10. News & Bulletins ───────────────────────────────── */

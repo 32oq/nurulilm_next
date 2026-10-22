@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { ShieldCheck, ArrowLeft, Lock, Eye, FileText, Database, Phone } from 'lucide-react';
 
 export const metadata = {
-  title: 'Privacy Policy | Nurul Ilm Library ',
-  description: 'Official patron data protection, CCTV surveillance, and identity privacy policy for Nurul Ilm Library  in Handwara, Jammu & Kashmir.',
+  title: 'Privacy Policy | Nurul Ilm Library',
+  description: 'Official patron data protection, CCTV surveillance, and identity privacy policy for Nurul Ilm Library in Handwara, Jammu & Kashmir.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
           <p className="text-xs text-slate-500">
-            Effective Date: January 1, 2025 | Governing Body: Nurul Ilm Library  Administration, Handwara
+            Effective Date: January 1, 2025 | Governing Body: Nurul Ilm Library Administration, Handwara
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
               <span>1. Overview and Scope</span>
             </h2>
             <p>
-              Nurul Ilm Library  is dedicated to cultivating a quiet, secure, and academically disciplined reading room for students and competitive exam aspirants in Handwara and Kupwara District. This Privacy Policy details the guidelines governing patron records collected for admission, library card verification, and building security.
+              Nurul Ilm Library is dedicated to cultivating a quiet, secure, and academically disciplined reading room for students and competitive exam aspirants in Handwara and Kupwara District. This Privacy Policy details the guidelines governing patron records collected for admission, library card verification, and building security.
             </p>
           </section>
 
@@ -103,9 +103,9 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3 text-xs space-y-0.5">
               <p><strong>Office of Library Administration</strong></p>
-              <p>Nurul Ilm Library </p>
+              <p>Nurul Ilm Library</p>
               <p>New Bus Stand Road, Handwara, Kupwara District, Jammu &amp; Kashmir 193221</p>
-              <p>In-person hours: 07:00 AM to 09:00 PM</p>
+              <p>In-person hours: Daily during library operating schedule</p>
             </div>
           </section>
 
@@ -113,7 +113,7 @@ export default function PrivacyPolicyPage() {
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-500 pt-2">
-          <p>© {new Date().getFullYear()} Nurul Ilm Library . All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Nurul Ilm Library. All rights reserved.</p>
         </div>
 
       </div>

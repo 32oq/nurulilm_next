@@ -17,6 +17,7 @@ import AdminPackages    from "./views/AdminPackages";
 import AdminCommunityNotes from "./views/AdminCommunityNotes";
 import FocusSprintView     from "./views/FocusSprintView";
 import AdminDesks          from "./views/AdminDesks";
+import AdminEngagementView from "./views/AdminEngagementView";
 import DailyGamePage       from "../../views/DailyGamePage";
 
 export default function DashboardContent({ view, setView }) {
@@ -31,6 +32,7 @@ export default function DashboardContent({ view, setView }) {
     case "focus_sprint":     return <FocusSprintView setView={setView} isAdmin={false} />;
     case "focus_sprint_admin": return <FocusSprintView setView={setView} isAdmin={true} />;
     case "scholar_path":     return <DailyGamePage setPage={setView} />;
+    case "engagement_admin": return <AdminEngagementView setView={setView} />;
     case "resources":        return <ResourcesView isAdmin={false} />;
     case "resources_admin":  return <ResourcesView isAdmin={true}  />;
     case "loans":            return <StudentLoans />;

@@ -6,11 +6,11 @@ import AdminDashboard from '../../components/dashboard/AdminDashboard';
 import { usePatronStatus } from '../../hooks/usePatronStatus';
 
 export default function DashboardClient() {
-  const { act } = usePatronStatus();
+  const { isAdmin } = usePatronStatus();
 
   return (
     <RouteGuard requirement="verified_patron">
-      {act === 'admin' ? (
+      {isAdmin ? (
         <AdminDashboard />
       ) : (
         <DashboardLayout />

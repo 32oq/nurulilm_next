@@ -11,8 +11,9 @@ export function usePatronStatus() {
   const { state: { isAuthenticated, act, user, authRestoring, loading: authLoading }, logout } = useAuth();
   const { state: { txns }, fetchTxns } = useOther();
 
-  const isStudent = Boolean(isAuthenticated && act !== 'admin');
-  const isAdmin = Boolean(isAuthenticated && act === 'admin');
+  const normalizedAct = String(act || '').toLowerCase();
+  const isAdmin = Boolean(isAuthenticated && (normalizedAct === 'admin' || normalizedAct === 'super_admin'));
+  const isStudent = Boolean(isAuthenticated && !isAdmin);
 
   // Verification status calculations:
   // - Admin is always verified

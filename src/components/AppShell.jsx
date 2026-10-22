@@ -65,11 +65,11 @@ export default function AppShell({ children }) {
 
       {/* Public Institutional Footer (Hidden on dashboard) */}
       {!isDashboard && (
-        <footer className="mt-auto py-8 bg-white dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
+        <footer className="mt-auto py-8 material-chrome hairline-t text-slate-600 dark:text-slate-400 transition-colors duration-200">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <span className="font-serif-lib text-base font-bold text-slate-900 dark:text-white">
-                Nurul Ilm Library 
+                Nurul Ilm Library
               </span>
               <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
               <span className="text-slate-600 dark:text-slate-400">

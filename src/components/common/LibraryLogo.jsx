@@ -38,7 +38,7 @@ export default function LibraryLogo({
         </svg>
         <div className="mt-3">
           <h1 className="font-serif-lib text-2xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-            Nurul Ilm Library 
+            Nurul Ilm Library
           </h1>
           {showTagline && (
             <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 tracking-wide">

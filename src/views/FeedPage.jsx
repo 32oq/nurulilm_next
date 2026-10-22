@@ -157,7 +157,7 @@ const FeedPage = ({ setPage }) => {
 
           <div className="px-3 text-center">
             <p className="text-[11px] text-slate-500">
-              Nurul Ilm Library  • Handwara, Kashmir
+              Nurul Ilm Library • Handwara, Kashmir
             </p>
           </div>
         </aside>

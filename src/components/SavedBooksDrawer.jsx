@@ -26,7 +26,7 @@ export default function SavedBooksDrawer({ savedBooks, onRemoveBook, onClearAll,
       {/* Floating Trigger Pill */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 bg-[#004B87] text-white px-3.5 py-2.5 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[#003865] transition cursor-pointer"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-[#004B87] text-white px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[#003865] transition cursor-pointer max-w-[calc(100vw-32px)]"
         title="View your saved reading list"
       >
         <span className="relative">
@@ -35,7 +35,7 @@ export default function SavedBooksDrawer({ savedBooks, onRemoveBook, onClearAll,
             {savedBooks.length}
           </span>
         </span>
-        <span className="text-xs font-semibold">
+        <span className="text-xs font-semibold truncate">
           Saved Reading List ({savedBooks.length})
         </span>
       </button>

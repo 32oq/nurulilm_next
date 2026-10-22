@@ -11,6 +11,7 @@ import { authService } from '../services/authService';
 import { setClientToken, getClientToken } from '../services/apiClient';
 import { storage } from '../utils/storage';
 import { getErrorMessage } from '../utils/errors';
+import { validateAndEnforceRole } from '../utils/security';
 
 export const getMemoryToken = () => getClientToken();
 export const setMemoryToken = (token) => setClientToken(token);
@@ -121,9 +122,25 @@ export const AuthProvider = ({ children }) => {
       try {
         const { token, user } = await authService.refreshSession();
         if (token && user && isMounted) {
+          const { role } = validateAndEnforceRole(token, user);
+          const secureUser = { ...user, act: role };
+
+          // Authoritative profile hydration (ensures profile_photo is active after refresh)
+          try {
+            const profile = await authService.refreshUser();
+            if (profile) {
+              if (profile.act) secureUser.act = profile.act;
+              if (profile.profile_photo) secureUser.profile_photo = profile.profile_photo;
+              if (profile.full_name) secureUser.full_name = profile.full_name;
+              if (profile.onboarding_completed !== undefined) {
+                secureUser.onboarding_completed = profile.onboarding_completed;
+              }
+            }
+          } catch (_) {}
+
           dispatch({
             type: AUTH_ACTIONS.LOGIN_SUCCESS,
-            payload: { user },
+            payload: { user: secureUser },
           });
         } else if (isMounted) {
           setClientToken(null);
@@ -158,12 +175,36 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (credentials) => {
     dispatch({ type: AUTH_ACTIONS.REQUEST_START });
     try {
-      const { user } = await authService.login(credentials);
+      const { user, token } = await authService.login(credentials);
+      
+      // Cryptographic Claim Validation:
+      // Derive and enforce authentic role from cryptographically signed token payload
+      const { role, isTampered } = validateAndEnforceRole(token, user);
+      if (isTampered) {
+        console.warn('[Security] Blocked modified role in response body. Enforcing signed token claim.');
+      }
+      const secureUser = { ...user, act: role };
+
+      // Authoritative verification: cross-check with server /me endpoint to ensure token signature is valid
+      try {
+        const verifiedProfile = await authService.refreshUser();
+        if (verifiedProfile) {
+          if (verifiedProfile.act) secureUser.act = verifiedProfile.act;
+          if (verifiedProfile.profile_photo) secureUser.profile_photo = verifiedProfile.profile_photo;
+          if (verifiedProfile.full_name) secureUser.full_name = verifiedProfile.full_name;
+          if (verifiedProfile.onboarding_completed !== undefined) {
+            secureUser.onboarding_completed = verifiedProfile.onboarding_completed;
+          }
+        }
+      } catch {
+        throw new Error('Authentication failed: Server rejected session credentials.');
+      }
+
       // Clean up any legacy storage keys to guarantee zero sensitive data in Web Storage
       storage.remove('user');
       storage.remove('has_session');
       storage.remove('last_act');
-      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: { user } });
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: { user: secureUser } });
       return true;
     } catch (error) {
       const message = getErrorMessage(error, 'Login failed. Please check your credentials.');

@@ -63,26 +63,26 @@ export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse })
   const progressPercent = Math.min(Math.round((weeklyHours / targetHours) * 100), 100);
 
   return (
-    <div className="bg-white dark:bg-[#0B1726] border border-[#DCE3EC] dark:border-[#18283A] rounded-2xl p-6 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-5">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E7ECF2] dark:border-[#18283A] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1677FF] dark:text-[#00B8FF] flex items-center gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#004B87] dark:text-blue-400 flex items-center gap-1.5">
               <Target size={13} />
               <span>Aspirant Deep Work Engine</span>
             </span>
-            <span className="text-xs text-[#64748B]">•</span>
-            <span className="text-[11px] text-[#138A5B] font-semibold">
-              Live Session Tracking Active
+            <span className="text-xs text-slate-400">•</span>
+            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+              Daily Desk Track
             </span>
           </div>
-          <h3 className="font-serif-lib text-xl font-bold text-[#0B1B2B] dark:text-white mt-0.5">
+          <h3 className="font-serif-lib text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
             Study Streak &amp; Focus Discipline
           </h3>
-          <p className="text-xs text-[#64748B] dark:text-[#A0ACBA]">
-            Target: <strong>{stats.examGoal}</strong> • Library Desk Track
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Target: <strong className="text-slate-700 dark:text-slate-200">{stats.examGoal}</strong> • Library Desk Track
           </p>
         </div>
 
@@ -90,67 +90,67 @@ export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse })
           <button
             onClick={loadSprintStats}
             title="Refresh statistics"
-            className="p-1.5 rounded-xl text-[#64748B] hover:text-[#1677FF] hover:bg-[#EEF2F7] dark:hover:bg-[#0F1D2E] transition cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-[#004B87] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
-            <RefreshCw size={15} className={loading ? 'animate-spin text-[#1677FF]' : ''} />
+            <RefreshCw size={15} className={loading ? 'animate-spin text-[#004B87]' : ''} />
           </button>
           {onOpenSynapse && (
             <button
               onClick={onOpenSynapse}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100 text-xs font-semibold shadow-2xs transition active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100 text-xs font-semibold shadow-2xs transition active:scale-[0.98] cursor-pointer"
               title="Daily 60-second mind break puzzle"
             >
-              <Brain size={14} className="text-amber-600 dark:text-amber-400" />
+              <Brain size={13} className="text-amber-600 dark:text-amber-400" />
               <span>Synapse (60s Break)</span>
             </button>
           )}
           <button
             onClick={onOpenTimer}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1677FF] hover:bg-[#1264E8] text-white text-xs font-semibold shadow-xs transition active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#004B87] hover:bg-[#003865] dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-xs font-semibold shadow-2xs transition active:scale-[0.98] cursor-pointer"
           >
-            <Play size={13} />
+            <Play size={12} />
             <span>Start Focus Sprint</span>
           </button>
         </div>
       </div>
 
       {/* Main Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         
         {/* Streak Counter */}
-        <div className="p-4 rounded-xl bg-[#F6F8FB] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A] flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-[#FFF7E6] dark:bg-[#2C2108] border border-[#F5B942]/30 text-[#A66A00] dark:text-[#F5B942] flex items-center justify-center text-xl font-bold">
+        <div className="p-3.5 rounded-lg bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 flex items-center justify-center text-lg font-bold">
             🔥
           </div>
           <div>
-            <span className="text-[11px] text-[#64748B] block font-medium">Consecutive Streak</span>
-            <span className="font-serif-lib text-2xl font-bold text-[#0B1B2B] dark:text-white">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Consecutive Streak</span>
+            <span className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
               {stats.streak} Days
             </span>
           </div>
         </div>
 
         {/* Today's Deep Work */}
-        <div className="p-4 rounded-xl bg-[#F6F8FB] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A] flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-[#EAF2FF] dark:bg-[#0F1D2E] border border-[#1677FF]/20 text-[#1677FF] dark:text-[#00B8FF] flex items-center justify-center">
-            <Timer size={24} />
+        <div className="p-3.5 rounded-lg bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[#004B87] dark:text-blue-400 flex items-center justify-center">
+            <Timer size={20} />
           </div>
           <div>
-            <span className="text-[11px] text-[#64748B] block font-medium">Today's Focus Log</span>
-            <span className="font-serif-lib text-2xl font-bold text-[#0B1B2B] dark:text-white">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Today's Focus Log</span>
+            <span className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
               {todayHours}h {todayMins}m
             </span>
           </div>
         </div>
 
         {/* Weekly Goal Progress */}
-        <div className="p-4 rounded-xl bg-[#F6F8FB] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A] flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-[#EAF8F1] dark:bg-[#0B251B] border border-[#138A5B]/30 text-[#138A5B] dark:text-[#19D68C] flex items-center justify-center">
-            <TrendingUp size={24} />
+        <div className="p-3.5 rounded-lg bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
+            <TrendingUp size={20} />
           </div>
           <div>
-            <span className="text-[11px] text-[#64748B] block font-medium">Logged This Week</span>
-            <span className="font-serif-lib text-2xl font-bold text-[#0B1B2B] dark:text-white">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Logged This Week</span>
+            <span className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
               {weeklyHours} / {targetHours}h
             </span>
           </div>
@@ -158,15 +158,15 @@ export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse })
       </div>
 
       {/* 7-Day Habit Consistency Stepper & Weekly Progress Bar */}
-      <div className="space-y-4 pt-1">
+      <div className="space-y-3 pt-1">
         <div>
-          <div className="flex justify-between text-xs font-semibold text-[#0B1B2B] dark:text-white mb-1.5">
+          <div className="flex justify-between text-xs font-semibold text-slate-900 dark:text-white mb-1.5">
             <span>Weekly Target Completion ({progressPercent}%)</span>
-            <span className="text-[#1677FF] dark:text-[#00B8FF]">{weeklyHours} hours completed</span>
+            <span className="text-[#004B87] dark:text-blue-400 font-mono tabular-nums">{weeklyHours} hours completed</span>
           </div>
-          <div className="w-full h-2.5 rounded-full bg-[#E7ECF2] dark:bg-[#18283A] overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#1677FF] to-[#00A8E8] transition-all duration-500"
+              className="h-full rounded-full bg-[#004B87] dark:bg-blue-500 transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -174,10 +174,10 @@ export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse })
 
         {/* Weekly calendar dots */}
         <div>
-          <span className="text-[11px] text-[#64748B] block mb-2 font-medium">
-            This Week's Attendance &amp; Consistency Stepper:
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-2 font-medium">
+            Weekly Attendance &amp; Focus Consistency Stepper:
           </span>
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
             {weekDays.map((day, idx) => {
               const isPastOrToday = idx <= todayIdx;
               const isToday = idx === todayIdx;
@@ -185,17 +185,17 @@ export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse })
               return (
                 <div
                   key={day}
-                  className={`p-2 rounded-xl text-center border transition-all ${
+                  className={`p-2 rounded-lg text-center border transition-all ${
                     isToday
-                      ? 'bg-[#EAF2FF] dark:bg-[#0F1D2E] border-[#1677FF] text-[#1677FF] dark:text-[#00B8FF] font-bold'
+                      ? 'bg-blue-50 dark:bg-blue-950/50 border-[#004B87] text-[#004B87] dark:text-blue-300 font-bold'
                       : isPastOrToday
-                      ? 'bg-[#EAF8F1] dark:bg-[#081812] border-[#138A5B]/30 text-[#138A5B] dark:text-[#19D68C]'
-                      : 'bg-[#F6F8FB] dark:bg-[#081321] border-[#DCE3EC] dark:border-[#18283A] text-[#64748B]'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300'
+                      : 'bg-[#F6F8FB] dark:bg-[#0B0F19] border-slate-200 dark:border-slate-800 text-slate-400'
                   }`}
                 >
                   <span className="text-[10px] block uppercase font-medium">{day}</span>
                   <span className="text-xs mt-0.5 flex items-center justify-center">
-                    {isToday ? <Flame size={13} className="text-[#1677FF]" /> : isPastOrToday ? '✓' : '-'}
+                    {isToday ? <Flame size={13} className="text-[#004B87] dark:text-blue-400" /> : isPastOrToday ? '✓' : '—'}
                   </span>
                 </div>
               );
@@ -205,40 +205,40 @@ export default function StudyStreakTracker({ user, onOpenTimer, onOpenSynapse })
       </div>
 
       {/* Mini Scholar Leaderboard */}
-      <div className="pt-4 border-t border-[#E7ECF2] dark:border-[#18283A]">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-[#0B1B2B] dark:text-white flex items-center gap-1.5">
-            <Trophy size={14} className="text-[#A66A00] dark:text-[#F5B942]" />
-            <span>Library Scholars Leaderboard (API Powered)</span>
+      <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            <Trophy size={14} className="text-amber-600 dark:text-amber-400" />
+            <span>Library Scholars Leaderboard</span>
           </span>
-          <span className="text-[11px] text-[#64748B]">Weekly Aggregation</span>
+          <span className="text-[11px] text-slate-500">Weekly Aggregation</span>
         </div>
 
         {topScholars.length === 0 ? (
-          <div className="py-4 px-4 rounded-xl bg-[#F6F8FB] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A] text-center">
-            <p className="text-xs text-[#64748B] dark:text-[#8CA093]">
-              No focus sprint sessions logged yet this week. Complete a quiet focus sprint to take the lead on the leaderboard!
+          <div className="py-3 px-4 rounded-lg bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 text-center">
+            <p className="text-xs text-slate-500">
+              Complete a quiet focus sprint at your desk to appear on the weekly scholars leaderboard.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {topScholars.map(scholar => (
               <div
                 key={scholar.rank || scholar.name}
-                className="p-3 rounded-xl bg-[#F6F8FB] dark:bg-[#081321] border border-[#DCE3EC] dark:border-[#18283A] flex items-center justify-between"
+                className="p-2.5 rounded-lg bg-[#F6F8FB] dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 flex items-center justify-between"
               >
-                <div className="flex items-center gap-2.5">
-                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                    scholar.rank === 1 ? 'bg-[#FFF7E6] text-[#A66A00] border border-[#F5B942]/40' : 'bg-[#E7ECF2] dark:bg-[#0F1D2E] text-[#64748B]'
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
+                    scholar.rank === 1 ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}>
                     #{scholar.rank || 1}
                   </span>
-                  <div>
-                    <p className="text-xs font-bold text-[#0B1B2B] dark:text-white leading-tight">{scholar.name}</p>
-                    <p className="text-[10px] text-[#64748B]">{scholar.exam || 'Civil Services'}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight truncate">{scholar.name}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{scholar.exam || 'Civil Services'}</p>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-[#1677FF] dark:text-[#00B8FF]">
+                <span className="text-xs font-mono font-bold text-[#004B87] dark:text-blue-400 flex-shrink-0 tabular-nums">
                   {scholar.hours}
                 </span>
               </div>

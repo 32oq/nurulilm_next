@@ -175,7 +175,7 @@ export default function ResourcesView({ isAdmin }) {
                     <div className="flex gap-1.5">
                       <button
                         onClick={() => openEdit(r)}
-                        className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 border border-slate-200 dark:border-slate-700 transition cursor-pointer"
+                        className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition cursor-pointer"
                         title="Edit Resource"
                       >
                         <Pencil size={13} />

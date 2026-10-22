@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, CreditCard, Users, LogOut } from "lucide-react";
+import { Menu, CreditCard, Users, Sparkles } from "lucide-react";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardContent from "./DashboardContent";
 import ThemeToggle from "../ThemeToggle";
@@ -28,6 +28,7 @@ const VIEW_TITLES = {
   Settings_admin: "Administrator Settings",
   users_admin: "Student Registry",
   news_admin: "Library Noticeboard",
+  engagement_admin: "Student Engagement & Study Metrics",
 };
 
 export default function DashboardLayout({ navTo, type }) {
@@ -43,14 +44,16 @@ export default function DashboardLayout({ navTo, type }) {
   }, [type, fetchPendingCounts]);
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-[#F6F8FB] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex relative">
+    <div className="w-full h-screen overflow-hidden bg-[#F6F8FB] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex relative selection:bg-blue-500/20">
+      {/* Mobile Drawer Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/50 z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
+      {/* Apple Inset Sidebar */}
       <DashboardSidebar
         open={sidebarOpen}
         setOpen={setSidebarOpen}
@@ -62,22 +65,22 @@ export default function DashboardLayout({ navTo, type }) {
         pendingCounts={pendingCounts}
       />
 
-      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden">
-        {/* Top Header Bar - Solid Institutional Navbar without glassmorphism */}
-        <header className="flex-shrink-0 z-30 bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between gap-3 shadow-2xs">
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative">
+        {/* Apple HIG Translucent Header Bar */}
+        <header className="flex-shrink-0 z-30 material-chrome hairline-b px-4 sm:px-8 h-16 flex items-center justify-between gap-3 sticky top-0 shadow-2xs backdrop-blur-xl">
           <div className="flex items-center gap-3">
             <button
-              className="md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition cursor-pointer"
+              className="md:hidden hig-touch-target p-2 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 hairline-border text-slate-700 dark:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition hig-spring cursor-pointer"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open navigation"
             >
               <Menu size={18} />
             </button>
             <div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#004B87] dark:text-blue-400 block">
                 {type === "admin" ? "Library Administration Console" : "Member Study Desk"}
               </span>
-              <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 leading-none">
+              <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 hig-title-2 leading-none mt-0.5 tracking-tight">
                 {VIEW_TITLES[view] || "Dashboard"}
               </h1>
             </div>
@@ -87,7 +90,7 @@ export default function DashboardLayout({ navTo, type }) {
             {type === "admin" && pendingCounts?.pendingPayments > 0 && (
               <button
                 onClick={() => setView("payments_admin")}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition shadow-2xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition hig-spring shadow-2xs cursor-pointer"
                 title="Review pending payments"
               >
                 <CreditCard size={13} className="text-amber-600" />
@@ -97,27 +100,21 @@ export default function DashboardLayout({ navTo, type }) {
             {type === "admin" && pendingCounts?.pendingUsers > 0 && (
               <button
                 onClick={() => setView("users_admin")}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition shadow-2xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-[#004B87] dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition hig-spring shadow-2xs cursor-pointer"
                 title="Review pending user approvals"
               >
                 <Users size={13} className="text-[#004B87] dark:text-blue-400" />
                 <span>{pendingCounts.pendingUsers} Pending User{pendingCounts.pendingUsers > 1 ? 's' : ''}</span>
               </button>
             )}
-            <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">
-              Handwara Branch
-            </span>
-            <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" title="System Online" />
+            
+            {/* Live Campus Pill */}
+            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 text-[11px] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Handwara Campus Active</span>
+            </div>
+
             <ThemeToggle className="ml-1" />
-            <button
-              onClick={logout}
-              className="flex items-center gap-1.5 p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700 sm:border-transparent transition cursor-pointer"
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <LogOut size={16} />
-              <span className="text-xs font-medium hidden lg:inline">Sign Out</span>
-            </button>
           </div>
         </header>
 

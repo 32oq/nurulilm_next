@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import moment from "moment";
-import { RefreshCw, CheckCircle2, Printer } from "lucide-react";
+import { RefreshCw, CheckCircle2, Printer, AlertCircle } from "lucide-react";
 import { useOther } from "../../../context/OtherContext";
 import { LoadingRow, ErrorRow, TxnStatus } from "../shared";
 import PrintableReceiptModal from "../PrintableReceiptModal";
@@ -63,25 +63,26 @@ export default function AdminPayments() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl w-full">
+    <div className="space-y-6 max-w-5xl w-full mx-auto pb-16">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif-lib text-2xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white hig-title-2 tracking-tight">
             Pending Fee Submissions
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
             Review student UPI transaction submissions and confirm membership periods.
           </p>
         </div>
         <button
           onClick={load}
           disabled={loading}
-          className="p-2.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 transition disabled:opacity-50 self-start sm:self-auto shadow-xs cursor-pointer"
+          className="h-11 px-4 rounded-2xl bg-white dark:bg-[#111827] hairline-border text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 self-start sm:self-auto shadow-xs cursor-pointer inline-flex items-center gap-2 hig-spring active:scale-[0.98] text-xs font-semibold"
           title="Refresh Pending Transactions"
           aria-label="Refresh Pending Transactions"
         >
           <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+          <span>Refresh</span>
         </button>
       </div>
 
@@ -89,12 +90,12 @@ export default function AdminPayments() {
       {error   && <ErrorRow message={error} />}
 
       {!loading && (
-        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden">
+        <div className="material-card hairline-border rounded-3xl shadow-sm overflow-hidden backdrop-blur-xl">
           {!pending?.length ? (
-            <div className="flex flex-col items-center justify-center py-16 px-6 gap-2 text-center">
-              <CheckCircle2 size={32} className="text-emerald-600" />
-              <p className="font-serif-lib text-base font-bold text-slate-900 dark:text-white">All student payments reconciled</p>
-              <p className="text-xs text-slate-500">No pending fee submissions waiting for confirmation.</p>
+            <div className="flex flex-col items-center justify-center py-16 px-6 gap-2.5 text-center">
+              <CheckCircle2 size={36} className="text-emerald-500" />
+              <p className="text-base font-bold text-slate-900 dark:text-white hig-title-2">All student payments reconciled</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">No pending fee submissions waiting for confirmation.</p>
             </div>
           ) : (
             <>
@@ -102,32 +103,32 @@ export default function AdminPayments() {
               <div className="hidden lg:block overflow-x-auto">
                 <table className="min-w-full text-xs">
                   <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
-                      <th className="px-5 py-3 text-left">Student Patron</th>
-                      <th className="px-5 py-3 text-left">Plan</th>
-                      <th className="px-5 py-3 text-left">Period</th>
-                      <th className="px-5 py-3 text-left">UPI / Reference ID</th>
-                      <th className="px-5 py-3 text-left">Amount</th>
-                      <th className="px-5 py-3 text-left">Status</th>
-                      <th className="px-5 py-3 text-left">Action</th>
+                    <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                      <th className="px-5 py-3.5 text-left">Student Patron</th>
+                      <th className="px-5 py-3.5 text-left">Plan</th>
+                      <th className="px-5 py-3.5 text-left">Period</th>
+                      <th className="px-5 py-3.5 text-left">UPI / Reference ID</th>
+                      <th className="px-5 py-3.5 text-left">Amount</th>
+                      <th className="px-5 py-3.5 text-left">Status</th>
+                      <th className="px-5 py-3.5 text-left">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                     {pending.map(item => {
                       const isPaid = !!item.confirmation;
                       const isApproving = approvingId === item.id;
                       return (
-                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                        <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                           <td className="px-5 py-3.5">
                             <p className="font-semibold text-slate-900 dark:text-white">{item.user_name}</p>
-                            <p className="text-[11px] text-slate-500">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
                               {item.user_email}{item.user_contact ? ` • ${item.user_contact}` : ''}
                             </p>
                           </td>
                           <td className="px-5 py-3.5 text-slate-700 dark:text-slate-300 font-medium max-w-[160px] truncate" title={item.package_name}>
                             {item.package_name}
                           </td>
-                          <td className="px-5 py-3.5 text-slate-500">
+                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400 font-mono tabular-nums text-[11px]">
                             <span>{item.fromdate}</span>
                             <span className="mx-1">→</span>
                             <span>{item.todate}</span>
@@ -135,29 +136,29 @@ export default function AdminPayments() {
                           <td className="px-5 py-3.5 font-mono text-xs font-semibold max-w-[160px] truncate text-slate-800 dark:text-slate-200">
                             {item.txn_id}
                           </td>
-                          <td className="px-5 py-3.5 font-serif-lib text-sm font-bold text-slate-900 dark:text-white">
+                          <td className="px-5 py-3.5 font-mono text-sm font-bold text-slate-900 dark:text-white tabular-nums">
                             ₹{item.amount}
                           </td>
                           <td className="px-5 py-3.5">
                             <TxnStatus ok={isPaid} label={isPaid ? "Approved" : "Awaiting Review"} />
                           </td>
-                          <td className="px-5 py-3.5 flex items-center gap-2">
+                          <td className="px-5 py-3.5">
                             {!isPaid ? (
                               <button
                                 onClick={() => handleApprove(item)}
                                 disabled={isApproving}
-                                className="px-3.5 py-1.5 bg-[#004B87] hover:bg-[#003B6B] text-white rounded text-xs font-semibold transition shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer"
+                                className="h-10 px-4 bg-[#004B87] hover:bg-[#003865] dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer hig-spring active:scale-[0.98]"
                               >
-                                {isApproving && <RefreshCw size={12} className="animate-spin" />}
+                                {isApproving && <RefreshCw size={13} className="animate-spin" />}
                                 <span>{isApproving ? "Approving..." : "Approve Fee"}</span>
                               </button>
                             ) : (
                               <button
                                 onClick={() => setReceiptTxn(item.raw || item)}
-                                className="px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[#004B87] dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
+                                className="h-10 px-4 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[#004B87] dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded-xl text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5 cursor-pointer hig-spring active:scale-[0.98]"
                                 aria-label="Print voucher"
                               >
-                                <Printer size={12} />
+                                <Printer size={13} />
                                 <span>Voucher</span>
                               </button>
                             )}
@@ -175,26 +176,26 @@ export default function AdminPayments() {
                   const isPaid = !!item.confirmation;
                   const isApproving = approvingId === item.id;
                   return (
-                    <div key={item.id} className="p-4 space-y-2.5">
+                    <div key={item.id} className="p-4 space-y-3">
                       <div className="flex justify-between items-start gap-2">
                         <div>
                           <p className="font-semibold text-slate-900 dark:text-white text-sm">{item.user_name}</p>
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400">
                             {item.user_email}{item.user_contact ? ` • ${item.user_contact}` : ''}
                           </p>
                           <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5">{item.package_name}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-serif-lib text-base font-bold text-slate-900 dark:text-white">₹{item.amount}</p>
+                          <p className="font-mono text-base font-bold text-slate-900 dark:text-white tabular-nums">₹{item.amount}</p>
                           <TxnStatus ok={isPaid} label={isPaid ? "Approved" : "Pending"} />
                         </div>
                       </div>
-                      <div className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1">
-                        <div className="flex justify-between">
+                      <div className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50/80 dark:bg-slate-900/70 p-3 rounded-2xl hairline-border space-y-1">
+                        <div className="flex justify-between font-mono tabular-nums text-[11px]">
                           <span className="text-slate-500">Period:</span>
                           <span>{item.fromdate} → {item.todate}</span>
                         </div>
-                        <div className="flex justify-between font-mono">
+                        <div className="flex justify-between font-mono text-[11px]">
                           <span className="text-slate-500">UPI ID:</span>
                           <span className="font-semibold text-slate-900 dark:text-white">{item.txn_id}</span>
                         </div>
@@ -203,17 +204,17 @@ export default function AdminPayments() {
                         <button
                           onClick={() => handleApprove(item)}
                           disabled={isApproving}
-                          className="w-full py-2.5 bg-[#004B87] hover:bg-[#003B6B] text-white rounded text-xs font-semibold transition shadow-xs disabled:opacity-50 inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                          className="w-full h-11 bg-[#004B87] hover:bg-[#003865] dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-2xl text-xs font-semibold transition shadow-xs disabled:opacity-50 inline-flex items-center justify-center gap-1.5 cursor-pointer hig-spring active:scale-[0.98]"
                         >
-                          {isApproving && <RefreshCw size={12} className="animate-spin" />}
+                          {isApproving && <RefreshCw size={13} className="animate-spin" />}
                           <span>{isApproving ? "Approving Fee..." : "Approve Fee Payment"}</span>
                         </button>
                       ) : (
                         <button
                           onClick={() => setReceiptTxn(item.raw || item)}
-                          className="w-full py-2 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[#004B87] dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded text-xs font-semibold transition shadow-xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                          className="w-full h-11 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[#004B87] dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded-2xl text-xs font-semibold transition shadow-xs inline-flex items-center justify-center gap-1.5 cursor-pointer hig-spring active:scale-[0.98]"
                         >
-                          <Printer size={12} />
+                          <Printer size={14} />
                           <span>Print Official Fee Voucher</span>
                         </button>
                       )}

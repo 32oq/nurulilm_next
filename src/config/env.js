@@ -34,7 +34,7 @@ export const ENV = Object.freeze({
   /**
    * Institutional defaults
    */
-  LIBRARY_NAME: 'Nurul Ilm Library ',
+  LIBRARY_NAME: 'Nurul Ilm Library',
   LIBRARY_LOCATION: 'New Bus Stand Road, Handwara, Jammu & Kashmir 193221',
   LIBRARY_PHONE: '+91 9906000000',
   LIBRARY_SUPPORT_EMAIL: 'support@nurulilmlibrary.com',

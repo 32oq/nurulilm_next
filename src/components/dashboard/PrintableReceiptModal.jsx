@@ -59,7 +59,7 @@ export default function PrintableReceiptModal({ isOpen, onClose, txn, studentNam
               Registered Non-Profit Educational Institution • Est. Handwara
             </div>
             <h1 className="text-xl sm:text-2xl font-serif-lib font-bold text-slate-950 tracking-wide uppercase">
-              Nurul Ilm Library 
+              Nurul Ilm Library
             </h1>
             <p className="text-[11px] text-slate-600 mt-1">
               Main Bus Stand Corridor, Handwara, Dist. Kupwara, Jammu & Kashmir — 193221

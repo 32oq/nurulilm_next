@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { LogIn, UserPlus, LogOut, LayoutDashboard, Menu, X, Rss, BookOpen, Clock, Sparkles } from 'lucide-react';
+import { LogIn, UserPlus, LogOut, LayoutDashboard, Menu, X, Rss, BookOpen, Clock, Lightbulb } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import LibraryLogo from './common/LibraryLogo';
@@ -15,7 +15,8 @@ const ROUTE_MAP = {
   game: '/daily-puzzle',
   login: '/login',
   packages: '/packages',
-  register: '/packages',
+  register: '/register',
+  signup: '/register',
   checkout: '/packages',
   payment_pending: '/payment-pending',
   police_verification: '/verification',
@@ -36,7 +37,8 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
     if (pathname.startsWith('/dashboard')) return 'dashboard';
     if (pathname.startsWith('/daily-puzzle')) return 'daily_puzzle';
     if (pathname.startsWith('/login')) return 'login';
-    if (pathname.startsWith('/packages') || pathname.startsWith('/register')) return 'packages';
+    if (pathname.startsWith('/packages')) return 'packages';
+    if (pathname.startsWith('/register') || pathname.startsWith('/signup')) return 'register';
     if (pathname.startsWith('/payment-pending')) return 'payment_pending';
     if (pathname.startsWith('/verification')) return 'police_verification';
     if (pathname.startsWith('/forgot-password')) return 'forgot_password';
@@ -87,19 +89,19 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
   );
 
   return (
-    <header className="bg-white dark:bg-[#0F172A] border-b border-slate-200 dark:border-slate-800 fixed top-0 left-0 right-0 z-30 shadow-xs">
+    <header className="fixed top-0 left-0 right-0 z-30 material-chrome hairline-b shadow-2xs transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
         {/* Brand Crest & Title */}
         <button
           onClick={() => handleNav(isAuthenticated ? 'feed' : 'home')}
           className="flex items-center gap-3 flex-shrink-0 text-left cursor-pointer focus-visible:outline-blue-800"
-          aria-label="Nurul Ilm Library  Home"
+          aria-label="Nurul Ilm Library Home"
         >
           <LibraryLogo size={36} className="w-9 h-9" />
           <div className="flex flex-col">
             <span className="font-serif-lib text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-              Nurul Ilm Library 
+              Nurul Ilm Library
             </span>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-sans leading-none">
               Handwara, Kashmir
@@ -111,7 +113,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
         {isAuthenticated && isVerified && (
           <nav className="hidden md:flex items-center gap-1.5" aria-label="Member Navigation">
             <NavPill page="feed" icon={Rss} label="Notices & Bulletins" />
-            <NavPill page="daily_puzzle" icon={Sparkles} label="Scholar Path" />
+            <NavPill page="daily_puzzle" icon={Lightbulb} label="Scholar Path" />
             <NavPill page="dashboard" icon={LayoutDashboard} label="Desk & Reading Room" />
           </nav>
         )}
@@ -187,22 +189,22 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
               <nav className="hidden sm:flex items-center gap-2" aria-label="Account Access">
                 <button
                   onClick={() => handleNav('packages')}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer hig-spring
                     ${activePage === 'packages'
-                      ? 'bg-blue-900 text-white dark:bg-blue-600'
-                      : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'}`}
+                      ? 'bg-[#004B87] text-white dark:bg-blue-600 shadow-xs'
+                      : 'text-slate-700 hover:bg-slate-100/80 dark:text-slate-200 dark:hover:bg-slate-800/80'}`}
                 >
                   Membership Plans
                 </button>
                 <button
                   onClick={() => handleNav('login')}
-                  className="px-3.5 py-1.5 rounded-md text-xs font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
+                  className="px-4 py-1.5 rounded-full text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition cursor-pointer hig-spring"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => handleNav('register')}
-                  className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition shadow-2xs cursor-pointer"
+                  className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#004B87] hover:bg-[#003865] dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition shadow-xs cursor-pointer hig-spring"
                 >
                   Register
                 </button>
@@ -210,12 +212,12 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
 
               {/* Mobile hamburger */}
               <button
-                className="sm:hidden p-2 rounded-md text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700 cursor-pointer"
+                className="sm:hidden hig-touch-target p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200/80 dark:border-slate-800 cursor-pointer hig-spring-press"
                 onClick={() => setMenuOpen(o => !o)}
                 aria-expanded={menuOpen}
                 aria-label="Toggle navigation menu"
               >
-                {menuOpen ? <X size={18} /> : <Menu size={18} />}
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </>
           )}
@@ -224,7 +226,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="sm:hidden bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-slate-800 px-4 py-4 shadow-lg">
+        <div className="sm:hidden material-card hairline-b px-4 py-4 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150">
           {isAuthenticated ? (
             <div className="space-y-1.5">
               <div className="flex items-center gap-3 px-3 py-3 mb-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-800">
@@ -237,7 +239,7 @@ const Header = ({ currentPage, setPage, isVerified = true, hasPendingPayment = f
                 </div>
               </div>
               <MobileItem page="feed" icon={Rss} label="Bulletin Feed" />
-              <MobileItem page="daily_puzzle" icon={Sparkles} label="Scholar Path (Daily Logic)" />
+              <MobileItem page="daily_puzzle" icon={Lightbulb} label="Scholar Path (Daily Logic)" />
               <MobileItem page="dashboard" icon={LayoutDashboard} label="Desk &amp; Catalog" />
               {hasPendingPayment && <MobileItem page="payment_pending" icon={Clock} label="Verification Pending" />}
               {hasNoPackage && <MobileItem page="packages" icon={BookOpen} label="Select Membership Tier" />}
